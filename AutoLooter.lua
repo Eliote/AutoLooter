@@ -30,16 +30,21 @@ local ConfirmLootSlot = ConfirmLootSlot
 local GetNumQuestLogEntries = GetNumQuestLogEntries
 local GetNumQuestLeaderBoards = GetNumQuestLeaderBoards
 local GetQuestLogLeaderBoard = GetQuestLogLeaderBoard
+local ConfirmLootRoll = ConfirmLootRoll
 local string = string
 --
 
-local function getItemText(icon, link, quantity)
-	--if not quantity then quantity = 1 end
+local questItemList
+
+local function GetItemText(icon, link, quantity)
+	quantity = quantity or 1
+	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark" .. ":0|t"
+	link = link or ""
 
 	return quantity .. "x|T" .. icon .. ":0|t" .. link .. " "
 end
 
-local function printLoot(descricao, cor, items, dinheiro)
+local function PrintLoot(descricao, cor, items, dinheiro)
 	items = items:trim()
 	if items ~= "" then
 		if dinheiro then
@@ -48,6 +53,29 @@ local function printLoot(descricao, cor, items, dinheiro)
 			print(cor, descricao, "|r: ", items)
 		end
 	end
+end
+
+local function CreateQuestItemList()
+	if not DataBase.lootQuest then return end
+
+	local itemList = {}
+
+	for questIndex = 1, GetNumQuestLogEntries() do
+		for boardIndex = 1, GetNumQuestLeaderBoards(questIndex) do
+			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
+
+			if not isDone and boardItemType == "item" then
+				-- i, j, numItems, numNeeded, itemName
+				local _, _, _, _, itemName = string.find(leaderboardTxt, "([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
+
+				if itemName then
+					itemList[itemName] = true
+				end
+			end
+		end
+	end
+
+	return itemList
 end
 
 function AUTO_LOOTER.GetBoolean(bool, def)
@@ -68,11 +96,16 @@ function AUTO_LOOTER.Enable(bool)
 	if DataBase.enable then
 		AUTO_LOOTER:RegisterEvent("CONFIRM_LOOT_ROLL")
 		AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
+		AUTO_LOOTER:RegisterEvent("QUEST_LOG_UPDATE") -- register UNIT_QUEST_LOG_CHANGED after first run
+		questItemList = CreateQuestItemList()
 		DataBase.enable = true
 		print(L["Enabled"])
 	else
 		AUTO_LOOTER:UnregisterEvent("CONFIRM_LOOT_ROLL")
 		AUTO_LOOTER:UnregisterEvent("LOOT_OPENED")
+		AUTO_LOOTER:UnregisterEvent("QUEST_LOG_UPDATE")
+		AUTO_LOOTER:UnregisterEvent("UNIT_QUEST_LOG_CHANGED")
+		questItemList = nil
 		DataBase.enable = false
 		print(L["Disabled"])
 	end
@@ -132,6 +165,16 @@ function AUTO_LOOTER:SetAlertSound(file)
 	DataBase.alertSound = file
 end
 
+function AUTO_LOOTER.SetMinimapVisibility(bool)
+	DataBase.showMinimap = bool
+
+	if (bool) then
+		AutoLooter_MinimapButton:Show()
+	else
+		AutoLooter_MinimapButton:Hide()
+	end
+end
+
 function AUTO_LOOTER:ReloadOptions()
 	PRIVATE_TABLE.DB = self.db.profile
 	DataBase = PRIVATE_TABLE.DB
@@ -139,6 +182,8 @@ function AUTO_LOOTER:ReloadOptions()
 	AUTO_LOOTER.Enable(DataBase.enable)
 
 	AutoLooter_MinimapButton_Reposition()
+
+	AUTO_LOOTER.SetMinimapVisibility(DataBase.showMinimap)
 end
 
 function AUTO_LOOTER:CreateProfile()
@@ -259,7 +304,13 @@ function AUTO_LOOTER:CreateProfile()
 				name = L["Set alert sound"],
 				set = function(info, val) AUTO_LOOTER.SetAlertSound(val) end,
 				get = false
-			}
+			},
+			showMinimap = {
+				type = "toggle",
+				name = L["Show/Hide minimap button"],
+				set = function(info, val) AUTO_LOOTER.SetMinimapVisibility(val)	end,
+				get = function(info) return DataBase.showMinimap end
+			},
 		}
 	}
 
@@ -283,22 +334,37 @@ end
 local function CreateAHTable(defTable)
 	local out = {}
 
-	local itemClasses = { GetAuctionItemClasses() };
-	if #itemClasses > 0 then
-		for i, itemClass in pairs(itemClasses) do
-			local t = {}
+	local itemClasses = {
+		LE_ITEM_CLASS_WEAPON,
+		LE_ITEM_CLASS_ARMOR,
+		LE_ITEM_CLASS_CONTAINER,
+		LE_ITEM_CLASS_GEM,
+		LE_ITEM_CLASS_ITEM_ENHANCEMENT,
+		LE_ITEM_CLASS_CONSUMABLE,
+		LE_ITEM_CLASS_GLYPH,
+		LE_ITEM_CLASS_TRADEGOODS,
+		LE_ITEM_CLASS_RECIPE,
+		LE_ITEM_CLASS_BATTLEPET,
+		LE_ITEM_CLASS_QUESTITEM,
+		LE_ITEM_CLASS_MISCELLANEOUS,
+	};
 
-			local itemSubClasses = { GetAuctionItemSubClasses(i) };
-			if #itemSubClasses > 0 then
-				for _, itemSubClass in pairs(itemSubClasses) do
-					t[itemSubClass] = GetSaved(defTable, itemClass, itemSubClass)
-				end
-			else
-				t[itemClass] = GetSaved(defTable, itemClass, itemClass)
+	for _, itemClass in pairs(itemClasses) do
+		local t = {}
+		local classInfo = GetItemClassInfo(itemClass)
+
+		local itemSubClasses = { GetAuctionItemSubClasses(itemClass) };
+		if #itemSubClasses > 0 then
+			for _, itemSubClass in pairs(itemSubClasses) do
+				local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
+				t[subclassInfo] = GetSaved(defTable, classInfo, subclassInfo)
 			end
-
-			out[itemClass] = t
+		else
+			t[classInfo] = GetSaved(defTable, classInfo, classInfo)
 		end
+
+		--t["(Legacy Types)"] = GetSaved(defTable, itemClass, "(Legacy Types)")
+		out[classInfo] = t
 	end
 
 	return out
@@ -318,6 +384,7 @@ function AUTO_LOOTER:OnInitialize()
 			lootQuest = true,
 			close = false,
 			minimapPos = 45,
+			showMinimap = true,
 			rarity = 2,
 			price = 40000,
 			alertSound = "Sound/creature/Murloc/mMurlocAggroOld.ogg",
@@ -330,6 +397,8 @@ function AUTO_LOOTER:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileChanged", "ReloadOptions")
 	self.db.RegisterCallback(self, "OnProfileCopied", "ReloadOptions")
 	self.db.RegisterCallback(self, "OnProfileReset", "ReloadOptions")
+
+	self.db.profile.typeTable = CreateAHTable(self.db.profile.typeTable)
 
 	AUTO_LOOTER:ReloadOptions()
 
@@ -358,32 +427,9 @@ local function LootType(iType, iSubType, iRarity)
 	if DataBase.ignoreGreys and iRarity == 0 then return false end
 
 	local t = DataBase.typeTable[iType]
-	if t then return t[iSubType] end
+	if t then return t[iSubType] or t["(Legacy Types)"] end
 
 	return false
-end
-
-local function CreateQuestItemList()
-	if not DataBase.lootQuest then return end
-
-	local itemList = {}
-
-	for questIndex = 1, GetNumQuestLogEntries() do
-		for boardIndex = 1, GetNumQuestLeaderBoards(questIndex) do
-			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
-
-			if not isDone and boardItemType == "item" then
-				-- i, j, numItems, numNeeded, itemName
-				local _, _, _, _, itemName = string.find(leaderboardTxt, "([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
-
-				if itemName then
-					itemList[itemName] = true
-				end
-			end
-		end
-	end
-
-	return itemList
 end
 
 -- LOOT OPENED
@@ -400,30 +446,33 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	local srType = ""
 	local srQuest = ""
 	local srToken = ""
-
-	local questItemList = CreateQuestItemList()
+	local srLocked = ""
 
 	for nIndex = 1, GetNumLootItems() do
-		local icon, sTitle, nQuantity, nRarity = GetLootSlotInfo(nIndex)
+		local icon, sTitle, nQuantity, nRarity, locked = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
-		-- Money
-		if (nQuantity == 0) then
+		-- Locked
+		if locked then
+			srLocked = srLocked .. GetItemText(icon, sItemLink, nQuantity)
+
+			-- Money
+		elseif (nQuantity == 0) then
 			srMoney = string.gsub(sTitle, "\n", " ")
 			LootSlot(nIndex)
 
 			-- White List
 		elseif (DataBase.items[sTitle]) then
-			srListed = srListed .. getItemText(icon, sItemLink, nQuantity)
+			srListed = srListed .. GetItemText(icon, sItemLink, nQuantity)
 			Loot(nIndex, sTitle)
 
 			-- Ignore List
 		elseif (DataBase.ignore[sTitle]) then
-			srIgnore = srIgnore .. getItemText(icon, sItemLink, nQuantity)
+			srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
 
 			-- Rarity
 		elseif (DataBase.rarity > -1) and nRarity and (nRarity >= DataBase.rarity) then
-			srRarity = srRarity .. getItemText(icon, sItemLink, nQuantity)
+			srRarity = srRarity .. GetItemText(icon, sItemLink, nQuantity)
 			Loot(nIndex, sTitle)
 
 			-- Need more info
@@ -432,34 +481,34 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 
 			-- Token
 			if not iPrice then
-				srToken = srToken .. getItemText(icon, sItemLink, nQuantity)
+				srToken = srToken .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
 				-- Price
 			elseif (DataBase.price > 0) and (iPrice >= DataBase.price) then
-				srPrice = srPrice .. getItemText(icon, sItemLink, nQuantity)
+				srPrice = srPrice .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
 				-- Type/Subtype
 			elseif LootType(itemType, itemSubType, nRarity) then
 				local typeSubtype = (DataBase.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
-				srType = srType .. typeSubtype .. getItemText(icon, sItemLink, nQuantity)
+				srType = srType .. typeSubtype .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
 				-- Quest
 			elseif questItemList and questItemList[sTitle] then
-				srQuest = srQuest .. getItemText(icon, sItemLink, nQuantity)
+				srQuest = srQuest .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
 				-- LootAll
 			elseif (DataBase.lootAll) then
-				srAll = srAll .. getItemText(icon, sItemLink, nQuantity)
+				srAll = srAll .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
 				-- Log
 			elseif DataBase.printoutIgnored then
-				srIgnore = srIgnore .. getItemText(icon, sItemLink, nQuantity)
+				srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
 			end
 		end
 	end
@@ -469,18 +518,19 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	end
 
 	if (DataBase.printout) then
-		printLoot(L["Coin"], Color.GREEN, srMoney, true)
-		printLoot(L["Listed"], Color.GREEN, srListed)
-		printLoot(L["Rarity"], Color.GREEN, srRarity)
-		printLoot(L["Price"], Color.GREEN, srPrice)
-		printLoot(L["All"], Color.GREEN, srAll)
-		printLoot(L["Type"], Color.GREEN, srType)
-		printLoot(L["Quest"], Color.GREEN, srQuest)
-		printLoot(L["Token"], Color.GREEN, srToken)
+		PrintLoot(L["Coin"], Color.GREEN, srMoney, true)
+		PrintLoot(L["Listed"], Color.GREEN, srListed)
+		PrintLoot(L["Rarity"], Color.GREEN, srRarity)
+		PrintLoot(L["Price"], Color.GREEN, srPrice)
+		PrintLoot(L["All"], Color.GREEN, srAll)
+		PrintLoot(L["Type"], Color.GREEN, srType)
+		PrintLoot(L["Quest"], Color.GREEN, srQuest)
+		PrintLoot(L["Token"], Color.GREEN, srToken)
 	end
 
 	if DataBase.printoutIgnored then
-		printLoot(L["Ignored"], Color.ORANGE, srIgnore)
+		PrintLoot(L["Ignored"], Color.ORANGE, srIgnore)
+		PrintLoot(L["Locked"], Color.RED, srLocked)
 	end
 end
 
@@ -491,6 +541,44 @@ function AUTO_LOOTER:CONFIRM_LOOT_ROLL(_, id, rolltype)
 	end
 end
 
+-- QUEST_LOG_UPDATE
+function AUTO_LOOTER:QUEST_LOG_UPDATE()
+	AUTO_LOOTER:UnregisterEvent("QUEST_LOG_UPDATE")
 
+	AUTO_LOOTER:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
 
+	questItemList = CreateQuestItemList()
+end
 
+-- UNIT_QUEST_LOG_CHANGED
+function AUTO_LOOTER:UNIT_QUEST_LOG_CHANGED(unitId)
+	if unitId == "player" then
+		questItemList = CreateQuestItemList()
+	end
+end
+
+-- LDB addition START
+-- thanks to Pseudopath "http://wow.curseforge.com/profiles/Pseudopath/"
+local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("AutoLooter", {
+	type = "launcher",
+	icon = "Interface\\Icons\\Inv_misc_bag_01",
+	label = "AutoLooter"
+})
+
+function AL_LDB.OnTooltipShow(tip)
+	tip:AddLine("AutoLooter")
+	tip:AddLine(" ")
+	tip:AddLine("Left-Click: Open Config")
+	tip:AddLine("Right-Click: Loot Everything")
+end
+
+function AL_LDB.OnClick()
+	local button = GetMouseButtonClicked()
+	if button == "LeftButton" then
+		ConfigUI.CreateConfigUI();
+	elseif button == "RightButton" then
+		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
+		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
+	end
+end
+-- LDB addition END

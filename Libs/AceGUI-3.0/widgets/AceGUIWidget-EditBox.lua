@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 EditBox Widget
 -------------------------------------------------------------------------------]]
-local Type, Version = "EditBox", 25
+local Type, Version = "EditBox", 26
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -28,7 +28,7 @@ end
 
 function _G.AceGUIEditBoxInsertLink(text)
 	for i = 1, AceGUI:GetWidgetCount(Type) do
-		local editbox = _G["AceGUI-3.0EditBox" .. i]
+		local editbox = _G["AceGUI-3.0EditBox"..i]
 		if editbox and editbox:IsVisible() and editbox:HasFocus() then
 			editbox:Insert(text)
 			return true
@@ -133,64 +133,77 @@ local methods = {
 		self:DisableButton(false)
 		self:SetMaxLetters(0)
 	end,
+
 	["OnRelease"] = function(self)
 		self:ClearFocus()
 	end,
+
 	["SetDisabled"] = function(self, disabled)
 		self.disabled = disabled
 		if disabled then
 			self.editbox:EnableMouse(false)
 			self.editbox:ClearFocus()
-			self.editbox:SetTextColor(0.5, 0.5, 0.5)
-			self.label:SetTextColor(0.5, 0.5, 0.5)
+			self.editbox:SetTextColor(0.5,0.5,0.5)
+			self.label:SetTextColor(0.5,0.5,0.5)
 		else
 			self.editbox:EnableMouse(true)
-			self.editbox:SetTextColor(1, 1, 1)
-			self.label:SetTextColor(1, .82, 0)
+			self.editbox:SetTextColor(1,1,1)
+			self.label:SetTextColor(1,.82,0)
 		end
 	end,
+
 	["SetText"] = function(self, text)
 		self.lasttext = text or ""
 		self.editbox:SetText(text or "")
 		self.editbox:SetCursorPosition(0)
 		HideButton(self)
 	end,
+
 	["GetText"] = function(self, text)
 		return self.editbox:GetText()
 	end,
+
 	["SetLabel"] = function(self, text)
 		if text and text ~= "" then
 			self.label:SetText(text)
 			self.label:Show()
-			self.editbox:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 7, -18)
+			self.editbox:SetPoint("TOPLEFT",self.frame,"TOPLEFT",7,-18)
 			self:SetHeight(44)
 			self.alignoffset = 30
 		else
 			self.label:SetText("")
 			self.label:Hide()
-			self.editbox:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 7, 0)
+			self.editbox:SetPoint("TOPLEFT",self.frame,"TOPLEFT",7,0)
 			self:SetHeight(26)
 			self.alignoffset = 12
 		end
 	end,
+
 	["DisableButton"] = function(self, disabled)
 		self.disablebutton = disabled
 		if disabled then
 			HideButton(self)
 		end
 	end,
-	["SetMaxLetters"] = function(self, num)
+
+	["SetMaxLetters"] = function (self, num)
 		self.editbox:SetMaxLetters(num or 0)
 	end,
+
 	["ClearFocus"] = function(self)
 		self.editbox:ClearFocus()
 		self.frame:SetScript("OnShow", nil)
 	end,
+
 	["SetFocus"] = function(self)
 		self.editbox:SetFocus()
 		if not self.frame:IsShown() then
 			self.frame:SetScript("OnShow", Frame_OnShowFocus)
 		end
+	end,
+
+	["HighlightText"] = function(self, from, to)
+		self.editbox:HighlightText(from, to)
 	end
 }
 
@@ -198,11 +211,11 @@ local methods = {
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
-	local num = AceGUI:GetNextWidgetNum(Type)
+	local num  = AceGUI:GetNextWidgetNum(Type)
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:Hide()
 
-	local editbox = CreateFrame("EditBox", "AceGUI-3.0EditBox" .. num, frame, "InputBoxTemplate")
+	local editbox = CreateFrame("EditBox", "AceGUI-3.0EditBox"..num, frame, "InputBoxTemplate")
 	editbox:SetAutoFocus(false)
 	editbox:SetFontObject(ChatFontNormal)
 	editbox:SetScript("OnEnter", Control_OnEnter)
@@ -235,11 +248,11 @@ local function Constructor()
 
 	local widget = {
 		alignoffset = 30,
-		editbox = editbox,
-		label = label,
-		button = button,
-		frame = frame,
-		type = Type
+		editbox     = editbox,
+		label       = label,
+		button      = button,
+		frame       = frame,
+		type        = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

@@ -1,6 +1,8 @@
---[[ $Id: AceGUIWidget-DropDown-Items.lua 996 2010-12-01 18:34:17Z nevcairiel $ ]] --
+--[[ $Id: AceGUIWidget-DropDown-Items.lua 1137 2016-05-15 10:57:36Z nevcairiel $ ]]--
 
 local AceGUI = LibStub("AceGUI-3.0")
+
+local IsLegion = select(4, GetBuildInfo()) >= 70000
 
 -- Lua APIs
 local select, assert = select, assert
@@ -9,11 +11,11 @@ local select, assert = select, assert
 local PlaySound = PlaySound
 local CreateFrame = CreateFrame
 
-local function fixlevels(parent, ...)
+local function fixlevels(parent,...)
 	local i = 1
 	local child = select(i, ...)
 	while child do
-		child:SetFrameLevel(parent:GetFrameLevel() + 1)
+		child:SetFrameLevel(parent:GetFrameLevel()+1)
 		fixlevels(child, child:GetChildren())
 		i = i + 1
 		child = select(i, ...)
@@ -52,7 +54,7 @@ function ItemBase.Frame_OnEnter(this)
 		self.highlight:Show()
 	end
 	self:Fire("OnEnter")
-
+	
 	if self.specialOnEnter then
 		self.specialOnEnter(self)
 	end
@@ -60,10 +62,10 @@ end
 
 function ItemBase.Frame_OnLeave(this)
 	local self = this.obj
-
+	
 	self.highlight:Hide()
 	self:Fire("OnLeave")
-
+	
 	if self.specialOnLeave then
 		self.specialOnLeave(self)
 	end
@@ -89,7 +91,7 @@ end
 --       Do not call this method directly
 function ItemBase.SetPullout(self, pullout)
 	self.pullout = pullout
-
+	
 	self.frame:SetParent(nil)
 	self.frame:SetParent(pullout.itemFrame)
 	self.parent = pullout.itemFrame
@@ -150,22 +152,22 @@ end
 function ItemBase.Create(type)
 	-- NOTE: Most of the following code is copied from AceGUI-3.0/Dropdown widget
 	local count = AceGUI:GetNextWidgetNum(type)
-	local frame = CreateFrame("Button", "AceGUI30DropDownItem" .. count)
+	local frame = CreateFrame("Button", "AceGUI30DropDownItem"..count)
 	local self = {}
 	self.frame = frame
 	frame.obj = self
 	self.type = type
-
+	
 	self.useHighlight = true
-
+	
 	frame:SetHeight(17)
 	frame:SetFrameStrata("FULLSCREEN_DIALOG")
-
-	local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	text:SetTextColor(1, 1, 1)
+	
+	local text = frame:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
+	text:SetTextColor(1,1,1)
 	text:SetJustifyH("LEFT")
-	text:SetPoint("TOPLEFT", frame, "TOPLEFT", 18, 0)
-	text:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -8, 0)
+	text:SetPoint("TOPLEFT",frame,"TOPLEFT",18,0)
+	text:SetPoint("BOTTOMRIGHT",frame,"BOTTOMRIGHT",-8,0)
 	self.text = text
 
 	local highlight = frame:CreateTexture(nil, "OVERLAY")
@@ -173,15 +175,15 @@ function ItemBase.Create(type)
 	highlight:SetBlendMode("ADD")
 	highlight:SetHeight(14)
 	highlight:ClearAllPoints()
-	highlight:SetPoint("RIGHT", frame, "RIGHT", -3, 0)
-	highlight:SetPoint("LEFT", frame, "LEFT", 5, 0)
+	highlight:SetPoint("RIGHT",frame,"RIGHT",-3,0)
+	highlight:SetPoint("LEFT",frame,"LEFT",5,0)
 	highlight:Hide()
 	self.highlight = highlight
 
-	local check = frame:CreateTexture("OVERLAY")
+	local check = frame:CreateTexture("OVERLAY")	
 	check:SetWidth(16)
 	check:SetHeight(16)
-	check:SetPoint("LEFT", frame, "LEFT", 3, -1)
+	check:SetPoint("LEFT",frame,"LEFT",3,-1)
 	check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
 	check:Hide()
 	self.check = check
@@ -189,29 +191,29 @@ function ItemBase.Create(type)
 	local sub = frame:CreateTexture("OVERLAY")
 	sub:SetWidth(16)
 	sub:SetHeight(16)
-	sub:SetPoint("RIGHT", frame, "RIGHT", -3, -1)
+	sub:SetPoint("RIGHT",frame,"RIGHT",-3,-1)
 	sub:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
 	sub:Hide()
-	self.sub = sub
-
+	self.sub = sub	
+	
 	frame:SetScript("OnEnter", ItemBase.Frame_OnEnter)
 	frame:SetScript("OnLeave", ItemBase.Frame_OnLeave)
-
+	
 	self.OnAcquire = ItemBase.OnAcquire
 	self.OnRelease = ItemBase.OnRelease
-
+	
 	self.SetPullout = ItemBase.SetPullout
-	self.GetText = ItemBase.GetText
-	self.SetText = ItemBase.SetText
+	self.GetText    = ItemBase.GetText
+	self.SetText    = ItemBase.SetText
 	self.SetDisabled = ItemBase.SetDisabled
-
-	self.SetPoint = ItemBase.SetPoint
-	self.Show = ItemBase.Show
-	self.Hide = ItemBase.Hide
-
+	
+	self.SetPoint   = ItemBase.SetPoint
+	self.Show       = ItemBase.Show
+	self.Hide       = ItemBase.Hide
+	
 	self.SetOnLeave = ItemBase.SetOnLeave
 	self.SetOnEnter = ItemBase.SetOnEnter
-
+	
 	return self
 end
 
@@ -247,25 +249,25 @@ end
 do
 	local widgetType = "Dropdown-Item-Header"
 	local widgetVersion = 1
-
+	
 	local function OnEnter(this)
 		local self = this.obj
 		self:Fire("OnEnter")
-
+		
 		if self.specialOnEnter then
 			self.specialOnEnter(self)
 		end
 	end
-
+	
 	local function OnLeave(this)
 		local self = this.obj
 		self:Fire("OnLeave")
-
+		
 		if self.specialOnLeave then
 			self.specialOnLeave(self)
 		end
 	end
-
+	
 	-- exported, override
 	local function SetDisabled(self, disabled)
 		ItemBase.SetDisabled(self, disabled)
@@ -273,21 +275,21 @@ do
 			self.text:SetTextColor(1, 1, 0)
 		end
 	end
-
+	
 	local function Constructor()
 		local self = ItemBase.Create(widgetType)
-
+		
 		self.SetDisabled = SetDisabled
-
+		
 		self.frame:SetScript("OnEnter", OnEnter)
 		self.frame:SetScript("OnLeave", OnLeave)
-
+		
 		self.text:SetTextColor(1, 1, 0)
-
+		
 		AceGUI:RegisterAsWidget(self)
 		return self
 	end
-
+	
 	AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion + ItemBase.version)
 end
 
@@ -296,7 +298,7 @@ end
 do
 	local widgetType = "Dropdown-Item-Execute"
 	local widgetVersion = 1
-
+	
 	local function Frame_OnClick(this, button)
 		local self = this.obj
 		if self.disabled then return end
@@ -305,16 +307,16 @@ do
 			self.pullout:Close()
 		end
 	end
-
+	
 	local function Constructor()
 		local self = ItemBase.Create(widgetType)
-
+		
 		self.frame:SetScript("OnClick", Frame_OnClick)
-
+		
 		AceGUI:RegisterAsWidget(self)
 		return self
 	end
-
+	
 	AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion + ItemBase.version)
 end
 
@@ -324,7 +326,7 @@ end
 do
 	local widgetType = "Dropdown-Item-Toggle"
 	local widgetVersion = 3
-
+	
 	local function UpdateToggle(self)
 		if self.value then
 			self.check:Show()
@@ -332,12 +334,12 @@ do
 			self.check:Hide()
 		end
 	end
-
+	
 	local function OnRelease(self)
 		ItemBase.OnRelease(self)
 		self:SetValue(nil)
 	end
-
+	
 	local function Frame_OnClick(this, button)
 		local self = this.obj
 		if self.disabled then return end
@@ -350,31 +352,31 @@ do
 		UpdateToggle(self)
 		self:Fire("OnValueChanged", self.value)
 	end
-
+	
 	-- exported
 	local function SetValue(self, value)
 		self.value = value
 		UpdateToggle(self)
 	end
-
+	
 	-- exported
 	local function GetValue(self)
 		return self.value
 	end
-
+	
 	local function Constructor()
 		local self = ItemBase.Create(widgetType)
-
+		
 		self.frame:SetScript("OnClick", Frame_OnClick)
-
+		
 		self.SetValue = SetValue
 		self.GetValue = GetValue
 		self.OnRelease = OnRelease
-
+		
 		AceGUI:RegisterAsWidget(self)
 		return self
 	end
-
+	
 	AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion + ItemBase.version)
 end
 
@@ -384,55 +386,55 @@ end
 do
 	local widgetType = "Dropdown-Item-Menu"
 	local widgetVersion = 2
-
+	
 	local function OnEnter(this)
 		local self = this.obj
 		self:Fire("OnEnter")
-
+		
 		if self.specialOnEnter then
 			self.specialOnEnter(self)
 		end
-
+		
 		self.highlight:Show()
-
+		
 		if not self.disabled and self.submenu then
 			self.submenu:Open("TOPLEFT", self.frame, "TOPRIGHT", self.pullout:GetRightBorderWidth(), 0, self.frame:GetFrameLevel() + 100)
 		end
 	end
-
+	
 	local function OnHide(this)
 		local self = this.obj
 		if self.submenu then
 			self.submenu:Close()
 		end
 	end
-
+	
 	-- exported
 	local function SetMenu(self, menu)
 		assert(menu.type == "Dropdown-Pullout")
 		self.submenu = menu
 	end
-
+		
 	-- exported
 	local function CloseMenu(self)
 		self.submenu:Close()
 	end
-
+		
 	local function Constructor()
 		local self = ItemBase.Create(widgetType)
-
+		
 		self.sub:Show()
-
+		
 		self.frame:SetScript("OnEnter", OnEnter)
 		self.frame:SetScript("OnHide", OnHide)
-
-		self.SetMenu = SetMenu
+		
+		self.SetMenu   = SetMenu
 		self.CloseMenu = CloseMenu
-
+		
 		AceGUI:RegisterAsWidget(self)
 		return self
 	end
-
+	
 	AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion + ItemBase.version)
 end
 
@@ -440,32 +442,36 @@ end
 -- A single line to separate items
 do
 	local widgetType = "Dropdown-Item-Separator"
-	local widgetVersion = 1
-
+	local widgetVersion = 2
+	
 	-- exported, override
 	local function SetDisabled(self, disabled)
 		ItemBase.SetDisabled(self, disabled)
 		self.useHighlight = false
 	end
-
+		
 	local function Constructor()
 		local self = ItemBase.Create(widgetType)
-
+		
 		self.SetDisabled = SetDisabled
-
+		
 		local line = self.frame:CreateTexture(nil, "OVERLAY")
 		line:SetHeight(1)
-		line:SetTexture(.5, .5, .5)
+		if IsLegion then
+			line:SetColorTexture(.5, .5, .5)
+		else
+			line:SetTexture(.5, .5, .5)
+		end
 		line:SetPoint("LEFT", self.frame, "LEFT", 10, 0)
 		line:SetPoint("RIGHT", self.frame, "RIGHT", -10, 0)
-
+		
 		self.text:Hide()
-
+		
 		self.useHighlight = false
-
+		
 		AceGUI:RegisterAsWidget(self)
 		return self
 	end
-
+	
 	AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion + ItemBase.version)
 end

@@ -27,6 +27,7 @@ if GetLocale() == "ptBR" then
 	L["Close"] = "Fechar"
 	L["Price (in coppers)"] = "Preço (em bronze)"
 	L["Rarity"] = "Raridade"
+	L["Locked"] = "Bloqueado"
 
 	L["Coin"] = "Moeda"
 	L["Listed"] = "Lista"
@@ -37,6 +38,8 @@ if GetLocale() == "ptBR" then
 	L["Ignored"] = "Ignorado"
 	L["Type"] = "Tipo"
 	L["Token"] = "Moeda"
+
+	L["(Legacy Types)"] = "(Tipos Legados)"
 
 	L["Enabled"] = "Ligado"
 	L["Disabled"] = "Desligado"

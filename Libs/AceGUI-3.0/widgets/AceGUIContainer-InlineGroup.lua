@@ -24,13 +24,16 @@ local methods = {
 
 	-- ["OnRelease"] = nil,
 
-	["SetTitle"] = function(self, title)
+	["SetTitle"] = function(self,title)
 		self.titletext:SetText(title)
 	end,
+
+
 	["LayoutFinished"] = function(self, width, height)
 		if self.noAutoHeight then return end
 		self:SetHeight((height or 0) + 40)
 	end,
+
 	["OnWidthSet"] = function(self, width)
 		local content = self.content
 		local contentwidth = width - 20
@@ -40,6 +43,7 @@ local methods = {
 		content:SetWidth(contentwidth)
 		content.width = contentwidth
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		local contentheight = height - 20
@@ -54,12 +58,10 @@ local methods = {
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
-local PaneBackdrop = {
+local PaneBackdrop  = {
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileSize = 16,
-	edgeSize = 16,
+	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 3, right = 3, top = 5, bottom = 3 }
 }
 
@@ -86,10 +88,10 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
 	local widget = {
-		frame = frame,
-		content = content,
+		frame     = frame,
+		content   = content,
 		titletext = titletext,
-		type = Type
+		type      = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

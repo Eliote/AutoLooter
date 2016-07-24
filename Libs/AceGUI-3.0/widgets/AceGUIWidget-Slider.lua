@@ -106,7 +106,7 @@ local function EditBox_OnEnterPressed(frame)
 	else
 		value = tonumber(value)
 	end
-
+	
 	if value then
 		PlaySound("igMainMenuOptionCheckBoxOn")
 		self.slider:SetValue(value)
@@ -131,7 +131,7 @@ local methods = {
 		self:SetHeight(44)
 		self:SetDisabled(false)
 		self:SetIsPercent(nil)
-		self:SetSliderValues(0, 100, 1)
+		self:SetSliderValues(0,100,1)
 		self:SetValue(0)
 		self.slider:EnableMouseWheel(false)
 	end,
@@ -159,6 +159,7 @@ local methods = {
 			self.editbox:EnableMouse(true)
 		end
 	end,
+
 	["SetValue"] = function(self, value)
 		self.slider.setup = true
 		self.slider:SetValue(value)
@@ -166,19 +167,22 @@ local methods = {
 		UpdateText(self)
 		self.slider.setup = nil
 	end,
+
 	["GetValue"] = function(self)
 		return self.value
 	end,
+
 	["SetLabel"] = function(self, text)
 		self.label:SetText(text)
 	end,
+
 	["SetSliderValues"] = function(self, min, max, step)
 		local frame = self.slider
 		frame.setup = true
 		self.min = min
 		self.max = max
 		self.step = step
-		frame:SetMinMaxValues(min or 0, max or 100)
+		frame:SetMinMaxValues(min or 0,max or 100)
 		UpdateLabels(self)
 		frame:SetValueStep(step or 1)
 		if self.value then
@@ -186,6 +190,7 @@ local methods = {
 		end
 		frame.setup = nil
 	end,
+
 	["SetIsPercent"] = function(self, value)
 		self.ispercent = value
 		UpdateLabels(self)
@@ -196,21 +201,17 @@ local methods = {
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
-local SliderBackdrop = {
+local SliderBackdrop  = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
-	tile = true,
-	tileSize = 8,
-	edgeSize = 8,
+	tile = true, tileSize = 8, edgeSize = 8,
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
 local ManualBackdrop = {
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 	edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
-	tile = true,
-	edgeSize = 1,
-	tileSize = 5,
+	tile = true, edgeSize = 1, tileSize = 5,
 }
 
 local function Constructor()
@@ -235,7 +236,7 @@ local function Constructor()
 	slider:SetPoint("LEFT", 3, 0)
 	slider:SetPoint("RIGHT", -3, 0)
 	slider:SetValue(0)
-	slider:SetScript("OnValueChanged", Slider_OnValueChanged)
+	slider:SetScript("OnValueChanged",Slider_OnValueChanged)
 	slider:SetScript("OnEnter", Control_OnEnter)
 	slider:SetScript("OnLeave", Control_OnLeave)
 	slider:SetScript("OnMouseUp", Slider_OnMouseUp)
@@ -264,14 +265,14 @@ local function Constructor()
 	editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
 
 	local widget = {
-		label = label,
-		slider = slider,
-		lowtext = lowtext,
-		hightext = hightext,
-		editbox = editbox,
+		label       = label,
+		slider      = slider,
+		lowtext     = lowtext,
+		hightext    = hightext,
+		editbox     = editbox,
 		alignoffset = 25,
-		frame = frame,
-		type = Type
+		frame       = frame,
+		type        = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func
@@ -281,4 +282,4 @@ local function Constructor()
 	return AceGUI:RegisterAsWidget(widget)
 end
 
-AceGUI:RegisterWidgetType(Type, Constructor, Version)
+AceGUI:RegisterWidgetType(Type,Constructor,Version)

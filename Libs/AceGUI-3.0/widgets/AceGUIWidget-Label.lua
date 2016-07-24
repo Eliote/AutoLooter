@@ -57,7 +57,7 @@ local function UpdateImageAnchor(self)
 		label:SetWidth(width)
 		height = label:GetHeight()
 	end
-
+	
 	self.resizing = true
 	frame:SetHeight(height)
 	frame.height = height
@@ -90,20 +90,23 @@ local methods = {
 	["OnWidthSet"] = function(self, width)
 		UpdateImageAnchor(self)
 	end,
+
 	["SetText"] = function(self, text)
 		self.label:SetText(text)
 		UpdateImageAnchor(self)
 	end,
+
 	["SetColor"] = function(self, r, g, b)
 		if not (r and g and b) then
 			r, g, b = 1, 1, 1
 		end
 		self.label:SetVertexColor(r, g, b)
 	end,
+
 	["SetImage"] = function(self, path, ...)
 		local image = self.image
 		image:SetTexture(path)
-
+		
 		if image:GetTexture() then
 			self.imageshown = true
 			local n = select("#", ...)
@@ -117,12 +120,15 @@ local methods = {
 		end
 		UpdateImageAnchor(self)
 	end,
+
 	["SetFont"] = function(self, font, height, flags)
 		self.label:SetFont(font, height, flags)
 	end,
+
 	["SetFontObject"] = function(self, font)
 		self:SetFont((font or GameFontHighlightSmall):GetFont())
 	end,
+
 	["SetImageSize"] = function(self, width, height)
 		self.image:SetWidth(width)
 		self.image:SetHeight(height)
@@ -148,7 +154,7 @@ local function Constructor()
 		label = label,
 		image = image,
 		frame = frame,
-		type = Type
+		type  = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

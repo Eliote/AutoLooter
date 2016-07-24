@@ -79,7 +79,7 @@ local function Tab_OnLeave(frame)
 end
 
 local function Tab_OnShow(frame)
-	_G[frame:GetName() .. "HighlightTexture"]:SetWidth(frame:GetTextWidth() + 30)
+	_G[frame:GetName().."HighlightTexture"]:SetWidth(frame:GetTextWidth() + 30)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -89,6 +89,7 @@ local methods = {
 	["OnAcquire"] = function(self)
 		self:SetTitle()
 	end,
+
 	["OnRelease"] = function(self)
 		self.status = nil
 		for k in pairs(self.localstatus) do
@@ -99,6 +100,7 @@ local methods = {
 			tab:Hide()
 		end
 	end,
+
 	["CreateTab"] = function(self, id)
 		local tabname = ("AceGUITabGroup%dTab%d"):format(self.num, id)
 		local tab = CreateFrame("Button", tabname, self.border, "OptionsFrameTabButtonTemplate")
@@ -122,6 +124,7 @@ local methods = {
 
 		return tab
 	end,
+
 	["SetTitle"] = function(self, text)
 		self.titletext:SetText(text or "")
 		if text and text ~= "" then
@@ -131,10 +134,12 @@ local methods = {
 		end
 		self:BuildTabs()
 	end,
+
 	["SetStatusTable"] = function(self, status)
 		assert(type(status) == "table")
 		self.status = status
 	end,
+
 	["SelectTab"] = function(self, value)
 		local status = self.status or self.localstatus
 		local found
@@ -148,27 +153,30 @@ local methods = {
 		end
 		status.selected = value
 		if found then
-			self:Fire("OnGroupSelected", value)
+			self:Fire("OnGroupSelected",value)
 		end
 	end,
+
 	["SetTabs"] = function(self, tabs)
 		self.tablist = tabs
 		self:BuildTabs()
 	end,
+	
+
 	["BuildTabs"] = function(self)
 		local hastitle = (self.titletext:GetText() and self.titletext:GetText() ~= "")
 		local status = self.status or self.localstatus
 		local tablist = self.tablist
 		local tabs = self.tabs
-
+		
 		if not tablist then return end
-
+		
 		local width = self.frame.width or self.frame:GetWidth() or 0
-
+		
 		wipe(widths)
 		wipe(rowwidths)
 		wipe(rowends)
-
+		
 		--Place Text into tabs and get thier initial width
 		for i, v in ipairs(tablist) do
 			local tab = tabs[i]
@@ -176,19 +184,19 @@ local methods = {
 				tab = self:CreateTab(i)
 				tabs[i] = tab
 			end
-
+			
 			tab:Show()
 			tab:SetText(v.text)
 			tab:SetDisabled(v.disabled)
 			tab.value = v.value
-
+			
 			widths[i] = tab:GetWidth() - 6 --tabs are anchored 10 pixels from the right side of the previous one to reduce spacing, but add a fixed 4px padding for the text
 		end
-
-		for i = (#tablist) + 1, #tabs, 1 do
+		
+		for i = (#tablist)+1, #tabs, 1 do
 			tabs[i]:Hide()
 		end
-
+		
 		--First pass, find the minimum number of rows needed to hold all tabs and the initial tab layout
 		local numtabs = #tablist
 		local numrows = 1
@@ -206,18 +214,18 @@ local methods = {
 		end
 		rowwidths[numrows] = usedwidth + 10 --first tab in each row takes up an extra 10px
 		rowends[numrows] = #tablist
-
+		
 		--Fix for single tabs being left on the last row, move a tab from the row above if applicable
 		if numrows > 1 then
 			--if the last row has only one tab
-			if rowends[numrows - 1] == numtabs - 1 then
+			if rowends[numrows-1] == numtabs-1 then
 				--if there are more than 2 tabs in the 2nd last row
-				if (numrows == 2 and rowends[numrows - 1] > 2) or (rowends[numrows] - rowends[numrows - 1] > 2) then
+				if (numrows == 2 and rowends[numrows-1] > 2) or (rowends[numrows] - rowends[numrows-1] > 2) then
 					--move 1 tab from the second last row to the last, if there is enough space
-					if (rowwidths[numrows] + widths[numtabs - 1]) <= width then
-						rowends[numrows - 1] = rowends[numrows - 1] - 1
-						rowwidths[numrows] = rowwidths[numrows] + widths[numtabs - 1]
-						rowwidths[numrows - 1] = rowwidths[numrows - 1] - widths[numtabs - 1]
+					if (rowwidths[numrows] + widths[numtabs-1]) <= width then
+						rowends[numrows-1] = rowends[numrows-1] - 1
+						rowwidths[numrows] = rowwidths[numrows] + widths[numtabs-1]
+						rowwidths[numrows-1] = rowwidths[numrows-1] - widths[numtabs-1]
 					end
 				end
 			end
@@ -231,31 +239,32 @@ local methods = {
 				local tab = tabs[tabno]
 				tab:ClearAllPoints()
 				if first then
-					tab:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, -(hastitle and 14 or 7) - (row - 1) * 20)
+					tab:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, -(hastitle and 14 or 7)-(row-1)*20 )
 					first = false
 				else
-					tab:SetPoint("LEFT", tabs[tabno - 1], "RIGHT", -10, 0)
+					tab:SetPoint("LEFT", tabs[tabno-1], "RIGHT", -10, 0)
 				end
 			end
-
+			
 			-- equal padding for each tab to fill the available width,
 			-- if the used space is above 75% already
 			-- the 18 pixel is the typical width of a scrollbar, so we can have a tab group inside a scrolling frame, 
 			-- and not have the tabs jump around funny when switching between tabs that need scrolling and those that don't
 			local padding = 0
-			if not (numrows == 1 and rowwidths[1] < width * 0.75 - 18) then
-				padding = (width - rowwidths[row]) / (endtab - starttab + 1)
+			if not (numrows == 1 and rowwidths[1] < width*0.75 - 18) then
+				padding = (width - rowwidths[row]) / (endtab - starttab+1)
 			end
-
+			
 			for i = starttab, endtab do
 				PanelTemplates_TabResize(tabs[i], padding + 4, nil, nil, width, tabs[i]:GetFontString():GetStringWidth())
 			end
 			starttab = endtab + 1
 		end
-
-		self.borderoffset = (hastitle and 17 or 10) + ((numrows) * 20)
+		
+		self.borderoffset = (hastitle and 17 or 10)+((numrows)*20)
 		self.border:SetPoint("TOPLEFT", 1, -self.borderoffset)
 	end,
+
 	["OnWidthSet"] = function(self, width)
 		local content = self.content
 		local contentwidth = width - 60
@@ -267,6 +276,7 @@ local methods = {
 		self:BuildTabs(self)
 		self.frame:SetScript("OnUpdate", BuildTabsOnUpdate)
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		local contentheight = height - (self.borderoffset + 23)
@@ -276,6 +286,7 @@ local methods = {
 		content:SetHeight(contentheight)
 		content.height = contentheight
 	end,
+	
 	["LayoutFinished"] = function(self, width, height)
 		if self.noAutoHeight then return end
 		self:SetHeight((height or 0) + (self.borderoffset + 23))
@@ -285,23 +296,21 @@ local methods = {
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
-local PaneBackdrop = {
+local PaneBackdrop  = {
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileSize = 16,
-	edgeSize = 16,
+	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 3, right = 3, top = 5, bottom = 3 }
 }
 
 local function Constructor()
 	local num = AceGUI:GetNextWidgetNum(Type)
-	local frame = CreateFrame("Frame", nil, UIParent)
+	local frame = CreateFrame("Frame",nil,UIParent)
 	frame:SetHeight(100)
 	frame:SetWidth(100)
 	frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	local titletext = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local titletext = frame:CreateFontString(nil,"OVERLAY","GameFontNormal")
 	titletext:SetPoint("TOPLEFT", 14, 0)
 	titletext:SetPoint("TOPRIGHT", -14, 0)
 	titletext:SetJustifyH("LEFT")
@@ -320,21 +329,21 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT", -10, 7)
 
 	local widget = {
-		num = num,
-		frame = frame,
-		localstatus = {},
-		alignoffset = 18,
-		titletext = titletext,
-		border = border,
+		num          = num,
+		frame        = frame,
+		localstatus  = {},
+		alignoffset  = 18,
+		titletext    = titletext,
+		border       = border,
 		borderoffset = 27,
-		tabs = {},
-		content = content,
-		type = Type
+		tabs         = {},
+		content      = content,
+		type         = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func
 	end
-
+	
 	return AceGUI:RegisterAsContainer(widget)
 end
 

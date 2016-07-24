@@ -1,6 +1,6 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: |cffffffffAutoLooter
-## Version: 1.3
+## Version: 1.5
 ## Author: Eliote
 ## Notes: Auto Loot Money and Specific Items
 ## SavedVariables: AutoLooterDB

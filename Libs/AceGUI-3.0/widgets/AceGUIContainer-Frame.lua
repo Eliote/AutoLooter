@@ -83,12 +83,14 @@ local methods = {
 		self:SetStatusText()
 		self:ApplyStatus()
 		self:Show()
-		self:EnableResize(true)
+        self:EnableResize(true)
 	end,
+
 	["OnRelease"] = function(self)
 		self.status = nil
 		wipe(self.localstatus)
 	end,
+
 	["OnWidthSet"] = function(self, width)
 		local content = self.content
 		local contentwidth = width - 34
@@ -98,6 +100,7 @@ local methods = {
 		content:SetWidth(contentwidth)
 		content.width = contentwidth
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		local contentheight = height - 57
@@ -107,19 +110,24 @@ local methods = {
 		content:SetHeight(contentheight)
 		content.height = contentheight
 	end,
+
 	["SetTitle"] = function(self, title)
 		self.titletext:SetText(title)
 		self.titlebg:SetWidth((self.titletext:GetWidth() or 0) + 10)
 	end,
+
 	["SetStatusText"] = function(self, text)
 		self.statustext:SetText(text)
 	end,
+
 	["Hide"] = function(self)
 		self.frame:Hide()
 	end,
+
 	["Show"] = function(self)
 		self.frame:Show()
 	end,
+
 	["EnableResize"] = function(self, state)
 		local func = state and "Show" or "Hide"
 		self.sizer_se[func](self.sizer_se)
@@ -133,6 +141,7 @@ local methods = {
 		self.status = status
 		self:ApplyStatus()
 	end,
+
 	["ApplyStatus"] = function(self)
 		local status = self.status or self.localstatus
 		local frame = self.frame
@@ -154,18 +163,14 @@ Constructor
 local FrameBackdrop = {
 	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
 	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
+	tile = true, tileSize = 32, edgeSize = 32,
 	insets = { left = 8, right = 8, top = 8, bottom = 8 }
 }
 
-local PaneBackdrop = {
+local PaneBackdrop  = {
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	tile = true,
-	tileSize = 16,
-	edgeSize = 16,
+	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 3, right = 3, top = 5, bottom = 3 }
 }
 
@@ -196,8 +201,8 @@ local function Constructor()
 	statusbg:SetPoint("BOTTOMRIGHT", -132, 15)
 	statusbg:SetHeight(24)
 	statusbg:SetBackdrop(PaneBackdrop)
-	statusbg:SetBackdropColor(0.1, 0.1, 0.1)
-	statusbg:SetBackdropBorderColor(0.4, 0.4, 0.4)
+	statusbg:SetBackdropColor(0.1,0.1,0.1)
+	statusbg:SetBackdropBorderColor(0.4,0.4,0.4)
 	statusbg:SetScript("OnEnter", StatusBar_OnEnter)
 	statusbg:SetScript("OnLeave", StatusBar_OnLeave)
 
@@ -243,7 +248,7 @@ local function Constructor()
 	sizer_se:SetWidth(25)
 	sizer_se:SetHeight(25)
 	sizer_se:EnableMouse()
-	sizer_se:SetScript("OnMouseDown", SizerSE_OnMouseDown)
+	sizer_se:SetScript("OnMouseDown",SizerSE_OnMouseDown)
 	sizer_se:SetScript("OnMouseUp", MoverSizer_OnMouseUp)
 
 	local line1 = sizer_se:CreateTexture(nil, "BACKGROUND")
@@ -251,7 +256,7 @@ local function Constructor()
 	line1:SetHeight(14)
 	line1:SetPoint("BOTTOMRIGHT", -8, 8)
 	line1:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
-	local x = 0.1 * 14 / 17
+	local x = 0.1 * 14/17
 	line1:SetTexCoord(0.05 - x, 0.5, 0.05, 0.5 + x, 0.05, 0.5 - x, 0.5 + x, 0.5)
 
 	local line2 = sizer_se:CreateTexture(nil, "BACKGROUND")
@@ -259,7 +264,7 @@ local function Constructor()
 	line2:SetHeight(8)
 	line2:SetPoint("BOTTOMRIGHT", -8, 8)
 	line2:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
-	local x = 0.1 * 8 / 17
+	local x = 0.1 * 8/17
 	line2:SetTexCoord(0.05 - x, 0.5, 0.05, 0.5 + x, 0.05, 0.5 - x, 0.5 + x, 0.5)
 
 	local sizer_s = CreateFrame("Frame", nil, frame)
@@ -285,15 +290,15 @@ local function Constructor()
 
 	local widget = {
 		localstatus = {},
-		titletext = titletext,
-		statustext = statustext,
-		titlebg = titlebg,
-		sizer_se = sizer_se,
-		sizer_s = sizer_s,
-		sizer_e = sizer_e,
-		content = content,
-		frame = frame,
-		type = Type
+		titletext   = titletext,
+		statustext  = statustext,
+		titlebg     = titlebg,
+		sizer_se    = sizer_se,
+		sizer_s     = sizer_s,
+		sizer_e     = sizer_e,
+		content     = content,
+		frame       = frame,
+		type        = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

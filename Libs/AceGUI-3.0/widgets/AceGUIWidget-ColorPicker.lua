@@ -1,9 +1,11 @@
 --[[-----------------------------------------------------------------------------
 ColorPicker Widget
 -------------------------------------------------------------------------------]]
-local Type, Version = "ColorPicker", 22
+local Type, Version = "ColorPicker", 23
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
+
+local IsLegion = select(4, GetBuildInfo()) >= 70000
 
 -- Lua APIs
 local pairs = pairs
@@ -100,6 +102,7 @@ local methods = {
 	["SetLabel"] = function(self, text)
 		self.text:SetText(text)
 	end,
+
 	["SetColor"] = function(self, r, g, b, a)
 		self.r = r
 		self.g = g
@@ -107,9 +110,11 @@ local methods = {
 		self.a = a or 1
 		self.colorSwatch:SetVertexColor(r, g, b, a)
 	end,
+
 	["SetHasAlpha"] = function(self, HasAlpha)
 		self.HasAlpha = HasAlpha
 	end,
+
 	["SetDisabled"] = function(self, disabled)
 		self.disabled = disabled
 		if self.disabled then
@@ -143,7 +148,11 @@ local function Constructor()
 	local texture = frame:CreateTexture(nil, "BACKGROUND")
 	texture:SetWidth(16)
 	texture:SetHeight(16)
-	texture:SetTexture(1, 1, 1)
+	if IsLegion then
+		texture:SetColorTexture(1, 1, 1)
+	else
+		texture:SetTexture(1, 1, 1)
+	end
 	texture:SetPoint("CENTER", colorSwatch)
 	texture:Show()
 
@@ -157,7 +166,7 @@ local function Constructor()
 	checkers:SetPoint("CENTER", colorSwatch)
 	checkers:Show()
 
-	local text = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	local text = frame:CreateFontString(nil,"OVERLAY","GameFontHighlight")
 	text:SetHeight(24)
 	text:SetJustifyH("LEFT")
 	text:SetTextColor(1, 1, 1)
@@ -171,9 +180,9 @@ local function Constructor()
 
 	local widget = {
 		colorSwatch = colorSwatch,
-		text = text,
-		frame = frame,
-		type = Type
+		text        = text,
+		frame       = frame,
+		type        = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

@@ -4,7 +4,7 @@ local CallbackHandler = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not CallbackHandler then return end -- No upgrade needed
 
-local meta = { __index = function(tbl, key) tbl[key] = {} return tbl[key] end }
+local meta = {__index = function(tbl, key) tbl[key] = {} return tbl[key] end}
 
 -- Lua APIs
 local tconcat = table.concat
@@ -46,32 +46,31 @@ local function CreateDispatcher(argCount)
 	]]
 
 	local ARGS, OLD_ARGS = {}, {}
-	for i = 1, argCount do ARGS[i], OLD_ARGS[i] = "arg" .. i, "old_arg" .. i end
+	for i = 1, argCount do ARGS[i], OLD_ARGS[i] = "arg"..i, "old_arg"..i end
 	code = code:gsub("OLD_ARGS", tconcat(OLD_ARGS, ", ")):gsub("ARGS", tconcat(ARGS, ", "))
-	return assert(loadstring(code, "safecall Dispatcher[" .. argCount .. "]"))(next, xpcall, errorhandler)
+	return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(next, xpcall, errorhandler)
 end
 
-local Dispatchers = setmetatable({}, {
-	__index = function(self, argCount)
-		local dispatcher = CreateDispatcher(argCount)
-		rawset(self, argCount, dispatcher)
-		return dispatcher
-	end
-})
+local Dispatchers = setmetatable({}, {__index=function(self, argCount)
+	local dispatcher = CreateDispatcher(argCount)
+	rawset(self, argCount, dispatcher)
+	return dispatcher
+end})
 
 --------------------------------------------------------------------------
 -- CallbackHandler:New
 --
--- target            - target object to embed public APIs in
--- RegisterName      - name of the callback registration API, default "RegisterCallback"
--- UnregisterName    - name of the callback unregistration API, default "UnregisterCallback"
--- UnregisterAllName - name of the API to unregister all callbacks, default "UnregisterAllCallbacks". false == don't publish this API.
+--   target            - target object to embed public APIs in
+--   RegisterName      - name of the callback registration API, default "RegisterCallback"
+--   UnregisterName    - name of the callback unregistration API, default "UnregisterCallback"
+--   UnregisterAllName - name of the API to unregister all callbacks, default "UnregisterAllCallbacks". false == don't publish this API.
+
 function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAllName)
 
 	RegisterName = RegisterName or "RegisterCallback"
 	UnregisterName = UnregisterName or "UnregisterCallback"
-	if UnregisterAllName == nil then -- false is used to indicate "don't want this method"
-	UnregisterAllName = "UnregisterAllCallbacks"
+	if UnregisterAllName==nil then	-- false is used to indicate "don't want this method"
+		UnregisterAllName = "UnregisterAllCallbacks"
 	end
 
 	-- we declare all objects and exported APIs inside this closure to quickly gain access
@@ -80,7 +79,7 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 
 	-- Create the registry object
 	local events = setmetatable({}, meta)
-	local registry = { recurse = 0, events = events }
+	local registry = { recurse=0, events=events }
 
 	-- registry:Fire() - fires the given event/message into the registry
 	function registry:Fire(eventname, ...)
@@ -92,11 +91,11 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 
 		registry.recurse = oldrecurse
 
-		if registry.insertQueue and oldrecurse == 0 then
+		if registry.insertQueue and oldrecurse==0 then
 			-- Something in one of our callbacks wanted to register more callbacks; they got queued
-			for eventname, callbacks in pairs(registry.insertQueue) do
-				local first = not rawget(events, eventname) or not next(events[eventname]) -- test for empty before. not test for one member after. that one member may have been overwritten.
-				for self, func in pairs(callbacks) do
+			for eventname,callbacks in pairs(registry.insertQueue) do
+				local first = not rawget(events, eventname) or not next(events[eventname])	-- test for empty before. not test for one member after. that one member may have been overwritten.
+				for self,func in pairs(callbacks) do
 					events[eventname][self] = func
 					-- fire OnUsed callback?
 					if first and registry.OnUsed then
@@ -116,15 +115,15 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 	-- all with an optional arg, which, if present, gets passed as first argument (after self if present)
 	target[RegisterName] = function(self, eventname, method, ... --[[actually just a single arg]])
 		if type(eventname) ~= "string" then
-			error("Usage: " .. RegisterName .. "(eventname, method[, arg]): 'eventname' - string expected.", 2)
+			error("Usage: "..RegisterName.."(eventname, method[, arg]): 'eventname' - string expected.", 2)
 		end
 
 		method = method or eventname
 
-		local first = not rawget(events, eventname) or not next(events[eventname]) -- test for empty before. not test for one member after. that one member may have been overwritten.
+		local first = not rawget(events, eventname) or not next(events[eventname])	-- test for empty before. not test for one member after. that one member may have been overwritten.
 
 		if type(method) ~= "string" and type(method) ~= "function" then
-			error("Usage: " .. RegisterName .. "(\"eventname\", \"methodname\"): 'methodname' - string or function expected.", 2)
+			error("Usage: "..RegisterName.."(\"eventname\", \"methodname\"): 'methodname' - string or function expected.", 2)
 		end
 
 		local regfunc
@@ -132,36 +131,36 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 		if type(method) == "string" then
 			-- self["method"] calling style
 			if type(self) ~= "table" then
-				error("Usage: " .. RegisterName .. "(\"eventname\", \"methodname\"): self was not a table?", 2)
-			elseif self == target then
-				error("Usage: " .. RegisterName .. "(\"eventname\", \"methodname\"): do not use Library:" .. RegisterName .. "(), use your own 'self'", 2)
+				error("Usage: "..RegisterName.."(\"eventname\", \"methodname\"): self was not a table?", 2)
+			elseif self==target then
+				error("Usage: "..RegisterName.."(\"eventname\", \"methodname\"): do not use Library:"..RegisterName.."(), use your own 'self'", 2)
 			elseif type(self[method]) ~= "function" then
-				error("Usage: " .. RegisterName .. "(\"eventname\", \"methodname\"): 'methodname' - method '" .. tostring(method) .. "' not found on self.", 2)
+				error("Usage: "..RegisterName.."(\"eventname\", \"methodname\"): 'methodname' - method '"..tostring(method).."' not found on self.", 2)
 			end
 
-			if select("#", ...) >= 1 then -- this is not the same as testing for arg==nil!
-			local arg = select(1, ...)
-			regfunc = function(...) self[method](self, arg, ...) end
+			if select("#",...)>=1 then	-- this is not the same as testing for arg==nil!
+				local arg=select(1,...)
+				regfunc = function(...) self[method](self,arg,...) end
 			else
-				regfunc = function(...) self[method](self, ...) end
+				regfunc = function(...) self[method](self,...) end
 			end
 		else
 			-- function ref with self=object or self="addonId" or self=thread
-			if type(self) ~= "table" and type(self) ~= "string" and type(self) ~= "thread" then
-				error("Usage: " .. RegisterName .. "(self or \"addonId\", eventname, method): 'self or addonId': table or string or thread expected.", 2)
+			if type(self)~="table" and type(self)~="string" and type(self)~="thread" then
+				error("Usage: "..RegisterName.."(self or \"addonId\", eventname, method): 'self or addonId': table or string or thread expected.", 2)
 			end
 
-			if select("#", ...) >= 1 then -- this is not the same as testing for arg==nil!
-			local arg = select(1, ...)
-			regfunc = function(...) method(arg, ...) end
+			if select("#",...)>=1 then	-- this is not the same as testing for arg==nil!
+				local arg=select(1,...)
+				regfunc = function(...) method(arg,...) end
 			else
 				regfunc = method
 			end
 		end
 
 
-		if events[eventname][self] or registry.recurse < 1 then
-			-- if registry.recurse<1 then
+		if events[eventname][self] or registry.recurse<1 then
+		-- if registry.recurse<1 then
 			-- we're overwriting an existing entry, or not currently recursing. just set it.
 			events[eventname][self] = regfunc
 			-- fire OnUsed callback?
@@ -171,18 +170,18 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 		else
 			-- we're currently processing a callback in this registry, so delay the registration of this new entry!
 			-- yes, we're a bit wasteful on garbage, but this is a fringe case, so we're picking low implementation overhead over garbage efficiency
-			registry.insertQueue = registry.insertQueue or setmetatable({}, meta)
+			registry.insertQueue = registry.insertQueue or setmetatable({},meta)
 			registry.insertQueue[eventname][self] = regfunc
 		end
 	end
 
 	-- Unregister a callback
 	target[UnregisterName] = function(self, eventname)
-		if not self or self == target then
-			error("Usage: " .. UnregisterName .. "(eventname): bad 'self'", 2)
+		if not self or self==target then
+			error("Usage: "..UnregisterName.."(eventname): bad 'self'", 2)
 		end
 		if type(eventname) ~= "string" then
-			error("Usage: " .. UnregisterName .. "(eventname): 'eventname' - string expected.", 2)
+			error("Usage: "..UnregisterName.."(eventname): 'eventname' - string expected.", 2)
 		end
 		if rawget(events, eventname) and events[eventname][self] then
 			events[eventname][self] = nil
@@ -199,16 +198,16 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 	-- OPTIONAL: Unregister all callbacks for given selfs/addonIds
 	if UnregisterAllName then
 		target[UnregisterAllName] = function(...)
-			if select("#", ...) < 1 then
-				error("Usage: " .. UnregisterAllName .. "([whatFor]): missing 'self' or \"addonId\" to unregister events for.", 2)
+			if select("#",...)<1 then
+				error("Usage: "..UnregisterAllName.."([whatFor]): missing 'self' or \"addonId\" to unregister events for.", 2)
 			end
-			if select("#", ...) == 1 and ... == target then
-				error("Usage: " .. UnregisterAllName .. "([whatFor]): supply a meaningful 'self' or \"addonId\"", 2)
+			if select("#",...)==1 and ...==target then
+				error("Usage: "..UnregisterAllName.."([whatFor]): supply a meaningful 'self' or \"addonId\"", 2)
 			end
 
 
-			for i = 1, select("#", ...) do
-				local self = select(i, ...)
+			for i=1,select("#",...) do
+				local self = select(i,...)
 				if registry.insertQueue then
 					for eventname, callbacks in pairs(registry.insertQueue) do
 						if callbacks[self] then

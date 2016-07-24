@@ -16,7 +16,7 @@ ConfigUI.raritysMenu = {
 	[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
 }
 
-AceGUI:RegisterLayout("Custom_Layout",
+AceGUI:RegisterLayout("AutoLooterConfigLayout",
 	function(content, children)
 		children[1]:SetWidth(content:GetWidth() or 0)
 		children[1].frame:SetPoint("TOPLEFT", content, "TOPLEFT", 5, -10)
@@ -79,6 +79,11 @@ local function CreateLeftWidgets()
 	autoConfirmRoll:SetValue(PRIVATE_TABLE.DB.autoConfirmRoll)
 	autoConfirmRoll:SetCallback("OnValueChanged", function(self, event, checked) PRIVATE_TABLE.DB.autoConfirmRoll = AUTO_LOOTER.GetBoolean(checked) end)
 
+	local showMinimap = AceGUI:Create("CheckBox")
+	showMinimap:SetLabel(L["Show minimap button"])
+	showMinimap:SetValue(PRIVATE_TABLE.DB.showMinimap)
+	showMinimap:SetCallback("OnValueChanged", function(self, event, checked) AUTO_LOOTER.SetMinimapVisibility(checked) end)
+
 	local rarity = AceGUI:Create("Dropdown")
 	rarity:SetList(ConfigUI.raritysMenu)
 	rarity:SetValue(PRIVATE_TABLE.DB.rarity)
@@ -114,6 +119,7 @@ local function CreateLeftWidgets()
 	group:AddChild(close)
 	group:AddChild(ignoreGreys)
 	group:AddChild(autoConfirmRoll)
+	group:AddChild(showMinimap)
 	group:AddChild(rarity)
 	group:AddChild(price)
 
@@ -194,7 +200,7 @@ local function createRightWidgets()
 
 		dropDown:SetMultiselect(true)
 
-		dropDown:SetWidth(180)
+		dropDown:SetWidth(250)
 		dropDown:SetText(k .. " (" .. Util.CountChecked(v) .. ")")
 
 		group:AddChild(dropDown)
@@ -211,7 +217,7 @@ function ConfigUI.CreateConfigUI()
 
 	frame = AceGUI:Create("Frame")
 	frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
-	frame:SetWidth(460)
+	frame:SetWidth(530)
 	frame:SetHeight(400)
 	frame:SetTitle("AutoLooter")
 	frame:EnableResize(false)
@@ -220,7 +226,9 @@ function ConfigUI.CreateConfigUI()
 	frame:AddChild(CreateLeftWidgets())
 	frame:AddChild(createRightWidgets())
 
-	frame:SetLayout("Custom_Layout")
+	frame:SetLayout("AutoLooterConfigLayout")
+
+	frame:DoLayout()
 
 	local old_CloseSpecialWindows
 	if not old_CloseSpecialWindows then
@@ -228,8 +236,8 @@ function ConfigUI.CreateConfigUI()
 		CloseSpecialWindows = function()
 			CloseSpecialWindows = old_CloseSpecialWindows
 
-			if frame then
-				frame:Hide()
+			if frame and frame:IsShown() then
+				frame:Release()
 				return true
 			end
 			return false

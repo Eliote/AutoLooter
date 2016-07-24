@@ -2,9 +2,11 @@
 ScrollFrame Container
 Plain container that scrolls its content and doesn't grow in height.
 -------------------------------------------------------------------------------]]
-local Type, Version = "ScrollFrame", 23
+local Type, Version = "ScrollFrame", 24
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
+
+local IsLegion = select(4, GetBuildInfo()) >= 70000
 
 -- Lua APIs
 local pairs, assert, type = pairs, assert, type
@@ -40,10 +42,11 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 local methods = {
-	["OnAcquire"] = function(self)
+	["OnAcquire"] = function(self) 
 		self:SetScroll(0)
 		self.scrollframe:SetScript("OnUpdate", FixScrollOnUpdate)
 	end,
+
 	["OnRelease"] = function(self)
 		self.status = nil
 		for k in pairs(self.localstatus) do
@@ -54,6 +57,7 @@ local methods = {
 		self.scrollBarShown = nil
 		self.content.height, self.content.width = nil, nil
 	end,
+
 	["SetScroll"] = function(self, value)
 		local status = self.status or self.localstatus
 		local viewheight = self.scrollframe:GetHeight()
@@ -71,19 +75,21 @@ local methods = {
 		status.offset = offset
 		status.scrollvalue = value
 	end,
+
 	["MoveScroll"] = function(self, value)
 		local status = self.status or self.localstatus
 		local height, viewheight = self.scrollframe:GetHeight(), self.content:GetHeight()
-
+		
 		if self.scrollBarShown then
 			local diff = height - viewheight
 			local delta = 1
 			if value < 0 then
 				delta = -1
 			end
-			self.scrollbar:SetValue(min(max(status.scrollvalue + delta * (1000 / (diff / 45)), 0), 1000))
+			self.scrollbar:SetValue(min(max(status.scrollvalue + delta*(1000/(diff/45)),0), 1000))
 		end
 	end,
+
 	["FixScroll"] = function(self)
 		if self.updateLock then return end
 		self.updateLock = true
@@ -121,10 +127,12 @@ local methods = {
 		end
 		self.updateLock = nil
 	end,
+
 	["LayoutFinished"] = function(self, width, height)
 		self.content:SetHeight(height or 0 + 20)
 		self.scrollframe:SetScript("OnUpdate", FixScrollOnUpdate)
 	end,
+
 	["SetStatusTable"] = function(self, status)
 		assert(type(status) == "table")
 		self.status = status
@@ -132,10 +140,12 @@ local methods = {
 			status.scrollvalue = 0
 		end
 	end,
+
 	["OnWidthSet"] = function(self, width)
 		local content = self.content
 		content.width = width
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		content.height = height
@@ -168,7 +178,11 @@ local function Constructor()
 
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
 	scrollbg:SetAllPoints(scrollbar)
-	scrollbg:SetTexture(0, 0, 0, 0.4)
+	if IsLegion then
+		scrollbg:SetColorTexture(0, 0, 0, 0.4)
+	else
+		scrollbg:SetTexture(0, 0, 0, 0.4)
+	end
 
 	--Container Support
 	local content = CreateFrame("Frame", nil, scrollframe)
@@ -180,10 +194,10 @@ local function Constructor()
 	local widget = {
 		localstatus = { scrollvalue = 0 },
 		scrollframe = scrollframe,
-		scrollbar = scrollbar,
-		content = content,
-		frame = frame,
-		type = Type
+		scrollbar   = scrollbar,
+		content     = content,
+		frame       = frame,
+		type        = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

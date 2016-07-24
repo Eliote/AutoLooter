@@ -26,7 +26,7 @@ local function AlignImage(self)
 		self.text:SetPoint("LEFT", self.checkbg, "RIGHT")
 		self.text:SetPoint("RIGHT")
 	else
-		self.text:SetPoint("LEFT", self.image, "RIGHT", 1, 0)
+		self.text:SetPoint("LEFT", self.image,"RIGHT", 1, 0)
 		self.text:SetPoint("RIGHT")
 	end
 end
@@ -46,7 +46,7 @@ local function CheckBox_OnMouseDown(frame)
 	local self = frame.obj
 	if not self.disabled then
 		if self.image:GetTexture() then
-			self.text:SetPoint("LEFT", self.image, "RIGHT", 2, -1)
+			self.text:SetPoint("LEFT", self.image,"RIGHT", 2, -1)
 		else
 			self.text:SetPoint("LEFT", self.checkbg, "RIGHT", 1, -1)
 		end
@@ -62,7 +62,7 @@ local function CheckBox_OnMouseUp(frame)
 		if self.checked then
 			PlaySound("igMainMenuOptionCheckBoxOn")
 		else -- for both nil and false (tristate)
-		PlaySound("igMainMenuOptionCheckBoxOff")
+			PlaySound("igMainMenuOptionCheckBoxOff")
 		end
 
 		self:Fire("OnValueChanged", self.checked)
@@ -95,6 +95,7 @@ local methods = {
 			end
 		end
 	end,
+
 	["SetDisabled"] = function(self, disabled)
 		self.disabled = disabled
 		if disabled then
@@ -117,7 +118,8 @@ local methods = {
 			end
 		end
 	end,
-	["SetValue"] = function(self, value)
+
+	["SetValue"] = function(self,value)
 		local check = self.check
 		self.checked = value
 		if value then
@@ -135,13 +137,16 @@ local methods = {
 		end
 		self:SetDisabled(self.disabled)
 	end,
+
 	["GetValue"] = function(self)
 		return self.checked
 	end,
+
 	["SetTriState"] = function(self, enabled)
 		self.tristate = enabled
 		self:SetValue(self:GetValue())
 	end,
+
 	["SetType"] = function(self, type)
 		local checkbg = self.checkbg
 		local check = self.check
@@ -170,6 +175,7 @@ local methods = {
 		checkbg:SetHeight(size)
 		checkbg:SetWidth(size)
 	end,
+
 	["ToggleChecked"] = function(self)
 		local value = self:GetValue()
 		if self.tristate then
@@ -185,9 +191,11 @@ local methods = {
 			self:SetValue(not self:GetValue())
 		end
 	end,
+
 	["SetLabel"] = function(self, label)
 		self.text:SetText(label)
 	end,
+
 	["SetDescription"] = function(self, desc)
 		if desc then
 			if not self.desc then
@@ -212,10 +220,11 @@ local methods = {
 			self:SetHeight(24)
 		end
 	end,
+	
 	["SetImage"] = function(self, path, ...)
 		local image = self.image
 		image:SetTexture(path)
-
+		
 		if image:GetTexture() then
 			local n = select("#", ...)
 			if n == 4 or n == 8 then
@@ -268,13 +277,13 @@ local function Constructor()
 	image:SetPoint("LEFT", checkbg, "RIGHT", 1, 0)
 
 	local widget = {
-		checkbg = checkbg,
-		check = check,
-		text = text,
+		checkbg   = checkbg,
+		check     = check,
+		text      = text,
 		highlight = highlight,
-		image = image,
-		frame = frame,
-		type = Type
+		image     = image,
+		frame     = frame,
+		type      = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

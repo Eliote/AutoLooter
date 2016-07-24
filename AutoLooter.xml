@@ -1,5 +1,4 @@
-<Ui
-		xmlns="http://www.blizzard.com/wow/ui/">
+<Ui	xmlns="http://www.blizzard.com/wow/ui/">
 
 
 	<Button name="AutoLooter_MinimapButton" parent="Minimap" enableMouse="true" movable="true" hidden="false">
@@ -47,12 +46,12 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp","RightButtonUp")
-				self:RegisterForDrag("LeftButton","RightButton")
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+				self:RegisterForDrag("LeftButton", "RightButton")
 			</OnLoad>
 			<OnEnter>
 				if not self.dragging then
-				AutoLooter_MinimapButton_OnEnter(self)
+					AutoLooter_MinimapButton_OnEnter(self)
 				end
 			</OnEnter>
 			<OnLeave>

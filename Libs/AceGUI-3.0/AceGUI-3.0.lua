@@ -51,7 +51,7 @@ AceGUI.LayoutRegistry = AceGUI.LayoutRegistry or {}
 AceGUI.WidgetBase = AceGUI.WidgetBase or {}
 AceGUI.WidgetContainerBase = AceGUI.WidgetContainerBase or {}
 AceGUI.WidgetVersions = AceGUI.WidgetVersions or {}
-
+ 
 -- local upvalues
 local WidgetRegistry = AceGUI.WidgetRegistry
 local LayoutRegistry = AceGUI.LayoutRegistry
@@ -81,24 +81,22 @@ local function CreateDispatcher(argCount)
 	
 		return dispatch
 	]]
-
+	
 	local ARGS = {}
-	for i = 1, argCount do ARGS[i] = "arg" .. i end
+	for i = 1, argCount do ARGS[i] = "arg"..i end
 	code = code:gsub("ARGS", tconcat(ARGS, ", "))
-	return assert(loadstring(code, "safecall Dispatcher[" .. argCount .. "]"))(xpcall, errorhandler)
+	return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(xpcall, errorhandler)
 end
 
-local Dispatchers = setmetatable({}, {
-	__index = function(self, argCount)
-		local dispatcher = CreateDispatcher(argCount)
-		rawset(self, argCount, dispatcher)
-		return dispatcher
-	end
-})
+local Dispatchers = setmetatable({}, {__index=function(self, argCount)
+	local dispatcher = CreateDispatcher(argCount)
+	rawset(self, argCount, dispatcher)
+	return dispatcher
+end})
 Dispatchers[0] = function(func)
 	return xpcall(func, errorhandler)
 end
-
+ 
 local function safecall(func, ...)
 	return Dispatchers[select("#", ...)](func, ...)
 end
@@ -120,7 +118,7 @@ do
 	if oldminor and oldminor < 29 and AceGUI.objPools then
 		AceGUI.objPools = nil
 	end
-
+	
 	AceGUI.objPools = AceGUI.objPools or {}
 	local objPools = AceGUI.objPools
 	--Returns a new instance, if none are available either returns a new table or calls the given contructor
@@ -128,11 +126,11 @@ do
 		if not WidgetRegistry[type] then
 			error("Attempt to instantiate unknown widget type", 2)
 		end
-
+		
 		if not objPools[type] then
 			objPools[type] = {}
 		end
-
+		
 		local newObj = next(objPools[type])
 		if not newObj then
 			newObj = WidgetRegistry[type]()
@@ -147,9 +145,8 @@ do
 		end
 		return newObj
 	end
-
 	-- Releases an instance to the Pool
-	function delWidget(obj, type)
+	function delWidget(obj,type)
 		if not objPools[type] then
 			objPools[type] = {}
 		end
@@ -183,12 +180,12 @@ function AceGUI:Create(type)
 			widget.OnAcquire = widget.Aquire
 			widget.Aquire = nil
 		end
-
+		
 		if rawget(widget, "Release") then
-			widget.OnRelease = rawget(widget, "Release")
+			widget.OnRelease = rawget(widget, "Release") 
 			widget.Release = nil
 		end
-
+		
 		if widget.OnAcquire then
 			widget:OnAcquire()
 		else
@@ -213,8 +210,8 @@ function AceGUI:Release(widget)
 
 	if widget.OnRelease then
 		widget:OnRelease()
-		--	else
-		--		error(("Widget type %s doesn't supply an OnRelease Function"):format(widget.type))
+--	else
+--		error(("Widget type %s doesn't supply an OnRelease Function"):format(widget.type))
 	end
 	for k in pairs(widget.userdata) do
 		widget.userdata[k] = nil
@@ -297,21 +294,21 @@ end
 -- Widget Base Template --
 --------------------------
 do
-	local WidgetBase = AceGUI.WidgetBase
-
+	local WidgetBase = AceGUI.WidgetBase 
+	
 	WidgetBase.SetParent = function(self, parent)
 		local frame = self.frame
 		frame:SetParent(nil)
 		frame:SetParent(parent.content)
 		self.parent = parent
 	end
-
+	
 	WidgetBase.SetCallback = function(self, name, func)
 		if type(func) == "function" then
 			self.events[name] = func
 		end
 	end
-
+	
 	WidgetBase.Fire = function(self, name, ...)
 		if self.events[name] then
 			local success, ret = safecall(self.events[name], self, name, ...)
@@ -320,7 +317,7 @@ do
 			end
 		end
 	end
-
+	
 	WidgetBase.SetWidth = function(self, width)
 		self.frame:SetWidth(width)
 		self.frame.width = width
@@ -328,7 +325,7 @@ do
 			self:OnWidthSet(width)
 		end
 	end
-
+	
 	WidgetBase.SetRelativeWidth = function(self, width)
 		if width <= 0 or width > 1 then
 			error(":SetRelativeWidth(width): Invalid relative width.", 2)
@@ -336,7 +333,7 @@ do
 		self.relWidth = width
 		self.width = "relative"
 	end
-
+	
 	WidgetBase.SetHeight = function(self, height)
 		self.frame:SetHeight(height)
 		self.frame.height = height
@@ -344,7 +341,7 @@ do
 			self:OnHeightSet(height)
 		end
 	end
-
+	
 	--[[ WidgetBase.SetRelativeHeight = function(self, height)
 		if height <= 0 or height > 1 then
 			error(":SetRelativeHeight(height): Invalid relative height.", 2)
@@ -356,47 +353,47 @@ do
 	WidgetBase.IsVisible = function(self)
 		return self.frame:IsVisible()
 	end
-
-	WidgetBase.IsShown = function(self)
+	
+	WidgetBase.IsShown= function(self)
 		return self.frame:IsShown()
 	end
-
+		
 	WidgetBase.Release = function(self)
 		AceGUI:Release(self)
 	end
-
+	
 	WidgetBase.SetPoint = function(self, ...)
 		return self.frame:SetPoint(...)
 	end
-
+	
 	WidgetBase.ClearAllPoints = function(self)
 		return self.frame:ClearAllPoints()
 	end
-
+	
 	WidgetBase.GetNumPoints = function(self)
 		return self.frame:GetNumPoints()
 	end
-
+	
 	WidgetBase.GetPoint = function(self, ...)
 		return self.frame:GetPoint(...)
-	end
-
+	end	
+	
 	WidgetBase.GetUserDataTable = function(self)
 		return self.userdata
 	end
-
+	
 	WidgetBase.SetUserData = function(self, key, value)
 		self.userdata[key] = value
 	end
-
+	
 	WidgetBase.GetUserData = function(self, key)
 		return self.userdata[key]
 	end
-
+	
 	WidgetBase.IsFullHeight = function(self)
 		return self.height == "fill"
 	end
-
+	
 	WidgetBase.SetFullHeight = function(self, isFull)
 		if isFull then
 			self.height = "fill"
@@ -404,11 +401,11 @@ do
 			self.height = nil
 		end
 	end
-
+	
 	WidgetBase.IsFullWidth = function(self)
 		return self.width == "fill"
 	end
-
+		
 	WidgetBase.SetFullWidth = function(self, isFull)
 		if isFull then
 			self.width = "fill"
@@ -416,37 +413,37 @@ do
 			self.width = nil
 		end
 	end
-
-	--	local function LayoutOnUpdate(this)
-	--		this:SetScript("OnUpdate",nil)
-	--		this.obj:PerformLayout()
-	--	end
-
+	
+--	local function LayoutOnUpdate(this)
+--		this:SetScript("OnUpdate",nil)
+--		this.obj:PerformLayout()
+--	end
+	
 	local WidgetContainerBase = AceGUI.WidgetContainerBase
-
+		
 	WidgetContainerBase.PauseLayout = function(self)
 		self.LayoutPaused = true
 	end
-
+	
 	WidgetContainerBase.ResumeLayout = function(self)
 		self.LayoutPaused = nil
 	end
-
+	
 	WidgetContainerBase.PerformLayout = function(self)
 		if self.LayoutPaused then
 			return
 		end
 		safecall(self.LayoutFunc, self.content, self.children)
 	end
-
+	
 	--call this function to layout, makes sure layed out objects get a frame to get sizes etc
 	WidgetContainerBase.DoLayout = function(self)
 		self:PerformLayout()
-		--		if not self.parent then
-		--			self.frame:SetScript("OnUpdate", LayoutOnUpdate)
-		--		end
+--		if not self.parent then
+--			self.frame:SetScript("OnUpdate", LayoutOnUpdate)
+--		end
 	end
-
+	
 	WidgetContainerBase.AddChild = function(self, child, beforeWidget)
 		if beforeWidget then
 			local siblingIndex = 1
@@ -454,7 +451,7 @@ do
 				if widget == beforeWidget then
 					break
 				end
-				siblingIndex = siblingIndex + 1
+				siblingIndex = siblingIndex + 1 
 			end
 			tinsert(self.children, siblingIndex, child)
 		else
@@ -464,7 +461,7 @@ do
 		child.frame:Show()
 		self:DoLayout()
 	end
-
+	
 	WidgetContainerBase.AddChildren = function(self, ...)
 		for i = 1, select("#", ...) do
 			local child = select(i, ...)
@@ -474,15 +471,15 @@ do
 		end
 		self:DoLayout()
 	end
-
+	
 	WidgetContainerBase.ReleaseChildren = function(self)
 		local children = self.children
-		for i = 1, #children do
+		for i = 1,#children do
 			AceGUI:Release(children[i])
 			children[i] = nil
 		end
 	end
-
+	
 	WidgetContainerBase.SetLayout = function(self, Layout)
 		self.LayoutFunc = AceGUI:GetLayout(Layout)
 	end
@@ -506,7 +503,7 @@ do
 			end
 		end
 	end
-
+	
 	local function ContentResize(this)
 		if this:GetWidth() and this:GetHeight() then
 			this.width = this:GetWidth()
@@ -515,10 +512,10 @@ do
 		end
 	end
 
-	setmetatable(WidgetContainerBase, { __index = WidgetBase })
+	setmetatable(WidgetContainerBase, {__index=WidgetBase})
 
 	--One of these function should be called on each Widget Instance as part of its creation process
-
+	
 	--- Register a widget-class as a container for newly created widgets.
 	-- @param widget The widget class
 	function AceGUI:RegisterAsContainer(widget)
@@ -530,11 +527,11 @@ do
 		widget.frame.obj = widget
 		widget.content:SetScript("OnSizeChanged", ContentResize)
 		widget.frame:SetScript("OnSizeChanged", FrameResize)
-		setmetatable(widget, { __index = WidgetContainerBase })
+		setmetatable(widget, {__index = WidgetContainerBase})
 		widget:SetLayout("List")
 		return widget
 	end
-
+	
 	--- Register a widget-class as a widget.
 	-- @param widget The widget class
 	function AceGUI:RegisterAsWidget(widget)
@@ -543,7 +540,7 @@ do
 		widget.base = WidgetBase
 		widget.frame.obj = widget
 		widget.frame:SetScript("OnSizeChanged", FrameResize)
-		setmetatable(widget, { __index = WidgetBase })
+		setmetatable(widget, {__index = WidgetBase})
 		return widget
 	end
 end
@@ -561,11 +558,11 @@ end
 -- @param Version The version of the widget
 function AceGUI:RegisterWidgetType(Name, Constructor, Version)
 	assert(type(Constructor) == "function")
-	assert(type(Version) == "number")
-
+	assert(type(Version) == "number") 
+	
 	local oldVersion = WidgetVersions[Name]
 	if oldVersion and oldVersion >= Version then return end
-
+	
 	WidgetVersions[Name] = Version
 	WidgetRegistry[Name] = Constructor
 end
@@ -634,31 +631,31 @@ AceGUI:RegisterLayout("List",
 		local width = content.width or content:GetWidth() or 0
 		for i = 1, #children do
 			local child = children[i]
-
+			
 			local frame = child.frame
 			frame:ClearAllPoints()
 			frame:Show()
 			if i == 1 then
 				frame:SetPoint("TOPLEFT", content)
 			else
-				frame:SetPoint("TOPLEFT", children[i - 1].frame, "BOTTOMLEFT")
+				frame:SetPoint("TOPLEFT", children[i-1].frame, "BOTTOMLEFT")
 			end
-
+			
 			if child.width == "fill" then
 				child:SetWidth(width)
 				frame:SetPoint("RIGHT", content)
-
+				
 				if child.DoLayout then
 					child:DoLayout()
 				end
 			elseif child.width == "relative" then
 				child:SetWidth(width * child.relWidth)
-
+				
 				if child.DoLayout then
 					child:DoLayout()
 				end
 			end
-
+			
 			height = height + (frame.height or frame:GetHeight() or 0)
 		end
 		safecall(content.obj.LayoutFinished, content.obj, nil, height)
@@ -694,18 +691,18 @@ AceGUI:RegisterLayout("Flow",
 		local rowheight = 0
 		local rowoffset = 0
 		local lastrowoffset
-
+		
 		local width = content.width or content:GetWidth() or 0
-
+		
 		--control at the start of the row
 		local rowstart
 		local rowstartoffset
 		local lastrowstart
 		local isfullheight
-
+		
 		local frameoffset
 		local lastframeoffset
-		local oversize
+		local oversize 
 		for i = 1, #children do
 			local child = children[i]
 			oversize = nil
@@ -719,11 +716,11 @@ AceGUI:RegisterLayout("Flow",
 			-- If widgets seem to anchor weirdly with this, provide a valid alignoffset for them.
 			-- TODO: Investigate moar!
 			frameoffset = child.alignoffset or (frameheight / 2)
-
+			
 			if child.width == "relative" then
 				framewidth = width * child.relWidth
 			end
-
+			
 			frame:Show()
 			frame:ClearAllPoints()
 			if i == 1 then
@@ -758,16 +755,16 @@ AceGUI:RegisterLayout("Flow",
 					if usedwidth > width then
 						oversize = true
 					end
-					-- put the control on the current row, adding it to the width and checking if the height needs to be increased
+				-- put the control on the current row, adding it to the width and checking if the height needs to be increased
 				else
 					--handles cases where the new height is higher than either control because of the offsets
 					--math.max(rowheight-rowoffset+frameoffset, frameheight-frameoffset+rowoffset)
-
+					
 					--offset is always the larger of the two offsets
 					rowoffset = math_max(rowoffset, frameoffset)
 					rowheight = math_max(rowheight, rowoffset + (frameheight / 2))
-
-					frame:SetPoint("TOPLEFT", children[i - 1].frame, "TOPRIGHT", 0, frameoffset - lastframeoffset)
+					
+					frame:SetPoint("TOPLEFT", children[i-1].frame, "TOPRIGHT", 0, frameoffset - lastframeoffset)
 					usedwidth = framewidth + usedwidth
 				end
 			end
@@ -775,11 +772,11 @@ AceGUI:RegisterLayout("Flow",
 			if child.width == "fill" then
 				safelayoutcall(child, "SetWidth", width)
 				frame:SetPoint("RIGHT", content)
-
+				
 				usedwidth = 0
 				rowstart = frame
 				rowstartoffset = frameoffset
-
+				
 				if child.DoLayout then
 					child:DoLayout()
 				end
@@ -788,7 +785,7 @@ AceGUI:RegisterLayout("Flow",
 				rowstartoffset = rowoffset
 			elseif child.width == "relative" then
 				safelayoutcall(child, "SetWidth", width * child.relWidth)
-
+				
 				if child.DoLayout then
 					child:DoLayout()
 				end
@@ -797,20 +794,20 @@ AceGUI:RegisterLayout("Flow",
 					frame:SetPoint("RIGHT", content)
 				end
 			end
-
+			
 			if child.height == "fill" then
 				frame:SetPoint("BOTTOM", content)
 				isfullheight = true
 			end
 		end
-
+		
 		--anchor the last row, if its full height needs a special case since  its height has just been changed by the anchor
 		if isfullheight then
 			rowstart:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -height)
 		elseif rowstart then
 			rowstart:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -(height + (rowoffset - rowstartoffset) + 3))
 		end
-
+		
 		height = height + rowheight + 3
 		safecall(content.obj.LayoutFinished, content.obj, nil, height)
 	end)

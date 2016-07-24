@@ -28,11 +28,13 @@ local methods = {
 		if self.noAutoHeight then return end
 		self:SetHeight(height or 0)
 	end,
+
 	["OnWidthSet"] = function(self, width)
 		local content = self.content
 		content:SetWidth(width)
 		content.width = width
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		content:SetHeight(height)
@@ -53,9 +55,9 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT")
 
 	local widget = {
-		frame = frame,
-		content = content,
-		type = Type
+		frame     = frame,
+		content   = content,
+		type      = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

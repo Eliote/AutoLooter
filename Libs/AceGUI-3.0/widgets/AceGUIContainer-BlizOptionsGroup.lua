@@ -65,6 +65,7 @@ local methods = {
 		content:SetWidth(contentwidth)
 		content.width = contentwidth
 	end,
+
 	["OnHeightSet"] = function(self, height)
 		local content = self.content
 		local contentheight = height - 26
@@ -74,10 +75,12 @@ local methods = {
 		content:SetHeight(contentheight)
 		content.height = contentheight
 	end,
+
 	["SetName"] = function(self, name, parent)
 		self.frame.name = name
 		self.frame.parent = parent
 	end,
+
 	["SetTitle"] = function(self, title)
 		local content = self.content
 		content:ClearAllPoints()
@@ -120,10 +123,10 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
 	local widget = {
-		label = label,
-		frame = frame,
+		label   = label,
+		frame   = frame,
 		content = content,
-		type = Type
+		type    = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

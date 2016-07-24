@@ -63,10 +63,10 @@ local function Constructor()
 
 	local widget = {
 		label = label,
-		left = left,
+		left  = left,
 		right = right,
 		frame = frame,
-		type = Type
+		type  = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

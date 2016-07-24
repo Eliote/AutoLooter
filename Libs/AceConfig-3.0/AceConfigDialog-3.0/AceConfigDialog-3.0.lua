@@ -1,10 +1,10 @@
 --- AceConfigDialog-3.0 generates AceGUI-3.0 based windows based on option tables.
 -- @class file
 -- @name AceConfigDialog-3.0
--- @release $Id: AceConfigDialog-3.0.lua 1126 2014-11-10 06:38:01Z nevcairiel $
+-- @release $Id: AceConfigDialog-3.0.lua 1139 2016-07-03 07:43:51Z nevcairiel $
 
 local LibStub = LibStub
-local MAJOR, MINOR = "AceConfigDialog-3.0", 60
+local MAJOR, MINOR = "AceConfigDialog-3.0", 61
 local AceConfigDialog, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceConfigDialog then return end
@@ -60,24 +60,22 @@ local function CreateDispatcher(argCount)
 	
 		return dispatch
 	]]
-
+	
 	local ARGS = {}
-	for i = 1, argCount do ARGS[i] = "arg" .. i end
+	for i = 1, argCount do ARGS[i] = "arg"..i end
 	code = code:gsub("ARGS", tconcat(ARGS, ", "))
-	return assert(loadstring(code, "safecall Dispatcher[" .. argCount .. "]"))(xpcall, errorhandler)
+	return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(xpcall, errorhandler)
 end
 
-local Dispatchers = setmetatable({}, {
-	__index = function(self, argCount)
-		local dispatcher = CreateDispatcher(argCount)
-		rawset(self, argCount, dispatcher)
-		return dispatcher
-	end
-})
+local Dispatchers = setmetatable({}, {__index=function(self, argCount)
+	local dispatcher = CreateDispatcher(argCount)
+	rawset(self, argCount, dispatcher)
+	return dispatcher
+end})
 Dispatchers[0] = function(func)
 	return xpcall(func, errorhandler)
 end
-
+ 
 local function safecall(func, ...)
 	return Dispatchers[select("#", ...)](func, ...)
 end
@@ -106,7 +104,7 @@ Group Types
 local new, del, copy
 --newcount, delcount,createdcount,cached = 0,0,0
 do
-	local pool = setmetatable({}, { __mode = "k" })
+	local pool = setmetatable({},{__mode="k"})
 	function new()
 		--newcount = newcount + 1
 		local t = next(pool)
@@ -118,7 +116,6 @@ do
 			return {}
 		end
 	end
-
 	function copy(t)
 		local c = new()
 		for k, v in pairs(t) do
@@ -126,29 +123,27 @@ do
 		end
 		return c
 	end
-
 	function del(t)
 		--delcount = delcount + 1
 		wipe(t)
 		pool[t] = true
 	end
-
-	--	function cached()
-	--		local n = 0
-	--		for k in pairs(pool) do
-	--			n = n + 1
-	--		end
-	--		return n
-	--	end
+--	function cached()
+--		local n = 0
+--		for k in pairs(pool) do
+--			n = n + 1
+--		end
+--		return n
+--	end
 end
 
 -- picks the first non-nil value and returns it
 local function pickfirstset(...)
-	for i = 1, select("#", ...) do
-		if select(i, ...) ~= nil then
-			return select(i, ...)
-		end
-	end
+  for i=1,select("#",...) do
+    if select(i,...)~=nil then
+      return select(i,...)
+    end
+  end
 end
 
 --gets an option from a given group, checking plugins
@@ -202,11 +197,11 @@ local allIsLiteral = {
 local function GetOptionsMemberValue(membername, option, options, path, appName, ...)
 	--get definition for the member
 	local inherits = isInherited[membername]
-
+	
 
 	--get the member of the option, traversing the tree if it can be inherited
 	local member
-
+	
 	if inherits then
 		local group = options
 		if group[membername] ~= nil then
@@ -221,22 +216,22 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
 	else
 		member = option[membername]
 	end
-
+	
 	--check if we need to call a functon, or if we have a literal value
-	if (not allIsLiteral[membername]) and (type(member) == "function" or ((not stringIsLiteral[membername]) and type(member) == "string")) then
+	if ( not allIsLiteral[membername] ) and ( type(member) == "function" or ((not stringIsLiteral[membername]) and type(member) == "string") ) then
 		--We have a function to call
 		local info = new()
 		--traverse the options table, picking up the handler and filling the info with the path
 		local handler
 		local group = options
 		handler = group.handler or handler
-
+		
 		for i = 1, #path do
 			group = GetSubOption(group, path[i])
 			info[i] = path[i]
 			handler = group.handler or handler
 		end
-
+		
 		info.options = options
 		info.appName = appName
 		info[0] = appName
@@ -246,26 +241,26 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
 		info.type = option.type
 		info.uiType = "dialog"
 		info.uiName = MAJOR
-
-		local a, b, c, d
+	
+		local a, b, c ,d 
 		--using 4 returns for the get of a color type, increase if a type needs more
 		if type(member) == "function" then
 			--Call the function
-			a, b, c, d = member(info, ...)
+			a,b,c,d = member(info, ...)
 		else
 			--Call the method
 			if handler and handler[member] then
-				a, b, c, d = handler[member](handler, info, ...)
+				a,b,c,d = handler[member](handler, info, ...)
 			else
 				error(format("Method %s doesn't exist in handler for type %s", member, membername))
 			end
 		end
 		del(info)
-		return a, b, c, d
+		return a,b,c,d
 	else
 		--The value isnt a function to call, return it
-		return member
-	end
+		return member	
+	end	
 end
 
 --[[calls an options function that could be inherited, method name or function ref
@@ -316,7 +311,7 @@ end
 local tempOrders
 local tempNames
 
-local function compareOptions(a, b)
+local function compareOptions(a,b)
 	if not a then
 		return true
 	end
@@ -349,7 +344,7 @@ end
 local function BuildSortedOptionsTable(group, keySort, opts, options, path, appName)
 	tempOrders = new()
 	tempNames = new()
-
+	
 	if group.plugins then
 		for plugin, t in pairs(group.plugins) do
 			for k, v in pairs(t) do
@@ -357,7 +352,7 @@ local function BuildSortedOptionsTable(group, keySort, opts, options, path, appN
 					tinsert(keySort, k)
 					opts[k] = v
 
-					path[#path + 1] = k
+					path[#path+1] = k
 					tempOrders[k] = GetOptionsMemberValue("order", v, options, path, appName)
 					tempNames[k] = GetOptionsMemberValue("name", v, options, path, appName)
 					path[#path] = nil
@@ -365,13 +360,13 @@ local function BuildSortedOptionsTable(group, keySort, opts, options, path, appN
 			end
 		end
 	end
-
+	
 	for k, v in pairs(group.args) do
 		if not opts[k] then
 			tinsert(keySort, k)
 			opts[k] = v
 
-			path[#path + 1] = k
+			path[#path+1] = k
 			tempOrders[k] = GetOptionsMemberValue("order", v, options, path, appName)
 			tempNames[k] = GetOptionsMemberValue("name", v, options, path, appName)
 			path[#path] = nil
@@ -396,7 +391,7 @@ local function DelTree(tree)
 end
 
 local function CleanUserData(widget, event)
-
+	
 	local user = widget:GetUserDataTable()
 
 	if user.path then
@@ -470,7 +465,7 @@ end
 function AceConfigDialog:SelectGroup(appName, ...)
 	local path = new()
 
-
+	
 	local app = reg:GetOptionsTable(appName)
 	if not app then
 		error(("%s isn't registed with AceConfigRegistry, unable to open config"):format(appName), 2)
@@ -482,10 +477,10 @@ function AceConfigDialog:SelectGroup(appName, ...)
 		status.groups = {}
 	end
 	status = status.groups
-	local treevalue
-	local treestatus
-
-	for n = 1, select("#", ...) do
+	local treevalue 
+	local treestatus 
+	
+	for n = 1, select("#",...) do
 		local key = select(n, ...)
 
 		if group.childGroups == "tab" or group.childGroups == "select" then
@@ -497,7 +492,7 @@ function AceConfigDialog:SelectGroup(appName, ...)
 			--tree group by default
 			if treevalue then
 				--this is an extra level of a tree group, build a uniquevalue for it
-				treevalue = treevalue .. "\001" .. key
+				treevalue = treevalue.."\001"..key
 			else
 				--this is the top level of a tree group, the uniquevalue is the same as the key
 				treevalue = key
@@ -511,11 +506,12 @@ function AceConfigDialog:SelectGroup(appName, ...)
 			--the selected group will be overwritten if a child is the final target but still needs to be open
 			treestatus.selected = treevalue
 			treestatus.groups[treevalue] = true
+			
 		end
-
+		
 		--move to the next group in the path
 		group = GetSubOption(group, key)
-		if not group then
+		if not group then 
 			break
 		end
 		tinsert(path, key)
@@ -525,10 +521,10 @@ function AceConfigDialog:SelectGroup(appName, ...)
 		end
 		status = status.groups
 	end
-
+	
 	del(path)
 	reg:NotifyChange(appName)
-end
+end	
 
 local function OptionOnMouseOver(widget, event)
 	--show a tooltip/set the status bar to the desc text
@@ -543,19 +539,19 @@ local function OptionOnMouseOver(widget, event)
 	local desc = GetOptionsMemberValue("desc", opt, options, path, appName)
 	local usage = GetOptionsMemberValue("usage", opt, options, path, appName)
 	local descStyle = opt.descStyle
-
+	
 	if descStyle and descStyle ~= "tooltip" then return end
-
+	
 	GameTooltip:SetText(name, 1, .82, 0, true)
-
+	
 	if opt.type == "multiselect" then
 		GameTooltip:AddLine(user.text, 0.5, 0.5, 0.8, true)
-	end
+	end	
 	if type(desc) == "string" then
 		GameTooltip:AddLine(desc, 1, 1, 1, true)
 	end
 	if type(usage) == "string" then
-		GameTooltip:AddLine("Usage: " .. usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		GameTooltip:AddLine("Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 	end
 
 	GameTooltip:Show()
@@ -573,7 +569,6 @@ local function GetFuncName(option)
 		return "set"
 	end
 end
-
 local function confirmPopup(appName, rootframe, basepath, info, message, func, ...)
 	if not StaticPopupDialogs["ACECONFIGDIALOG30_CONFIRM_DIALOG"] then
 		StaticPopupDialogs["ACECONFIGDIALOG30_CONFIRM_DIALOG"] = {}
@@ -634,7 +629,7 @@ local function ActivateControl(widget, event, ...)
 	--build the info table containing the path
 	-- pick up functions while traversing the tree
 	if group[funcname] ~= nil then
-		func = group[funcname]
+		func =  group[funcname]
 	end
 	handler = group.handler or handler
 	confirm = group.confirm
@@ -644,7 +639,7 @@ local function ActivateControl(widget, event, ...)
 		group = GetSubOption(group, v)
 		info[i] = v
 		if group[funcname] ~= nil then
-			func = group[funcname]
+			func =  group[funcname]
 		end
 		handler = group.handler or handler
 		if group.confirm ~= nil then
@@ -678,13 +673,13 @@ local function ActivateControl(widget, event, ...)
 	local validated = true
 
 	if option.type == "input" then
-		if type(pattern) == "string" then
+		if type(pattern)=="string" then
 			if not strmatch(..., pattern) then
 				validated = false
 			end
 		end
 	end
-
+	
 	local success
 	if validated and option.type ~= "execute" then
 		if type(validate) == "string" then
@@ -699,7 +694,7 @@ local function ActivateControl(widget, event, ...)
 			if not success then validated = false end
 		end
 	end
-
+	
 	local rootframe = user.rootframe
 	if type(validated) == "string" then
 		--validate function returned a message to display
@@ -715,12 +710,12 @@ local function ActivateControl(widget, event, ...)
 		--validate returned false	
 		if rootframe.SetStatusText then
 			if usage then
-				rootframe:SetStatusText(name .. ": " .. usage)
+				rootframe:SetStatusText(name..": "..usage)
 			else
 				if pattern then
-					rootframe:SetStatusText(name .. ": Expected " .. pattern)
+					rootframe:SetStatusText(name..": Expected "..pattern)
 				else
-					rootframe:SetStatusText(name .. ": Invalid Value")
+					rootframe:SetStatusText(name..": Invalid Value")
 				end
 			end
 		else
@@ -730,7 +725,7 @@ local function ActivateControl(widget, event, ...)
 		del(info)
 		return true
 	else
-
+		
 		local confirmText = option.confirmText
 		--call confirm func/method
 		if type(confirm) == "string" then
@@ -768,13 +763,13 @@ local function ActivateControl(widget, event, ...)
 					end
 					confirmText = name
 					if desc then
-						confirmText = confirmText .. " - " .. desc
+						confirmText = confirmText.." - "..desc
 					end
 				end
-
+				
 				local iscustom = user.rootframe:GetUserData("iscustom")
 				local rootframe
-
+				
 				if iscustom then
 					rootframe = user.rootframe
 				end
@@ -796,12 +791,12 @@ local function ActivateControl(widget, event, ...)
 		--call the function
 		if type(func) == "string" then
 			if handler and handler[func] then
-				safecall(handler[func], handler, info, ...)
+				safecall(handler[func],handler, info, ...)
 			else
 				error(format("Method %s doesn't exist in handler for type func", func))
 			end
 		elseif type(func) == "function" then
-			safecall(func, info, ...)
+			safecall(func,info, ...)
 		end
 
 
@@ -811,7 +806,7 @@ local function ActivateControl(widget, event, ...)
 		--full refresh of the frame, some controls dont cause this on all events
 		if option.type == "color" then
 			if event == "OnValueConfirmed" then
-
+				
 				if iscustom then
 					AceConfigDialog:Open(user.appName, user.rootframe, unpack(basepath))
 				else
@@ -826,7 +821,7 @@ local function ActivateControl(widget, event, ...)
 					AceConfigDialog:Open(user.appName, unpack(basepath))
 				end
 			end
-			--multiselects don't cause a refresh on 'OnValueChanged' only 'OnClosed'
+		--multiselects don't cause a refresh on 'OnValueChanged' only 'OnClosed'
 		elseif option.type == "multiselect" then
 			user.valuechanged = true
 		else
@@ -836,6 +831,7 @@ local function ActivateControl(widget, event, ...)
 				AceConfigDialog:Open(user.appName, unpack(basepath))
 			end
 		end
+
 	end
 	del(info)
 end
@@ -852,7 +848,7 @@ local function ActivateSlider(widget, event, value)
 	if max then
 		value = math_min(value, max)
 	end
-	ActivateControl(widget, event, value)
+	ActivateControl(widget,event,value)
 end
 
 --called from a checkbox that is part of an internally created multiselect group
@@ -890,7 +886,7 @@ end
 
 local function CheckOptionHidden(option, options, path, appName)
 	--check for a specific boolean option
-	local hidden = pickfirstset(option.dialogHidden, option.guiHidden)
+	local hidden = pickfirstset(option.dialogHidden,option.guiHidden)
 	if hidden ~= nil then
 		return hidden
 	end
@@ -900,14 +896,13 @@ end
 
 local function CheckOptionDisabled(option, options, path, appName)
 	--check for a specific boolean option
-	local disabled = pickfirstset(option.dialogDisabled, option.guiDisabled)
+	local disabled = pickfirstset(option.dialogDisabled,option.guiDisabled)
 	if disabled ~= nil then
 		return disabled
 	end
 
 	return GetOptionsMemberValue("disabled", option, options, path, appName)
 end
-
 --[[
 local function BuildTabs(group, options, path, appName)
 	local tabs = new()
@@ -950,8 +945,8 @@ local function BuildSelect(group, options, path, appName)
 		local k = keySort[i]
 		local v = opts[k]
 		if v.type == "group" then
-			path[#path + 1] = k
-			local inline = pickfirstset(v.dialogInline, v.guiInline, v.inline, false)
+			path[#path+1] = k
+			local inline = pickfirstset(v.dialogInline,v.guiInline,v.inline, false)
 			local hidden = CheckOptionHidden(v, options, path, appName)
 			if not inline and not hidden then
 				groups[k] = GetOptionsMemberValue("name", v, options, path, appName)
@@ -977,8 +972,8 @@ local function BuildSubGroups(group, tree, options, path, appName)
 		local k = keySort[i]
 		local v = opts[k]
 		if v.type == "group" then
-			path[#path + 1] = k
-			local inline = pickfirstset(v.dialogInline, v.guiInline, v.inline, false)
+			path[#path+1] = k
+			local inline = pickfirstset(v.dialogInline,v.guiInline,v.inline, false)
 			local hidden = CheckOptionHidden(v, options, path, appName)
 			if not inline and not hidden then
 				local entry = new()
@@ -988,9 +983,9 @@ local function BuildSubGroups(group, tree, options, path, appName)
 				entry.iconCoords = GetOptionsMemberValue("iconCoords", v, options, path, appName)
 				entry.disabled = CheckOptionDisabled(v, options, path, appName)
 				if not tree.children then tree.children = new() end
-				tinsert(tree.children, entry)
+				tinsert(tree.children,entry)
 				if (v.childGroups or "tree") == "tree" then
-					BuildSubGroups(v, entry, options, path, appName)
+					BuildSubGroups(v,entry, options, path, appName)
 				end
 			end
 			path[#path] = nil
@@ -1012,8 +1007,8 @@ local function BuildGroups(group, options, path, appName, recurse)
 		local k = keySort[i]
 		local v = opts[k]
 		if v.type == "group" then
-			path[#path + 1] = k
-			local inline = pickfirstset(v.dialogInline, v.guiInline, v.inline, false)
+			path[#path+1] = k
+			local inline = pickfirstset(v.dialogInline,v.guiInline,v.inline, false)
 			local hidden = CheckOptionHidden(v, options, path, appName)
 			if not inline and not hidden then
 				local entry = new()
@@ -1021,9 +1016,9 @@ local function BuildGroups(group, options, path, appName, recurse)
 				entry.text = GetOptionsMemberValue("name", v, options, path, appName)
 				entry.icon = GetOptionsMemberValue("icon", v, options, path, appName)
 				entry.disabled = CheckOptionDisabled(v, options, path, appName)
-				tinsert(tree, entry)
+				tinsert(tree,entry)
 				if recurse and (v.childGroups or "tree") == "tree" then
-					BuildSubGroups(v, entry, options, path, appName)
+					BuildSubGroups(v,entry, options, path, appName)
 				end
 			end
 			path[#path] = nil
@@ -1057,7 +1052,7 @@ end
 	path - table with the keys to get to the group being fed
 --]]
 
-local function FeedOptions(appName, options, container, rootframe, path, group, inline)
+local function FeedOptions(appName, options,container,rootframe,path,group,inline)
 	local keySort = new()
 	local opts = new()
 
@@ -1071,7 +1066,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 		local name = GetOptionsMemberValue("name", v, options, path, appName)
 		if not hidden then
 			if v.type == "group" then
-				if inline or pickfirstset(v.dialogInline, v.guiInline, v.inline, false) then
+				if inline or pickfirstset(v.dialogInline,v.guiInline,v.inline, false) then
 					--Inline group
 					local GroupContainer
 					if name and name ~= "" then
@@ -1080,30 +1075,30 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 					else
 						GroupContainer = gui:Create("SimpleGroup")
 					end
-
+					
 					GroupContainer.width = "fill"
 					GroupContainer:SetLayout("flow")
 					container:AddChild(GroupContainer)
-					FeedOptions(appName, options, GroupContainer, rootframe, path, v, true)
+					FeedOptions(appName,options,GroupContainer,rootframe,path,v,true)
 				end
 			else
 				--Control to feed
 				local control
-
+				
 				local name = GetOptionsMemberValue("name", v, options, path, appName)
-
+				
 				if v.type == "execute" then
-
-					local imageCoords = GetOptionsMemberValue("imageCoords", v, options, path, appName)
-					local image, width, height = GetOptionsMemberValue("image", v, options, path, appName)
-
-					if type(image) == "string" then
+					
+					local imageCoords = GetOptionsMemberValue("imageCoords",v, options, path, appName)
+					local image, width, height = GetOptionsMemberValue("image",v, options, path, appName)
+					
+					if type(image) == "string" or type(image) == "number" then
 						control = gui:Create("Icon")
 						if not width then
-							width = GetOptionsMemberValue("imageWidth", v, options, path, appName)
+							width = GetOptionsMemberValue("imageWidth",v, options, path, appName)
 						end
 						if not height then
-							height = GetOptionsMemberValue("imageHeight", v, options, path, appName)
+							height = GetOptionsMemberValue("imageHeight",v, options, path, appName)
 						end
 						if type(imageCoords) == "table" then
 							control:SetImage(image, unpack(imageCoords))
@@ -1122,7 +1117,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						control = gui:Create("Button")
 						control:SetText(name)
 					end
-					control:SetCallback("OnClick", ActivateControl)
+					control:SetCallback("OnClick",ActivateControl)
 
 				elseif v.type == "input" then
 					local controlType = v.dialogControl or v.control or (v.multiline and "MultiLineEditBox") or "EditBox"
@@ -1131,13 +1126,13 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						geterrorhandler()(("Invalid Custom Control Type - %s"):format(tostring(controlType)))
 						control = gui:Create(v.multiline and "MultiLineEditBox" or "EditBox")
 					end
-
+					
 					if v.multiline and control.SetNumLines then
 						control:SetNumLines(tonumber(v.multiline) or 4)
 					end
 					control:SetLabel(name)
-					control:SetCallback("OnEnterPressed", ActivateControl)
-					local text = GetOptionsMemberValue("get", v, options, path, appName)
+					control:SetCallback("OnEnterPressed",ActivateControl)
+					local text = GetOptionsMemberValue("get",v, options, path, appName)
 					if type(text) ~= "string" then
 						text = ""
 					end
@@ -1147,19 +1142,19 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 					control = gui:Create("CheckBox")
 					control:SetLabel(name)
 					control:SetTriState(v.tristate)
-					local value = GetOptionsMemberValue("get", v, options, path, appName)
+					local value = GetOptionsMemberValue("get",v, options, path, appName)
 					control:SetValue(value)
-					control:SetCallback("OnValueChanged", ActivateControl)
-
+					control:SetCallback("OnValueChanged",ActivateControl)
+					
 					if v.descStyle == "inline" then
 						local desc = GetOptionsMemberValue("desc", v, options, path, appName)
 						control:SetDescription(desc)
 					end
-
+					
 					local image = GetOptionsMemberValue("image", v, options, path, appName)
 					local imageCoords = GetOptionsMemberValue("imageCoords", v, options, path, appName)
-
-					if type(image) == "string" then
+					
+					if type(image) == "string" or type(image) == "number" then
 						if type(imageCoords) == "table" then
 							control:SetImage(image, unpack(imageCoords))
 						else
@@ -1171,29 +1166,29 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 					control:SetLabel(name)
 					control:SetSliderValues(v.softMin or v.min or 0, v.softMax or v.max or 100, v.bigStep or v.step or 0)
 					control:SetIsPercent(v.isPercent)
-					local value = GetOptionsMemberValue("get", v, options, path, appName)
+					local value = GetOptionsMemberValue("get",v, options, path, appName)
 					if type(value) ~= "number" then
 						value = 0
 					end
 					control:SetValue(value)
-					control:SetCallback("OnValueChanged", ActivateSlider)
-					control:SetCallback("OnMouseUp", ActivateSlider)
+					control:SetCallback("OnValueChanged",ActivateSlider)
+					control:SetCallback("OnMouseUp",ActivateSlider)
 
 				elseif v.type == "select" then
 					local values = GetOptionsMemberValue("values", v, options, path, appName)
 					if v.style == "radio" then
 						local disabled = CheckOptionDisabled(v, options, path, appName)
-						local width = GetOptionsMemberValue("width", v, options, path, appName)
+						local width = GetOptionsMemberValue("width",v,options,path,appName)
 						control = gui:Create("InlineGroup")
 						control:SetLayout("Flow")
 						control:SetTitle(name)
 						control.width = "fill"
 
 						control:PauseLayout()
-						local optionValue = GetOptionsMemberValue("get", v, options, path, appName)
+						local optionValue = GetOptionsMemberValue("get",v, options, path, appName)
 						local t = {}
 						for value, text in pairs(values) do
-							t[#t + 1] = value
+							t[#t+1]=value
 						end
 						tsort(t)
 						for k, value in ipairs(t) do
@@ -1234,7 +1229,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						end
 						control:SetLabel(name)
 						control:SetList(values, nil, itemType)
-						local value = GetOptionsMemberValue("get", v, options, path, appName)
+						local value = GetOptionsMemberValue("get",v, options, path, appName)
 						if not values[value] then
 							value = nil
 						end
@@ -1245,9 +1240,9 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 				elseif v.type == "multiselect" then
 					local values = GetOptionsMemberValue("values", v, options, path, appName)
 					local disabled = CheckOptionDisabled(v, options, path, appName)
-
+					
 					local controlType = v.dialogControl or v.control
-
+					
 					local valuesort = new()
 					if values then
 						for value, text in pairs(values) do
@@ -1255,7 +1250,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						end
 					end
 					tsort(valuesort)
-
+					
 					if controlType then
 						control = gui:Create(controlType)
 						if not control then
@@ -1267,9 +1262,9 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						control:SetLabel(name)
 						control:SetList(values)
 						control:SetDisabled(disabled)
-						control:SetCallback("OnValueChanged", ActivateControl)
+						control:SetCallback("OnValueChanged",ActivateControl)
 						control:SetCallback("OnClosed", MultiControlOnClosed)
-						local width = GetOptionsMemberValue("width", v, options, path, appName)
+						local width = GetOptionsMemberValue("width",v,options,path,appName)
 						if width == "double" then
 							control:SetWidth(width_multiplier * 2)
 						elseif width == "half" then
@@ -1282,8 +1277,8 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						--check:SetTriState(v.tristate)
 						for i = 1, #valuesort do
 							local key = valuesort[i]
-							local value = GetOptionsMemberValue("get", v, options, path, appName, key)
-							control:SetItemValue(key, value)
+							local value = GetOptionsMemberValue("get",v, options, path, appName, key)
+							control:SetItemValue(key,value)
 						end
 					else
 						control = gui:Create("InlineGroup")
@@ -1292,7 +1287,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						control.width = "fill"
 
 						control:PauseLayout()
-						local width = GetOptionsMemberValue("width", v, options, path, appName)
+						local width = GetOptionsMemberValue("width",v,options,path,appName)
 						for i = 1, #valuesort do
 							local value = valuesort[i]
 							local text = values[value]
@@ -1302,8 +1297,8 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 							check:SetUserData("text", text)
 							check:SetDisabled(disabled)
 							check:SetTriState(v.tristate)
-							check:SetValue(GetOptionsMemberValue("get", v, options, path, appName, value))
-							check:SetCallback("OnValueChanged", ActivateMultiControl)
+							check:SetValue(GetOptionsMemberValue("get",v, options, path, appName, value))
+							check:SetCallback("OnValueChanged",ActivateMultiControl)
 							InjectInfo(check, options, v, path, rootframe, appName)
 							control:AddChild(check)
 							if width == "double" then
@@ -1318,23 +1313,25 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						end
 						control:ResumeLayout()
 						control:DoLayout()
-					end
 
+						
+					end
+					
 					del(valuesort)
 
 				elseif v.type == "color" then
 					control = gui:Create("ColorPicker")
 					control:SetLabel(name)
-					control:SetHasAlpha(GetOptionsMemberValue("hasAlpha", v, options, path, appName))
-					control:SetColor(GetOptionsMemberValue("get", v, options, path, appName))
-					control:SetCallback("OnValueChanged", ActivateControl)
-					control:SetCallback("OnValueConfirmed", ActivateControl)
+					control:SetHasAlpha(GetOptionsMemberValue("hasAlpha",v, options, path, appName))
+					control:SetColor(GetOptionsMemberValue("get",v, options, path, appName))
+					control:SetCallback("OnValueChanged",ActivateControl)
+					control:SetCallback("OnValueConfirmed",ActivateControl)
 
 				elseif v.type == "keybinding" then
 					control = gui:Create("Keybinding")
 					control:SetLabel(name)
-					control:SetKey(GetOptionsMemberValue("get", v, options, path, appName))
-					control:SetCallback("OnKeyChanged", ActivateControl)
+					control:SetKey(GetOptionsMemberValue("get",v, options, path, appName))
+					control:SetCallback("OnKeyChanged",ActivateControl)
 
 				elseif v.type == "header" then
 					control = gui:Create("Heading")
@@ -1344,25 +1341,25 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 				elseif v.type == "description" then
 					control = gui:Create("Label")
 					control:SetText(name)
-
-					local fontSize = GetOptionsMemberValue("fontSize", v, options, path, appName)
+					
+					local fontSize = GetOptionsMemberValue("fontSize",v, options, path, appName)
 					if fontSize == "medium" then
 						control:SetFontObject(GameFontHighlight)
 					elseif fontSize == "large" then
 						control:SetFontObject(GameFontHighlightLarge)
 					else -- small or invalid
-					control:SetFontObject(GameFontHighlightSmall)
+						control:SetFontObject(GameFontHighlightSmall)
 					end
-
-					local imageCoords = GetOptionsMemberValue("imageCoords", v, options, path, appName)
-					local image, width, height = GetOptionsMemberValue("image", v, options, path, appName)
-
-					if type(image) == "string" then
+					
+					local imageCoords = GetOptionsMemberValue("imageCoords",v, options, path, appName)
+					local image, width, height = GetOptionsMemberValue("image",v, options, path, appName)
+					
+					if type(image) == "string" or type(image) == "number" then
 						if not width then
-							width = GetOptionsMemberValue("imageWidth", v, options, path, appName)
+							width = GetOptionsMemberValue("imageWidth",v, options, path, appName)
 						end
 						if not height then
-							height = GetOptionsMemberValue("imageHeight", v, options, path, appName)
+							height = GetOptionsMemberValue("imageHeight",v, options, path, appName)
 						end
 						if type(imageCoords) == "table" then
 							control:SetImage(image, unpack(imageCoords))
@@ -1377,14 +1374,14 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 						end
 						control:SetImageSize(width, height)
 					end
-					local width = GetOptionsMemberValue("width", v, options, path, appName)
+					local width = GetOptionsMemberValue("width",v,options,path,appName)
 					control.width = not width and "fill"
 				end
 
 				--Common Init
 				if control then
 					if control.width ~= "fill" then
-						local width = GetOptionsMemberValue("width", v, options, path, appName)
+						local width = GetOptionsMemberValue("width",v,options,path,appName)
 						if width == "double" then
 							control:SetWidth(width_multiplier * 2)
 						elseif width == "half" then
@@ -1403,6 +1400,7 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 					InjectInfo(control, options, v, path, rootframe, appName)
 					container:AddChild(control)
 				end
+				
 			end
 		end
 		tremove(path)
@@ -1414,8 +1412,8 @@ local function FeedOptions(appName, options, container, rootframe, path, group, 
 end
 
 local function BuildPath(path, ...)
-	for i = 1, select("#", ...) do
-		tinsert(path, (select(i, ...)))
+	for i = 1, select("#",...)  do
+		tinsert(path, (select(i,...)))
 	end
 end
 
@@ -1427,7 +1425,7 @@ local function TreeOnButtonEnter(widget, event, uniquevalue, button)
 	local option = user.option
 	local path = user.path
 	local appName = user.appName
-
+	
 	local feedpath = new()
 	for i = 1, #path do
 		feedpath[i] = path[i]
@@ -1442,20 +1440,20 @@ local function TreeOnButtonEnter(widget, event, uniquevalue, button)
 
 	local name = GetOptionsMemberValue("name", group, options, feedpath, appName)
 	local desc = GetOptionsMemberValue("desc", group, options, feedpath, appName)
-
+	
 	GameTooltip:SetOwner(button, "ANCHOR_NONE")
 	if widget.type == "TabGroup" then
-		GameTooltip:SetPoint("BOTTOM", button, "TOP")
+		GameTooltip:SetPoint("BOTTOM",button,"TOP")
 	else
-		GameTooltip:SetPoint("LEFT", button, "RIGHT")
+		GameTooltip:SetPoint("LEFT",button,"RIGHT")
 	end
 
 	GameTooltip:SetText(name, 1, .82, 0, true)
-
+	
 	if type(desc) == "string" then
 		GameTooltip:AddLine(desc, 1, 1, 1, true)
 	end
-
+	
 	GameTooltip:Show()
 end
 
@@ -1466,25 +1464,25 @@ end
 
 local function GroupExists(appName, options, path, uniquevalue)
 	if not uniquevalue then return false end
-
+	
 	local feedpath = new()
 	local temppath = new()
 	for i = 1, #path do
 		feedpath[i] = path[i]
 	end
-
+	
 	BuildPath(feedpath, ("\001"):split(uniquevalue))
-
+	
 	local group = options
 	for i = 1, #feedpath do
 		local v = feedpath[i]
 		temppath[i] = v
 		group = GetSubOption(group, v)
-
-		if not group or group.type ~= "group" or CheckOptionHidden(group, options, temppath, appName) then
+		
+		if not group or group.type ~= "group" or CheckOptionHidden(group, options, temppath, appName) then 
 			del(feedpath)
 			del(temppath)
-			return false
+			return false 
 		end
 	end
 	del(feedpath)
@@ -1512,7 +1510,7 @@ local function GroupSelected(widget, event, uniquevalue)
 		group = GetSubOption(group, feedpath[i])
 	end
 	widget:ReleaseChildren()
-	AceConfigDialog:FeedGroup(user.appName, options, widget, rootframe, feedpath)
+	AceConfigDialog:FeedGroup(user.appName,options,widget,rootframe,feedpath)
 
 	del(feedpath)
 end
@@ -1535,7 +1533,7 @@ Rules:
 		if its parent is a tree group, its already a node on a tree
 --]]
 
-function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path, isRoot)
+function AceConfigDialog:FeedGroup(appName,options,container,rootframe,path, isRoot)
 	local group = options
 	--follow the path to get to the curent group
 	local inline
@@ -1545,7 +1543,7 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 	for i = 1, #path do
 		local v = path[i]
 		group = GetSubOption(group, v)
-		inline = inline or pickfirstset(v.dialogInline, v.guiInline, v.inline, false)
+		inline = inline or pickfirstset(v.dialogInline,v.guiInline,v.inline, false)
 		parenttype = grouptype
 		grouptype = group.childGroups
 	end
@@ -1557,14 +1555,14 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 	--check if the group has child groups
 	local hasChildGroups
 	for k, v in pairs(group.args) do
-		if v.type == "group" and not pickfirstset(v.dialogInline, v.guiInline, v.inline, false) and not CheckOptionHidden(v, options, path, appName) then
+		if v.type == "group" and not pickfirstset(v.dialogInline,v.guiInline,v.inline, false) and not CheckOptionHidden(v, options, path, appName) then
 			hasChildGroups = true
 		end
 	end
 	if group.plugins then
 		for plugin, t in pairs(group.plugins) do
 			for k, v in pairs(t) do
-				if v.type == "group" and not pickfirstset(v.dialogInline, v.guiInline, v.inline, false) and not CheckOptionHidden(v, options, path, appName) then
+				if v.type == "group" and not pickfirstset(v.dialogInline,v.guiInline,v.inline, false) and not CheckOptionHidden(v, options, path, appName) then
 					hasChildGroups = true
 				end
 			end
@@ -1587,7 +1585,7 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 		end
 	end
 
-	FeedOptions(appName, options, container, rootframe, path, group, nil)
+	FeedOptions(appName,options,container,rootframe,path,group,nil)
 
 	if scroll then
 		container:PerformLayout()
@@ -1607,7 +1605,7 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 			tab:SetCallback("OnGroupSelected", GroupSelected)
 			tab:SetCallback("OnTabEnter", TreeOnButtonEnter)
 			tab:SetCallback("OnTabLeave", TreeOnButtonLeave)
-
+			
 			local status = AceConfigDialog:GetStatusTable(appName, path)
 			if not status.groups then
 				status.groups = {}
@@ -1623,11 +1621,11 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 			for i = 1, #tabs do
 				local entry = tabs[i]
 				if not entry.disabled then
-					tab:SelectTab((GroupExists(appName, options, path, status.groups.selected) and status.groups.selected) or entry.value)
+					tab:SelectTab((GroupExists(appName, options, path,status.groups.selected) and status.groups.selected) or entry.value)
 					break
 				end
 			end
-
+			
 			container:AddChild(tab)
 
 		elseif grouptype == "select" then
@@ -1648,28 +1646,28 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 
 			local firstgroup = orderlist[1]
 			if firstgroup then
-				select:SetGroup((GroupExists(appName, options, path, status.groups.selected) and status.groups.selected) or firstgroup)
+				select:SetGroup((GroupExists(appName, options, path,status.groups.selected) and status.groups.selected) or firstgroup)
 			end
-
+			
 			select.width = "fill"
 			select.height = "fill"
 
 			container:AddChild(select)
 
-			--assume tree group by default
-			--if parenttype is tree then this group is already a node on that tree
+		--assume tree group by default
+		--if parenttype is tree then this group is already a node on that tree
 		elseif (parenttype ~= "tree") or isRoot then
 			local tree = gui:Create("TreeGroup")
 			InjectInfo(tree, options, group, path, rootframe, appName)
 			tree:EnableButtonTooltips(false)
-
+			
 			tree.width = "fill"
 			tree.height = "fill"
 
 			tree:SetCallback("OnGroupSelected", GroupSelected)
 			tree:SetCallback("OnButtonEnter", TreeOnButtonEnter)
 			tree:SetCallback("OnButtonLeave", TreeOnButtonLeave)
-
+			
 			local status = AceConfigDialog:GetStatusTable(appName, path)
 			if not status.groups then
 				status.groups = {}
@@ -1678,12 +1676,12 @@ function AceConfigDialog:FeedGroup(appName, options, container, rootframe, path,
 			tree:SetStatusTable(status.groups)
 
 			tree:SetTree(treedefinition)
-			tree:SetUserData("tree", treedefinition)
+			tree:SetUserData("tree",treedefinition)
 
 			for i = 1, #treedefinition do
 				local entry = treedefinition[i]
 				if not entry.disabled then
-					tree:SelectByValue((GroupExists(appName, options, path, status.groups.selected) and status.groups.selected) or entry.value)
+					tree:SelectByValue((GroupExists(appName, options, path,status.groups.selected) and status.groups.selected) or entry.value)
 					break
 				end
 			end
@@ -1710,7 +1708,7 @@ local function RefreshOnUpdate(this)
 		end
 		this.closing[appName] = nil
 	end
-
+	
 	if this.closeAll then
 		for k, v in pairs(AceConfigDialog.OpenFrames) do
 			if not this.closeAllOverride[k] then
@@ -1720,7 +1718,7 @@ local function RefreshOnUpdate(this)
 		this.closeAll = nil
 		wipe(this.closeAllOverride)
 	end
-
+	
 	for appName in pairs(this.apps) do
 		if AceConfigDialog.OpenFrames[appName] then
 			local user = AceConfigDialog.OpenFrames[appName]:GetUserDataTable()
@@ -1805,20 +1803,20 @@ function AceConfigDialog:Open(appName, container, ...)
 	local options = app("dialog", MAJOR)
 
 	local f
-
+	
 	local path = new()
 	local name = GetOptionsMemberValue("name", options, options, path, appName)
-
+	
 	--If an optional path is specified add it to the path table before feeding the options
 	--as container is optional as well it may contain the first element of the path
 	if type(container) == "string" then
 		tinsert(path, container)
 		container = nil
 	end
-	for n = 1, select("#", ...) do
+	for n = 1, select("#",...) do
 		tinsert(path, (select(n, ...)))
 	end
-
+	
 	local option = options
 	if type(container) == "table" and container.type == "BlizOptionsGroup" and #path > 0 then
 		for i = 1, #path do
@@ -1826,7 +1824,7 @@ function AceConfigDialog:Open(appName, container, ...)
 		end
 		name = format("%s - %s", name, GetOptionsMemberValue("name", option, options, path, appName))
 	end
-
+	
 	--if a container is given feed into that
 	if container then
 		f = container
@@ -1838,7 +1836,7 @@ function AceConfigDialog:Open(appName, container, ...)
 		end
 		local status = AceConfigDialog:GetStatusTable(appName)
 		if not status.width then
-			status.width = 700
+			status.width =  700
 		end
 		if not status.height then
 			status.height = 500
@@ -1867,7 +1865,7 @@ function AceConfigDialog:Open(appName, container, ...)
 		f:SetStatusTable(status)
 	end
 
-	self:FeedGroup(appName, options, f, f, path, true)
+	self:FeedGroup(appName,options,f,f,path,true)
 	if f.Show then
 		f:Show()
 	end
@@ -1923,16 +1921,16 @@ end
 -- @return The reference to the frame registered into the Interface Options. 
 function AceConfigDialog:AddToBlizOptions(appName, name, parent, ...)
 	local BlizOptions = AceConfigDialog.BlizOptions
-
+	
 	local key = appName
 	for n = 1, select("#", ...) do
-		key = key .. "\001" .. select(n, ...)
+		key = key.."\001"..select(n, ...)
 	end
-
+	
 	if not BlizOptions[appName] then
 		BlizOptions[appName] = {}
 	end
-
+	
 	if not BlizOptions[appName][key] then
 		local group = gui:Create("BlizOptionsGroup")
 		BlizOptions[appName][key] = group
@@ -1942,7 +1940,7 @@ function AceConfigDialog:AddToBlizOptions(appName, name, parent, ...)
 		group:SetUserData("appName", appName)
 		if select("#", ...) > 0 then
 			local path = {}
-			for n = 1, select("#", ...) do
+			for n = 1, select("#",...) do
 				tinsert(path, (select(n, ...)))
 			end
 			group:SetUserData("path", path)

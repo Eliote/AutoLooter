@@ -47,6 +47,7 @@ local methods = {
 	["SetHighlight"] = function(self, ...)
 		self.highlight:SetTexture(...)
 	end,
+
 	["SetHighlightTexCoord"] = function(self, ...)
 		local c = select("#", ...)
 		if c == 4 or c == 8 then
@@ -55,7 +56,8 @@ local methods = {
 			self.highlight:SetTexCoord(0, 1, 0, 1)
 		end
 	end,
-	["SetDisabled"] = function(self, disabled)
+
+	["SetDisabled"] = function(self,disabled)
 		self.disabled = disabled
 		if disabled then
 			self.frame:EnableMouse(false)

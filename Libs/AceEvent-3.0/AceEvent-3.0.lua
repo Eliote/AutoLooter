@@ -25,23 +25,24 @@ AceEvent.embeds = AceEvent.embeds or {} -- what objects embed this lib
 
 -- APIs and registry for blizzard events, using CallbackHandler lib
 if not AceEvent.events then
-	AceEvent.events = CallbackHandler:New(AceEvent,
+	AceEvent.events = CallbackHandler:New(AceEvent, 
 		"RegisterEvent", "UnregisterEvent", "UnregisterAllEvents")
 end
 
-function AceEvent.events:OnUsed(target, eventname)
+function AceEvent.events:OnUsed(target, eventname) 
 	AceEvent.frame:RegisterEvent(eventname)
 end
 
-function AceEvent.events:OnUnused(target, eventname)
+function AceEvent.events:OnUnused(target, eventname) 
 	AceEvent.frame:UnregisterEvent(eventname)
 end
 
 
 -- APIs and registry for IPC messages, using CallbackHandler lib
 if not AceEvent.messages then
-	AceEvent.messages = CallbackHandler:New(AceEvent,
-		"RegisterMessage", "UnregisterMessage", "UnregisterAllMessages")
+	AceEvent.messages = CallbackHandler:New(AceEvent, 
+		"RegisterMessage", "UnregisterMessage", "UnregisterAllMessages"
+	)
 	AceEvent.SendMessage = AceEvent.messages.Fire
 end
 
