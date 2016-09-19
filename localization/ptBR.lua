@@ -70,6 +70,8 @@ if GetLocale() == "ptBR" then
 	L["Right-click"] = "Clique-direito"
 
 	L["to Show/Hide UI"] = "para Mostrar/Esconder a UI"
+	L["Show/Hide UI"] = "Mostra/Esconde a UI"
+	L["Show/Hide minimap button"] = "Mostra/Esconde botão do minimapa"
 	L["to Enable/Disable loot all"] = "para Liga/Desligar 'pegar tudo'"
 	L["Hold and drag to move"] = "Segure e arraste para mover"
 end

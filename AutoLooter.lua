@@ -311,6 +311,11 @@ function AUTO_LOOTER:CreateProfile()
 				set = function(info, val) AUTO_LOOTER.SetMinimapVisibility(val)	end,
 				get = function(info) return DataBase.showMinimap end
 			},
+			config = {
+				type ="execute",
+				name =L["Show/Hide UI"],
+				func = function() ConfigUI.CreateConfigUI() end
+			},
 		}
 	}
 
