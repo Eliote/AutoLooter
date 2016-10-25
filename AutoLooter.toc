@@ -1,5 +1,5 @@
-## Interface: 70000
-## Title: |cffffffffAutoLooter
+## Interface: 70100
+## Title: AutoLooter
 ## Version: @project-version@
 ## Author: Eliote
 ## Notes: Auto Loot Money and Specific Items
