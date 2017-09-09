@@ -14,6 +14,3 @@ localization/ptBR.lua
 Util.lua
 AutoLooter.lua
 ConfigUI.lua
-MiniMap.lua
-
-AutoLooter.xml

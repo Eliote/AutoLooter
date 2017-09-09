@@ -34,6 +34,32 @@ local ConfirmLootRoll = ConfirmLootRoll
 local string = string
 --
 
+-- LDB addition START
+-- thanks to Pseudopath "http://wow.curseforge.com/profiles/Pseudopath/"
+local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(ADDON_NAME, {
+	type = "launcher",
+	icon = "Interface\\Icons\\Inv_misc_bag_01",
+	label = ADDON_NAME
+})
+local LDBIcon = LibStub("LibDBIcon-1.0")
+
+function AL_LDB.OnTooltipShow(tip)
+	tip:AddLine(Color.WHITE .. ADDON_NAME)
+	tip:AddLine(" ")
+	tip:AddLine(Color.YELLOW .. L["Left-click"] .. "|r " .. L["to Show/Hide UI"])
+	tip:AddLine(Color.YELLOW .. L["Right-click"] .. "|r " .. L["to Enable/Disable loot all"])
+end
+
+function AL_LDB.OnClick(self, button)
+	if button == "LeftButton" then
+		ConfigUI.CreateConfigUI();
+	elseif button == "RightButton" then
+		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
+		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
+	end
+end
+-- LDB addition END
+
 local questItemList
 
 local function GetItemText(icon, link, quantity)
@@ -165,13 +191,14 @@ function AUTO_LOOTER:SetAlertSound(file)
 	DataBase.alertSound = file
 end
 
-function AUTO_LOOTER.SetMinimapVisibility(bool)
-	DataBase.showMinimap = bool
+function AUTO_LOOTER.SetMinimapVisibility(show)
+	DataBase.minimap.hide = not show
 
-	if (bool) then
-		AutoLooter_MinimapButton:Show()
+	print(DataBase.minimap.hide)
+	if (DataBase.minimap.hide) then
+		LDBIcon:Hide(ADDON_NAME)
 	else
-		AutoLooter_MinimapButton:Hide()
+		LDBIcon:Show(ADDON_NAME)
 	end
 end
 
@@ -180,10 +207,6 @@ function AUTO_LOOTER:ReloadOptions()
 	DataBase = PRIVATE_TABLE.DB
 
 	AUTO_LOOTER.Enable(DataBase.enable)
-
-	AutoLooter_MinimapButton_Reposition()
-
-	AUTO_LOOTER.SetMinimapVisibility(DataBase.showMinimap)
 end
 
 function AUTO_LOOTER:CreateProfile()
@@ -309,11 +332,11 @@ function AUTO_LOOTER:CreateProfile()
 				type = "toggle",
 				name = L["Show/Hide minimap button"],
 				set = function(info, val) AUTO_LOOTER.SetMinimapVisibility(val)	end,
-				get = function(info) return DataBase.showMinimap end
+				get = function(info) return not DataBase.minimap.hide end
 			},
 			config = {
-				type ="execute",
-				name =L["Show/Hide UI"],
+				type = "execute",
+				name = L["Show/Hide UI"],
 				func = function() ConfigUI.CreateConfigUI() end
 			},
 		}
@@ -327,6 +350,8 @@ function AUTO_LOOTER:CreateProfile()
 	local AceDialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrame = AceDialog:AddToBlizOptions("AutoLooter", "AutoLooter")
 	self.profilesFrame = AceDialog:AddToBlizOptions("AutoLooter-Profiles", "Profiles", "AutoLooter")
+
+	LDBIcon:Register(ADDON_NAME, AL_LDB, DataBase.minimap)
 end
 
 local function GetSaved(defTable, itemClass, itemSubClass)
@@ -388,14 +413,13 @@ function AUTO_LOOTER:OnInitialize()
 			lootAll = false,
 			lootQuest = true,
 			close = false,
-			minimapPos = 45,
-			showMinimap = true,
 			rarity = 2,
 			price = 40000,
 			alertSound = "Sound/creature/Murloc/mMurlocAggroOld.ogg",
 			typeTable = CreateAHTable(),
 			ignoreGreys = false,
-			autoConfirmRoll = false
+			autoConfirmRoll = false,
+			minimap = { hide = false }
 		}
 	}
 	self.db = LibStub("AceDB-3.0"):New("AutoLooterDB", defaults, "Default")
@@ -561,29 +585,3 @@ function AUTO_LOOTER:UNIT_QUEST_LOG_CHANGED(unitId)
 		questItemList = CreateQuestItemList()
 	end
 end
-
--- LDB addition START
--- thanks to Pseudopath "http://wow.curseforge.com/profiles/Pseudopath/"
-local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("AutoLooter", {
-	type = "launcher",
-	icon = "Interface\\Icons\\Inv_misc_bag_01",
-	label = "AutoLooter"
-})
-
-function AL_LDB.OnTooltipShow(tip)
-	tip:AddLine("AutoLooter")
-	tip:AddLine(" ")
-	tip:AddLine("Left-Click: Open Config")
-	tip:AddLine("Right-Click: Loot Everything")
-end
-
-function AL_LDB.OnClick()
-	local button = GetMouseButtonClicked()
-	if button == "LeftButton" then
-		ConfigUI.CreateConfigUI();
-	elseif button == "RightButton" then
-		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
-		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
-	end
-end
--- LDB addition END

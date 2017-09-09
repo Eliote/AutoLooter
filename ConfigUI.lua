@@ -81,7 +81,7 @@ local function CreateLeftWidgets()
 
 	local showMinimap = AceGUI:Create("CheckBox")
 	showMinimap:SetLabel(L["Show minimap button"])
-	showMinimap:SetValue(PRIVATE_TABLE.DB.showMinimap)
+	showMinimap:SetValue(not PRIVATE_TABLE.DB.minimap.hide)
 	showMinimap:SetCallback("OnValueChanged", function(self, event, checked) AUTO_LOOTER.SetMinimapVisibility(checked) end)
 
 	local rarity = AceGUI:Create("Dropdown")
