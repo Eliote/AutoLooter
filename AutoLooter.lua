@@ -478,7 +478,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	local srLocked = ""
 
 	for nIndex = 1, GetNumLootItems() do
-		local icon, sTitle, nQuantity, nRarity, locked = GetLootSlotInfo(nIndex)
+		local icon, sTitle, nQuantity, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
 		-- Locked
@@ -502,6 +502,11 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 			-- Rarity
 		elseif (DataBase.rarity > -1) and nRarity and (nRarity >= DataBase.rarity) then
 			srRarity = srRarity .. GetItemText(icon, sItemLink, nQuantity)
+			Loot(nIndex, sTitle)
+
+			-- Loot by quest using the new [GetLootSlotInfo] parameter [isQuestItem]
+		elseif (DataBase.lootQuest and isQuestItem) then
+			srQuest = srQuest .. GetItemText(icon, sItemLink, nQuantity)
 			Loot(nIndex, sTitle)
 
 			-- Need more info
