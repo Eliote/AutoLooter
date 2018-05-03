@@ -300,6 +300,12 @@ function AUTO_LOOTER:CreateProfile()
 				set = function(info, val) DataBase.ignoreGreys = AUTO_LOOTER.GetBoolean(val) end,
 				get = function(info) return DataBase.ignoreGreys end
 			},
+			ignoreBop = {
+				type = "toggle",
+				name = L["Ignore BoP"],
+				set = function(info, val) DataBase.ignoreBop = AUTO_LOOTER.GetBoolean(val) end,
+				get = function(info) return DataBase.ignoreBop end
+			},
 			autoConfirmRoll = {
 				type = "toggle",
 				name = L["Auto confirm loot roll"],
@@ -419,7 +425,8 @@ function AUTO_LOOTER:OnInitialize()
 			typeTable = CreateAHTable(),
 			ignoreGreys = false,
 			autoConfirmRoll = false,
-			minimap = { hide = false }
+			minimap = { hide = false },
+			ignoreBop = false
 		}
 	}
 	self.db = LibStub("AceDB-3.0"):New("AutoLooterDB", defaults, "Default")
@@ -499,6 +506,10 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		elseif (DataBase.ignore[sTitle]) then
 			srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
 
+			-- Ignore BoP
+		elseif (DataBase.ignoreBop and sItemLink and select(14, GetItemInfo(sItemLink)) == 1) then
+			srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
+
 			-- Rarity
 		elseif (DataBase.rarity > -1) and nRarity and (nRarity >= DataBase.rarity) then
 			srRarity = srRarity .. GetItemText(icon, sItemLink, nQuantity)
@@ -511,7 +522,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 
 			-- Need more info
 		elseif sItemLink then
-			local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice = GetItemInfo(sItemLink)
+			local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(sItemLink)
 
 			-- Token
 			if not iPrice then
@@ -531,7 +542,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 				Loot(nIndex, sTitle)
 
 				-- Quest
-			elseif questItemList and questItemList[sTitle] then
+			elseif (DataBase.lootQuest and bindType == 4) or (questItemList and questItemList[sTitle]) then
 				srQuest = srQuest .. GetItemText(icon, sItemLink, nQuantity)
 				Loot(nIndex, sTitle)
 
