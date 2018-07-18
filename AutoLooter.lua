@@ -489,11 +489,13 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		local sItemLink = GetLootSlotLink(nIndex)
 
 		-- Locked
-		if locked then
+        -- Just ignore it by now
+		--[[if locked then
 			srLocked = srLocked .. GetItemText(icon, sItemLink, nQuantity)
 
 			-- Money
-		elseif (nQuantity == 0) then
+		else]]--
+		if (nQuantity == 0) then
 			srMoney = string.gsub(sTitle, "\n", " ")
 			LootSlot(nIndex)
 
