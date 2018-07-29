@@ -485,19 +485,22 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	local srLocked = ""
 
 	for nIndex = 1, GetNumLootItems() do
-		local icon, sTitle, nQuantity, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
+		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
 		-- Locked
-        -- Just ignore it by now
-		--[[if locked then
+		if locked then
 			srLocked = srLocked .. GetItemText(icon, sItemLink, nQuantity)
 
 			-- Money
-		else]]--
-		if (nQuantity == 0) then
+		elseif (nQuantity == 0) then
 			srMoney = string.gsub(sTitle, "\n", " ")
 			LootSlot(nIndex)
+
+			-- Currency
+		elseif (currencyID ~= nil) then
+			srToken = srToken .. GetItemText(icon, sItemLink, nQuantity)
+			Loot(nIndex, sTitle)
 
 			-- White List
 		elseif (DataBase.items[sTitle]) then
