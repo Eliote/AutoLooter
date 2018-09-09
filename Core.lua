@@ -1,5 +1,8 @@
 local ADDON_NAME, PRIVATE_TABLE = ...;
 PRIVATE_TABLE.AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
+PRIVATE_TABLE.MODULES = {
+	-- CanLoot(GetLootSlotInfo(index)), Finish()
+}
 
 PRIVATE_TABLE.GetTable = function(tableName)
 	if not PRIVATE_TABLE[tableName] then
@@ -20,3 +23,21 @@ local function defaultFunc(L, key)
 end
 
 setmetatable(L, { __index = defaultFunc });
+
+AutoLooter = {}
+
+function AutoLooter:NewLootModule(priority)
+	local newMobule = {}
+
+	table.insert(PRIVATE_TABLE.MODULES, priority, newMobule)
+
+	return newMobule
+end
+
+function AutoLooter:GetColorTable()
+	return PRIVATE_TABLE.GetTable("Color")
+end
+
+function AutoLooter:GetUtil()
+	return PRIVATE_TABLE.GetTable("Util")
+end

@@ -110,40 +110,6 @@ function Util.GetColorForRarity(rarity)
 	return ""
 end
 
---[[function Util.GetItemClassTable()
-	local classes = GetItemClasses()
-
-	for class, index in classes do
-		classes[class] = GetItemsSubClasses(index)
-	end
-end]]
-
---[[function Util.GetItemClasses()
-	local out = {}
-
-	local itemClasses = { GetAuctionItemClasses() }
-	if #itemClasses > 0 then
-		for i, itemClass in pairs(itemClasses) do
-			out[itemClass] = i
-		end
-	end
-
-	return out
-end]]
-
---[[function Util.GetItemsSubClasses(index)
-	local out = {}
-
-	local itemSubClasses = { GetAuctionItemSubClasses(i) };
-	if #itemSubClasses > 0 then
-		for i, itemSubClass in pairs(itemSubClasses) do
-			out[itemSubClass] = false
-		end
-	end
-
-	return out
-end]]
-
 Util.OnOff = function(bToggle)
 	if (bToggle) then
 		return Color.GREEN .. L["On"] .. "|r"
@@ -164,6 +130,10 @@ Util.print = function(...)
 	print(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r", out)
 end
 
---[[function Util.interp(str, tab)
-    return (str:gsub('($%b{})', function(w) return tostring(tab[w:sub(3, -2)] or w) end))
-end]]
+function Util.GetItemText(icon, link, quantity)
+	quantity = quantity or 1
+	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark" .. ":0|t"
+	link = link or ""
+
+	return quantity .. "x|T" .. icon .. ":0|t" .. link .. " "
+end

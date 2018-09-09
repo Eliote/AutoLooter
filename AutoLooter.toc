@@ -14,3 +14,16 @@ localization/ptBR.lua
 Util.lua
 AutoLooter.lua
 ConfigUI.lua
+
+modules/All.lua
+modules/BlackList.lua
+modules/Currency.lua
+modules/IgnoreBOP.lua
+modules/Locked.lua
+modules/Money.lua
+modules/Price.lua
+modules/Quest.lua
+modules/Rarity.lua
+modules/Token.lua
+modules/Type.lua
+modules/WhiteList.lua

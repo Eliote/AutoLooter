@@ -12,6 +12,7 @@ local AUTO_LOOTER = PRIVATE_TABLE.GetTable("AUTO_LOOTER")
 local DataBase = PRIVATE_TABLE.GetTable("DB")
 local Util = PRIVATE_TABLE.GetTable("Util")
 local Color = PRIVATE_TABLE.GetTable("Color")
+local MODULES = PRIVATE_TABLE.GetTable("MODULES")
 
 local print = Util.print
 local formatGold = Util.formatGold
@@ -58,17 +59,10 @@ function AL_LDB.OnClick(self, button)
 		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
 	end
 end
+
 -- LDB addition END
 
 local questItemList
-
-local function GetItemText(icon, link, quantity)
-	quantity = quantity or 1
-	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark" .. ":0|t"
-	link = link or ""
-
-	return quantity .. "x|T" .. icon .. ":0|t" .. link .. " "
-end
 
 local function PrintLoot(descricao, cor, items, dinheiro)
 	items = items:trim()
@@ -337,7 +331,7 @@ function AUTO_LOOTER:CreateProfile()
 			showMinimap = {
 				type = "toggle",
 				name = L["Show/Hide minimap button"],
-				set = function(info, val) AUTO_LOOTER.SetMinimapVisibility(val)	end,
+				set = function(info, val) AUTO_LOOTER.SetMinimapVisibility(val) end,
 				get = function(info) return not DataBase.minimap.hide end
 			},
 			config = {
@@ -459,128 +453,60 @@ local function Loot(index, itemName)
 	ConfirmLootSlot(index) -- In case it's a Bind on Pickup
 end
 
-local function LootType(iType, iSubType, iRarity)
-	if DataBase.ignoreGreys and iRarity == 0 then return false end
 
-	local t = DataBase.typeTable[iType]
-	if t then return t[iSubType] or t["(Legacy Types)"] end
 
-	return false
+local function PrintReason(reason, contents)
+	local items = ""
+	local sep = ""
+	for _, content in pairs(contents) do
+		items = sep .. items .. content
+		sep = " "
+	end
+
+	print(reason, "|r: ", items)
 end
 
 -- LOOT OPENED
 function AUTO_LOOTER:LOOT_OPENED(_, arg1)
-	-- do not continue if autolooting
 	if (arg1 == 1) then return end
 
-	local srMoney = ""
-	local srListed = ""
-	local srRarity = ""
-	local srPrice = ""
-	local srAll = ""
-	local srIgnore = ""
-	local srType = ""
-	local srQuest = ""
-	local srToken = ""
-	local srLocked = ""
+	local sortedModules = {}
+	for n in pairs(MODULES) do table.insert(sortedModules, n) end
+	table.sort(sortedModules)
+
+	local reasonMap = {}
 
 	for nIndex = 1, GetNumLootItems() do
 		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
-		-- Locked
-		if locked then
-			srLocked = srLocked .. GetItemText(icon, sItemLink, nQuantity)
+		for k, moduleIndex in ipairs(sortedModules) do
+			local module = MODULES[moduleIndex]
+			if (module.CanLoot) then
+				local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
-			-- Money
-		elseif (nQuantity == 0) then
-			srMoney = string.gsub(sTitle, "\n", " ")
-			LootSlot(nIndex)
+				if (reason) then
+					reasonMap[reason] = reasonMap[reason] or {}
+					table.insert(reasonMap[reason], reasonContent)
+				end
 
-			-- Currency
-		elseif (currencyID ~= nil) then
-			srToken = srToken .. GetItemText(icon, sItemLink, nQuantity)
-			Loot(nIndex, sTitle)
+				if loot then
+					Loot(nIndex, sTitle)
+					break
+				end
 
-			-- White List
-		elseif (DataBase.items[sTitle]) then
-			srListed = srListed .. GetItemText(icon, sItemLink, nQuantity)
-			Loot(nIndex, sTitle)
-
-			-- Ignore List
-		elseif (DataBase.ignore[sTitle]) then
-			srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
-
-			-- Ignore BoP
-		elseif (DataBase.ignoreBop and sItemLink and select(14, GetItemInfo(sItemLink)) == 1) then
-			srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
-
-			-- Rarity
-		elseif (DataBase.rarity > -1) and nRarity and (nRarity >= DataBase.rarity) then
-			srRarity = srRarity .. GetItemText(icon, sItemLink, nQuantity)
-			Loot(nIndex, sTitle)
-
-			-- Loot by quest using the new [GetLootSlotInfo] parameter [isQuestItem]
-		elseif (DataBase.lootQuest and isQuestItem) then
-			srQuest = srQuest .. GetItemText(icon, sItemLink, nQuantity)
-			Loot(nIndex, sTitle)
-
-			-- Need more info
-		elseif sItemLink then
-			local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(sItemLink)
-
-			-- Token
-			if not iPrice then
-				srToken = srToken .. GetItemText(icon, sItemLink, nQuantity)
-				Loot(nIndex, sTitle)
-
-				-- Price
-			elseif (DataBase.price > 0) and (iPrice >= DataBase.price) then
-				srPrice = srPrice .. GetItemText(icon, sItemLink, nQuantity)
-				Loot(nIndex, sTitle)
-
-				-- Type/Subtype
-			elseif LootType(itemType, itemSubType, nRarity) then
-				local typeSubtype = (DataBase.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
-
-				srType = srType .. typeSubtype .. GetItemText(icon, sItemLink, nQuantity)
-				Loot(nIndex, sTitle)
-
-				-- Quest
-			elseif (DataBase.lootQuest and bindType == 4) or (questItemList and questItemList[sTitle]) then
-				srQuest = srQuest .. GetItemText(icon, sItemLink, nQuantity)
-				Loot(nIndex, sTitle)
-
-				-- LootAll
-			elseif (DataBase.lootAll) then
-				srAll = srAll .. GetItemText(icon, sItemLink, nQuantity)
-				Loot(nIndex, sTitle)
-
-				-- Log
-			elseif DataBase.printoutIgnored then
-				srIgnore = srIgnore .. GetItemText(icon, sItemLink, nQuantity)
+				if forceBreak then break end
 			end
 		end
 	end
 
-	if (DataBase.close) then
-		CloseLoot()
+	for _, moduleIndex in ipairs(sortedModules)  do
+		local module = MODULES[moduleIndex]
+		if (module.Finish) then module.Finish() end
 	end
 
-	if (DataBase.printout) then
-		PrintLoot(L["Coin"], Color.GREEN, srMoney, true)
-		PrintLoot(L["Listed"], Color.GREEN, srListed)
-		PrintLoot(L["Rarity"], Color.GREEN, srRarity)
-		PrintLoot(L["Price"], Color.GREEN, srPrice)
-		PrintLoot(L["All"], Color.GREEN, srAll)
-		PrintLoot(L["Type"], Color.GREEN, srType)
-		PrintLoot(L["Quest"], Color.GREEN, srQuest)
-		PrintLoot(L["Token"], Color.GREEN, srToken)
-	end
-
-	if DataBase.printoutIgnored then
-		PrintLoot(L["Ignored"], Color.ORANGE, srIgnore)
-		PrintLoot(L["Locked"], Color.RED, srLocked)
+	for reason, contents in pairs(reasonMap) do
+		PrintReason(reason, contents)
 	end
 end
 
