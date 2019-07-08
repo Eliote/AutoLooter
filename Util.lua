@@ -137,3 +137,15 @@ function Util.GetItemText(icon, link, quantity)
 
 	return quantity .. "x|T" .. icon .. ":0|t" .. link .. " "
 end
+
+function Util.GetBoolean(bool, def)
+	if (bool == "on" or bool == true) then
+		return true
+	elseif (bool == "off" or bool == false) then
+		return false
+	end
+
+	if not def then return false end
+
+	return def
+end

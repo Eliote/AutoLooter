@@ -76,4 +76,6 @@ if GetLocale() == "ptBR" then
 	L["Hold and drag to move"] = "Segure e arraste para mover"
 
 	L["Ignore BoP"] = "Ignorar BoP"
+
+	L["General"] = "Geral"
 end

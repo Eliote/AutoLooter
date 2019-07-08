@@ -1,4 +1,4 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
+local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.GetTable("L")
 
 local Color = AutoLooter:GetColorTable()
@@ -14,3 +14,31 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
 	end
 end
+
+
+-- Config
+local AceGUI = LibStub("AceGUI-3.0")
+local tab = L["General"]
+
+function module.GetConfigTabs()
+	return tab
+end
+
+function module.CreateConfigGroup(container, event, group)
+	if (group == tab) then
+		local lootQuest = AceGUI:Create("CheckBox")
+		lootQuest:SetLabel(L["Loot quest itens"])
+		lootQuest:SetValue(PRIVATE_TABLE.DB.lootQuest)
+		lootQuest:SetCallback("OnValueChanged", function(self, event, checked) PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(checked) end)
+		container:AddChild(lootQuest)
+	end
+end
+
+module.cli = {
+	lootQuest = {
+		type = "toggle",
+		name = L["Loot quest itens"],
+		set = function(info, val) PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(val) end,
+		get = function(info) return PRIVATE_TABLE.DB.lootQuest end
+	}
+}

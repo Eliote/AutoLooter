@@ -12,9 +12,13 @@ Core.lua
 localization/ptBR.lua
 
 Util.lua
+DataBroker.lua
 AutoLooter.lua
 ConfigUI.lua
 
+modules/common/ListHelper.lua
+
+modules/AlertList.lua
 modules/All.lua
 modules/BlackList.lua
 modules/Currency.lua

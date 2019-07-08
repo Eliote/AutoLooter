@@ -1,5 +1,7 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
+local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.GetTable("L")
+
+local ListHelper = PRIVATE_TABLE.GetTable("ListHelper")
 
 local Color = AutoLooter:GetColorTable()
 local Util = AutoLooter:GetUtil()
@@ -16,3 +18,18 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 		end
 	end
 end
+
+module.cli = {
+	ignore = {
+		type = "input",
+		name = L["Add item to ignore list"],
+		set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.ignore) end,
+		get = false
+	},
+	removeI = {
+		type = "input",
+		name = L["Remove item from ignore list"],
+		set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
+		get = false
+	},
+}

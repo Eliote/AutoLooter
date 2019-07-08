@@ -1,5 +1,7 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
+local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.GetTable("L")
+
+local ListHelper = PRIVATE_TABLE.GetTable("ListHelper")
 
 local Color = AutoLooter:GetColorTable()
 local Util = AutoLooter:GetUtil()
@@ -12,3 +14,19 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
 	end
 end
+
+module.cli = {
+	add = {
+		type = "input",
+		name = L["Add item to white list"],
+		set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.items) end,
+		get = false,
+		usage = L["[link/id/name] or [mouse over]"]
+	},
+	remove = {
+		type = "input",
+		name = L["Remove item from white list"],
+		set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.items) end,
+		get = false
+	}
+}
