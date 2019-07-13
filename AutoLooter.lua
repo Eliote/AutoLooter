@@ -26,6 +26,9 @@ local ConfirmLootSlot = ConfirmLootSlot
 local ConfirmLootRoll = ConfirmLootRoll
 --
 
+local sortedLootModules = {}
+local sortedModules = {}
+
 function AUTO_LOOTER.Enable(bool)
 	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
 
@@ -106,7 +109,7 @@ function AUTO_LOOTER:CreateProfile()
 
 	local AceConfig = LibStub("AceConfig-3.0")
 	AceConfig:RegisterOptionsTable("AutoLooter-Commands", self.options, { "al", "autolooter", "atl" })
-	AceConfig:RegisterOptionsTable("AutoLooter", { type = "group", name = "AutoLooter", args = { enable = self.options.args.enable } })
+	AceConfig:RegisterOptionsTable("AutoLooter", { type = "group", name = "AutoLooter", args = self.options.args })
 	AceConfig:RegisterOptionsTable("AutoLooter-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 
 	local AceDialog = LibStub("AceConfigDialog-3.0")
@@ -147,6 +150,15 @@ function AUTO_LOOTER:OnInitialize()
 	AUTO_LOOTER:ReloadOptions()
 	AUTO_LOOTER:CreateProfile()
 
+	for n in pairs(MODULES) do
+		table.insert(sortedModules, n)
+		if(MODULES[n].CanLoot) then
+			table.insert(sortedLootModules, n)
+		end
+	end
+	table.sort(sortedModules)
+	table.sort(sortedLootModules)
+
 	DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
 end
 
@@ -170,33 +182,27 @@ end
 function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	if (arg1 == 1) then return end
 
-	local sortedModules = {}
-	for n in pairs(MODULES) do table.insert(sortedModules, n) end
-	table.sort(sortedModules)
-
 	local reasonMap = {}
 
 	for nIndex = 1, GetNumLootItems() do
 		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
-		for k, moduleIndex in ipairs(sortedModules) do
+		for k, moduleIndex in ipairs(sortedLootModules) do
 			local module = MODULES[moduleIndex]
-			if (module.CanLoot) then
-				local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
+			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
-				if (reason) then
-					reasonMap[reason] = reasonMap[reason] or {}
-					table.insert(reasonMap[reason], reasonContent)
-				end
-
-				if loot then
-					Loot(nIndex, sTitle, sItemLink)
-					break
-				end
-
-				if forceBreak then break end
+			if (reason) then
+				reasonMap[reason] = reasonMap[reason] or {}
+				table.insert(reasonMap[reason], reasonContent)
 			end
+
+			if loot then
+				Loot(nIndex, sTitle, sItemLink)
+				break
+			end
+
+			if forceBreak then break end
 		end
 	end
 
