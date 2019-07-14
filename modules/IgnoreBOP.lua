@@ -17,30 +17,17 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-
--- Config
-local AceGUI = LibStub("AceGUI-3.0")
-local tab = L["General"]
-
-function module.GetConfigTabs()
-	return tab
-end
-
-function module.CreateConfigGroup(container, event, group)
-	if (group == tab) then
-		local ignoreBop = AceGUI:Create("CheckBox")
-		ignoreBop:SetLabel(L["Ignore BoP"])
-		ignoreBop:SetValue(PRIVATE_TABLE.DB.ignoreBop)
-		ignoreBop:SetCallback("OnValueChanged", function(self, event, checked) PRIVATE_TABLE.DB.ignoreBop = Util.GetBoolean(checked) end)
-		container:AddChild(ignoreBop)
-	end
-end
-
-module.cli = {
-	ignoreBop = {
-		type = "toggle",
-		name = L["Ignore BoP"],
-		set = function(info, val) PRIVATE_TABLE.DB.ignoreBop = Util.GetBoolean(val) end,
-		get = function(info) return PRIVATE_TABLE.DB.ignoreBop end
+function module:GetOptions()
+	return {
+		general = {
+			args = {
+				ignoreBop = {
+					type = "toggle",
+					name = L["Ignore BoP"],
+					set = function(info, val) PRIVATE_TABLE.DB.ignoreBop = Util.GetBoolean(val) end,
+					get = function(info) return PRIVATE_TABLE.DB.ignoreBop end
+				}
+			}
+		}
 	}
-}
+end

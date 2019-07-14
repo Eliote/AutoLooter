@@ -3,7 +3,6 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.GetTable("L")
 local Util = PRIVATE_TABLE.GetTable("Util")
 local Color = PRIVATE_TABLE.GetTable("Color")
-local ConfigUI = PRIVATE_TABLE.GetTable("ConfigUI")
 local Broker = PRIVATE_TABLE.GetTable("Broker")
 
 local print = Util.print
@@ -25,7 +24,7 @@ end
 
 function AL_LDB.OnClick(self, button)
 	if button == "LeftButton" then
-		ConfigUI.CreateConfigUI();
+		LibStub("AceConfigDialog-3.0"):Open(ADDON_NAME)
 	elseif button == "RightButton" then
 		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
 		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))

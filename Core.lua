@@ -29,7 +29,7 @@ AutoLooter = {}
 function AutoLooter:NewLootModule(priority)
 	local newMobule = {}
 
-	table.insert(PRIVATE_TABLE.MODULES, priority, newMobule)
+	table.insert(PRIVATE_TABLE.MODULES, priority or 999999999, newMobule)
 
 	return newMobule
 end

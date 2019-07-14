@@ -78,4 +78,7 @@ if GetLocale() == "ptBR" then
 	L["Ignore BoP"] = "Ignorar BoP"
 
 	L["General"] = "Geral"
+	L["Alert List"] = "Lista de Alertas"
+	L["Blacklist"] = "Lista Negra"
+	L["Whitelist"] = "Lista Branca"
 end

@@ -19,17 +19,27 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-module.cli = {
-	ignore = {
-		type = "input",
-		name = L["Add item to ignore list"],
-		set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.ignore) end,
-		get = false
-	},
-	removeI = {
-		type = "input",
-		name = L["Remove item from ignore list"],
-		set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
-		get = false
-	},
-}
+function module:GetOptions()
+	return {
+		blacklist = {
+			name = L["Blacklist"],
+			type = "group",
+			args = {
+				add = {
+					type = "input",
+					name = L["Add item to ignore list"],
+					width = "double",
+					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.ignore) end,
+					get = false
+				},
+				remove = {
+					type = "input",
+					name = L["Remove item from ignore list"],
+					width = "double",
+					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
+					get = false
+				},
+			}
+		}
+	}
+end

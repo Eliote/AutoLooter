@@ -15,18 +15,28 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-module.cli = {
-	add = {
-		type = "input",
-		name = L["Add item to white list"],
-		set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.items) end,
-		get = false,
-		usage = L["[link/id/name] or [mouse over]"]
-	},
-	remove = {
-		type = "input",
-		name = L["Remove item from white list"],
-		set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.items) end,
-		get = false
+function module:GetOptions()
+	return {
+		whitelist = {
+			name = L["Whitelist"],
+			type = "group",
+			args = {
+				add = {
+					type = "input",
+					name = L["Add item to white list"],
+					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.items) end,
+					get = false,
+					width = "double",
+					usage = L["[link/id/name] or [mouse over]"]
+				},
+				remove = {
+					type = "input",
+					name = L["Remove item from white list"],
+					width = "double",
+					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.items) end,
+					get = false
+				}
+			}
+		}
 	}
-}
+end

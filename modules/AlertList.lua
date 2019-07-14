@@ -18,23 +18,34 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-module.cli = {
-	alert = {
-		type = "input",
-		name = L["Add item to alert list"],
-		set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.alert) end,
-		get = false
-	},
-	removeA = {
-		type = "input",
-		name = L["Remove item from alert list"],
-		set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
-		get = false
-	},
-	alertSound = {
-		type = "input",
-		name = L["Set alert sound"],
-		set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
-		get = false
+function module:GetOptions()
+	return {
+		alertlist = {
+			name = L["Alert List"],
+			type = "group",
+			args = {
+				add = {
+					type = "input",
+					name = L["Add item to alert list"],
+					width = "double",
+					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.alert) end,
+					get = false
+				},
+				remove = {
+					type = "input",
+					name = L["Remove item from alert list"],
+					width = "double",
+					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
+					get = false
+				},
+				sound = {
+					type = "input",
+					name = L["Set alert sound"],
+					width = "double",
+					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
+					get = false
+				}
+			}
+		}
 	}
-}
+end

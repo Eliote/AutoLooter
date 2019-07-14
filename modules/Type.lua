@@ -26,30 +26,39 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-local function GetSaved(defTable, itemClass, itemSubClass)
-	if not defTable then return false end
+local function SetTypeTableDb(db, type, subtype, value)
+	db.typeTable = db.typeTable or {}
+	db.typeTable[type] = db.typeTable[type] or {}
+	db.typeTable[type][subtype] = value
+end
 
-	local t = defTable[itemClass]
-	if t then return t[itemSubClass] or false end
-	return false
+local function GetTypeTableDb(db, type, subtype)
+	if (not db.typeTable) then return false end
+	if (not db.typeTable[type]) then return false end
+	return db.typeTable[type][subtype] or false
 end
 
 local function CreateAHTable(defTable)
 	local out = {}
 
 	local itemClasses = {
-		LE_ITEM_CLASS_WEAPON,
-		LE_ITEM_CLASS_ARMOR,
-		LE_ITEM_CLASS_CONTAINER,
-		LE_ITEM_CLASS_GEM,
-		LE_ITEM_CLASS_ITEM_ENHANCEMENT,
 		LE_ITEM_CLASS_CONSUMABLE,
-		LE_ITEM_CLASS_GLYPH,
+		LE_ITEM_CLASS_CONTAINER,
+		LE_ITEM_CLASS_WEAPON,
+		LE_ITEM_CLASS_GEM,
+		LE_ITEM_CLASS_ARMOR,
+		LE_ITEM_CLASS_REAGENT,
+		LE_ITEM_CLASS_PROJECTILE,
 		LE_ITEM_CLASS_TRADEGOODS,
+		LE_ITEM_CLASS_ITEM_ENHANCEMENT,
 		LE_ITEM_CLASS_RECIPE,
-		LE_ITEM_CLASS_BATTLEPET,
+		LE_ITEM_CLASS_QUIVER,
 		LE_ITEM_CLASS_QUESTITEM,
+		LE_ITEM_CLASS_KEY,
 		LE_ITEM_CLASS_MISCELLANEOUS,
+		LE_ITEM_CLASS_GLYPH,
+		LE_ITEM_CLASS_BATTLEPET,
+		LE_ITEM_CLASS_WOW_TOKEN,
 	};
 
 	for _, itemClass in pairs(itemClasses) do
@@ -60,143 +69,77 @@ local function CreateAHTable(defTable)
 		if #itemSubClasses > 0 then
 			for _, itemSubClass in pairs(itemSubClasses) do
 				local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
-				t[subclassInfo] = GetSaved(defTable, classInfo, subclassInfo)
+				t[subclassInfo] = GetTypeTableDb(defTable, classInfo, subclassInfo)
 			end
 		else
-			t[classInfo] = GetSaved(defTable, classInfo, classInfo)
+			t[classInfo] = GetTypeTableDb(defTable, classInfo, classInfo)
 		end
 
-		--t["(Legacy Types)"] = GetSaved(defTable, itemClass, "(Legacy Types)")
 		out[classInfo] = t
 	end
 
 	return out
 end
 
-
--- Config
-local AceGUI = LibStub("AceGUI-3.0")
-local tab = L["Type"]
-
-function module.GetConfigTabs()
-	return tab
-end
-
-local function DropDown_OnValueChanged(this, event, checked)
-	local data = this.userdata
-
-	data.table[this:GetText()] = checked
-	data.own:SetText(data.tableName .. " (" .. Util.CountChecked(data.table) .. ")")
-end
-
-local function SetAll(this, value)
-	local data = this.userdata
-
-	for k, v in pairs(data.table) do
-		data.table[k] = value
-
-		for _, item in data.own.pullout:IterateItems() do
-			if item.SetValue then item:SetValue(value) end
-		end
-	end
-	data.own:SetText(data.tableName .. " (" .. Util.CountChecked(data.table) .. ")")
-end
-
-local function SELECT_ALL_OnClick(this)
-	SetAll(this, true)
-end
-
-local function REMOVE_ALL_OnClick(this)
-	SetAll(this, false)
-end
-
-local function createRightWidgets()
-	local group = AceGUI:Create("SimpleGroup")
-	group:SetLayout("List")
-
-	PRIVATE_TABLE.DB.typeTable = CreateAHTable(PRIVATE_TABLE.DB.typeTable)
-
-	for k, v in Util.orderedPairs(PRIVATE_TABLE.DB.typeTable) do
-		local dropDown = AceGUI:Create("Dropdown")
-
-		for k2, v2 in Util.orderedPairs(v) do
-			local item = AceGUI:Create("Dropdown-Item-Toggle")
-			item:SetText(k2)
-			item:SetValue(v2)
-
-			item.userdata.table = v
-			item.userdata.tableName = k
-			item.userdata.own = dropDown
-			item:SetCallback("OnValueChanged", DropDown_OnValueChanged)
-
-			dropDown.pullout:AddItem(item)
-		end
-
-		dropDown.pullout:AddItem(AceGUI:Create("Dropdown-Item-Separator"))
-
-		local n = Util.CountTable(v)
-
-		if n > 1 then
-			local item = AceGUI:Create("Dropdown-Item-Execute")
-			item.userdata.table = v
-			item.userdata.tableName = k
-			item.userdata.own = dropDown
-			item:SetText(L["Select all"])
-			item:SetCallback("OnClick", SELECT_ALL_OnClick)
-
-			dropDown.pullout:AddItem(item)
-
-			item = AceGUI:Create("Dropdown-Item-Execute")
-			item.userdata.table = v
-			item.userdata.tableName = k
-			item.userdata.own = dropDown
-			item:SetText(L["Remove all"])
-			item:SetCallback("OnClick", REMOVE_ALL_OnClick)
-
-			dropDown.pullout:AddItem(item)
-		end
-
-		dropDown:SetMultiselect(true)
-
-		dropDown:SetWidth(250)
-		dropDown:SetText(k .. " (" .. Util.CountChecked(v) .. ")")
-
-		group:AddChild(dropDown)
-	end
-
-	return group
-end
-
-function module.CreateConfigGroup(container, event, group)
-	if (group == tab) then
-		local printOutType = AceGUI:Create("CheckBox")
-		printOutType:SetLabel(L["Printout items type"])
-		printOutType:SetValue(PRIVATE_TABLE.DB.printoutType)
-		printOutType:SetCallback("OnValueChanged", function(self, event, checked) PRIVATE_TABLE.DB.printoutType = Util.GetBoolean(checked) end)
-		container:AddChild(printOutType)
-
-		local ignoreGreys = AceGUI:Create("CheckBox")
-		ignoreGreys:SetLabel(L["Ignore greys when looting by type"])
-		ignoreGreys:SetValue(PRIVATE_TABLE.DB.ignoreGreys)
-		ignoreGreys:SetCallback("OnValueChanged", function(self, event, checked) PRIVATE_TABLE.DB.ignoreGreys = Util.GetBoolean(checked) end)
-		ignoreGreys:SetWidth(250)
-		container:AddChild(ignoreGreys)
-
-		container:AddChild(createRightWidgets())
-	end
-end
-
-module.cli = {
-	printoutType = {
-		type = "toggle",
-		name = L["Printout items type"],
-		set = function(info, val) PRIVATE_TABLE.DB.printoutType = Util.GetBoolean(val) end,
-		get = function(info) return PRIVATE_TABLE.DB.printoutType end
-	},
-	ignoreGreys = {
-		type = "toggle",
-		name = L["Ignore greys when looting by type"],
-		set = function(info, val) PRIVATE_TABLE.DB.ignoreGreys = Util.GetBoolean(val) end,
-		get = function(info) return PRIVATE_TABLE.DB.ignoreGreys end
+local function createOptions()
+	local options = {
+		printoutType = {
+			type = "toggle",
+			name = L["Printout items type"],
+			order = 1,
+			width = "double",
+			set = function(info, val) PRIVATE_TABLE.DB.printoutType = Util.GetBoolean(val) end,
+			get = function(info) return PRIVATE_TABLE.DB.printoutType end
+		},
+		ignoreGreys = {
+			type = "toggle",
+			name = L["Ignore greys when looting by type"],
+			order = 2,
+			width = "double",
+			set = function(info, val) PRIVATE_TABLE.DB.ignoreGreys = Util.GetBoolean(val) end,
+			get = function(info) return PRIVATE_TABLE.DB.ignoreGreys end
+		}
 	}
-}
+
+	local typeTable = CreateAHTable(PRIVATE_TABLE.DB)
+
+	for type, subtypeTable in Util.orderedPairs(typeTable) do
+		local values = {}
+
+		for subtype, _ in Util.orderedPairs(subtypeTable) do
+			values[subtype] = subtype
+		end
+
+		if (Util.CountTable(subtypeTable) > 0) then
+			options[type] = {
+				name = type,
+				type = "group",
+				cmdInline = true,
+				args = {
+					[type] = {
+						type = "multiselect",
+						name = type,
+						desc = "",
+						values = values,
+						order = 10,
+						get = function(info, key) return GetTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
+						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end
+					}
+				}
+
+			}
+		end
+	end
+
+	return options
+end
+
+function module:GetOptions()
+	return {
+		type = {
+			name = L["Type"],
+			type = "group",
+			args = createOptions()
+		}
+	}
+end

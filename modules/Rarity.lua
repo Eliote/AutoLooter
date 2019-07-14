@@ -13,38 +13,27 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-
--- Config
-local AceGUI = LibStub("AceGUI-3.0")
-local tab = L["Rarity"]
 local ConfigUI = PRIVATE_TABLE.GetTable("ConfigUI")
 
-function module.GetConfigTabs()
-	return tab
-end
-
-local function Rarity_OnValueChanged(self, event, value)
-	PRIVATE_TABLE.DB.rarity = value
-end
-
-function module.CreateConfigGroup(container, event, group)
-	if (group == tab) then
-		local rarity = AceGUI:Create("Dropdown")
-		rarity:SetList(ConfigUI.raritysMenu)
-		rarity:SetValue(PRIVATE_TABLE.DB.rarity)
-		rarity:SetCallback("OnValueChanged", Rarity_OnValueChanged)
-		rarity:SetLabel(L["Rarity"])
-		rarity:SetWidth(120)
-		container:AddChild(rarity)
-	end
-end
-
-module.cli = {
-	rarity = {
-		type = "select",
-		name = L["Rarity"],
-		values = ConfigUI.raritysMenu,
-		set = function(info, val) PRIVATE_TABLE.DB.rarity = val end,
-		get = function(info) return PRIVATE_TABLE.DB.rarity end
+function module:GetOptions()
+	return {
+		general = {
+			args = {
+				rarity = {
+					type = "select",
+					name = L["Rarity"],
+					values = {
+						[-1] = "|cFFFF0000" .. L["Off"],
+						[0] = Util.GetColorForRarity(0) .. _G["ITEM_QUALITY0_DESC"],
+						[1] = Util.GetColorForRarity(1) .. _G["ITEM_QUALITY1_DESC"],
+						[2] = Util.GetColorForRarity(2) .. _G["ITEM_QUALITY2_DESC"],
+						[3] = Util.GetColorForRarity(3) .. _G["ITEM_QUALITY3_DESC"],
+						[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
+					},
+					set = function(info, val) PRIVATE_TABLE.DB.rarity = val end,
+					get = function(info) return PRIVATE_TABLE.DB.rarity end
+				}
+			}
+		}
 	}
-}
+end

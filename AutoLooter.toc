@@ -14,7 +14,6 @@ localization/ptBR.lua
 Util.lua
 DataBroker.lua
 AutoLooter.lua
-ConfigUI.lua
 
 modules/common/ListHelper.lua
 
@@ -26,6 +25,7 @@ modules/IgnoreBOP.lua
 modules/Locked.lua
 modules/Money.lua
 modules/Price.lua
+modules/ProfileTab.lua
 modules/Quest.lua
 modules/Rarity.lua
 modules/Token.lua

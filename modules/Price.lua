@@ -14,45 +14,22 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	end
 end
 
-
--- Config
-local AceGUI = LibStub("AceGUI-3.0")
-local tab = L["Price"]
-
-function module.GetConfigTabs()
-	return tab
-end
-
-function module.CreateConfigGroup(container, event, group)
-	if (group == tab) then
-		local price = AceGUI:Create("EditBox")
-		price.editbox:SetNumeric(true)
-		price:SetMaxLetters(7)
-		price:SetText(PRIVATE_TABLE.DB.price)
-		price:SetLabel(L["Price"])
-
-		price:SetCallback("OnEnterPressed", function(self)
-			local number = tonumber(self:GetText())
-			if not number then
-				number = 0
-			end
-
-			PRIVATE_TABLE.DB.price = number
-		end)
-
-		price:SetWidth(120)
-		container:AddChild(price)
-	end
-end
-
-module.cli = {
-	price = {
-		type = "range",
-		name = L["Price (in coppers)"],
-		min = 0,
-		max = 10000000,
-		step = 1,
-		set = function(info, val) PRIVATE_TABLE.DB.price = val end,
-		get = function(info) return PRIVATE_TABLE.DB.price end
+function module:GetOptions()
+	return {
+		general = {
+			args = {
+				price = {
+					type = "range",
+					name = L["Price (in coppers)"],
+					min = 0,
+					max = 10000000,
+					softMax = 1000000,
+					step = 1,
+					width = "double",
+					set = function(info, val) PRIVATE_TABLE.DB.price = val end,
+					get = function(info) return PRIVATE_TABLE.DB.price end
+				}
+			}
+		}
 	}
-}
+end

@@ -57,64 +57,72 @@ function AUTO_LOOTER:CreateProfile()
 		type = "group",
 		name = "AutoLooter",
 		args = {
-			enable = {
-				type = "toggle",
-				name = L["Enable"],
-				set = function(info, val) AUTO_LOOTER.Enable(val) end,
-				get = function(info) return DataBase.enable end
-			},
-			printout = {
-				type = "toggle",
-				name = L["Printout items looted"],
-				set = function(info, val) DataBase.printout = Util.GetBoolean(val) end,
-				get = function(info) return DataBase.printout end
-			},
-			printoutIgnored = {
-				type = "toggle",
-				name = L["Printout items ignored"],
-				set = function(info, val) DataBase.printoutIgnored = Util.GetBoolean(val) end,
-				get = function(info) return DataBase.printoutIgnored end
-			},
-			close = {
-				type = "toggle",
-				name = L["Close after loot"],
-				set = function(info, val) DataBase.close = Util.GetBoolean(val) end,
-				get = function(info) return DataBase.close end
-			},
-			autoConfirmRoll = {
-				type = "toggle",
-				name = L["Auto confirm loot roll"],
-				set = function(info, val) DataBase.autoConfirmRoll = Util.GetBoolean(val) end,
-				get = function(info) return DataBase.autoConfirmRoll end
-			},
-			showMinimap = {
-				type = "toggle",
-				name = L["Show/Hide minimap button"],
-				set = function(info, val) Broker.SetMinimapVisibility(val) end,
-				get = function(info) return not DataBase.minimap.hide end
-			},
 			config = {
 				type = "execute",
 				name = L["Show/Hide UI"],
-				func = function() ConfigUI.CreateConfigUI() end
+				func = function() ConfigUI.CreateConfigUI() end,
+				hidden = true
+			},
+			general = {
+				name = L["General"],
+				type = "group",
+				args = {
+					enable = {
+						type = "toggle",
+						name = L["Enable"],
+						set = function(info, val) AUTO_LOOTER.Enable(val) end,
+						get = function(info) return DataBase.enable end
+					},
+					printout = {
+						type = "toggle",
+						name = L["Printout items looted"],
+						set = function(info, val) DataBase.printout = Util.GetBoolean(val) end,
+						get = function(info) return DataBase.printout end
+					},
+					printoutIgnored = {
+						type = "toggle",
+						name = L["Printout items ignored"],
+						set = function(info, val) DataBase.printoutIgnored = Util.GetBoolean(val) end,
+						get = function(info) return DataBase.printoutIgnored end
+					},
+					close = {
+						type = "toggle",
+						name = L["Close after loot"],
+						set = function(info, val) DataBase.close = Util.GetBoolean(val) end,
+						get = function(info) return DataBase.close end
+					},
+					autoConfirmRoll = {
+						type = "toggle",
+						name = L["Auto confirm loot roll"],
+						set = function(info, val) DataBase.autoConfirmRoll = Util.GetBoolean(val) end,
+						get = function(info) return DataBase.autoConfirmRoll end
+					},
+					showMinimap = {
+						type = "toggle",
+						name = L["Show/Hide minimap button"],
+						width = "double",
+						set = function(info, val) Broker.SetMinimapVisibility(val) end,
+						get = function(info) return not DataBase.minimap.hide end
+					}
+				}
 			},
 		}
 	}
 
+	self.options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	self.options.args.profile.order = -1
+
 	for _, module in pairs(MODULES) do
-		if(module.cli) then
-			for k,v in pairs(module.cli) do self.options.args[k] = v end
+		if (module.GetOptions) then
+			Util.mergeTable(self.options.args, module:GetOptions())
 		end
 	end
 
 	local AceConfig = LibStub("AceConfig-3.0")
-	AceConfig:RegisterOptionsTable("AutoLooter-Commands", self.options, { "al", "autolooter", "atl" })
-	AceConfig:RegisterOptionsTable("AutoLooter", { type = "group", name = "AutoLooter", args = self.options.args })
-	AceConfig:RegisterOptionsTable("AutoLooter-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
+	AceConfig:RegisterOptionsTable("AutoLooter", self.options, { "al", "autolooter", "atl" })
 
 	local AceDialog = LibStub("AceConfigDialog-3.0")
-	self.optionsFrame = AceDialog:AddToBlizOptions("AutoLooter", "AutoLooter")
-	self.profilesFrame = AceDialog:AddToBlizOptions("AutoLooter-Profiles", "Profiles", "AutoLooter")
+	self.optionsFrame = AceDialog:AddToBlizOptions("AutoLooter")
 
 	Broker.Init()
 end
@@ -152,7 +160,7 @@ function AUTO_LOOTER:OnInitialize()
 
 	for n in pairs(MODULES) do
 		table.insert(sortedModules, n)
-		if(MODULES[n].CanLoot) then
+		if (MODULES[n].CanLoot) then
 			table.insert(sortedLootModules, n)
 		end
 	end
