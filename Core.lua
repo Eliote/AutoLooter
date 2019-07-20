@@ -1,5 +1,4 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-PRIVATE_TABLE.AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
 PRIVATE_TABLE.MODULES = {}
 
 setmetatable(PRIVATE_TABLE, {

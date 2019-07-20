@@ -78,6 +78,11 @@ function Util.orderedNext(t, state)
 	return
 end
 
+-- iterate [indexes] from [table] using the [indexes] order
+function Util.pairsFromIndexes(table, indexes)
+	return Util.orderedNext, table, indexes
+end
+
 function Util.orderedPairs(t)
 	-- Equivalent of the pairs() function on tables. Allows to iterate
 	-- in order

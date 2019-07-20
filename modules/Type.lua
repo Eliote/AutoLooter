@@ -81,6 +81,12 @@ local function CreateAHTable(defTable)
 	return out
 end
 
+local function SetAll(table, value)
+	for k, v in pairs(table) do
+		table[k] = value
+	end
+end
+
 local function createOptions()
 	local options = {
 		printoutType = {
@@ -114,19 +120,25 @@ local function createOptions()
 			options[type] = {
 				name = type,
 				type = "group",
-				cmdInline = true,
 				args = {
-					[type] = {
+					all = {
+						type = "execute",
+						name = L["Select all"],
+						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], true) end
+					},
+					none = {
+						type = "execute",
+						name = L["Remove all"],
+						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], false) end
+					},
+					toggle = {
 						type = "multiselect",
 						name = type,
-						desc = "",
 						values = values,
-						order = 10,
 						get = function(info, key) return GetTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
 						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end
-					}
+					},
 				}
-
 			}
 		end
 	end

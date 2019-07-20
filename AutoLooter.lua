@@ -6,8 +6,9 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
+local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
+
 local L = PRIVATE_TABLE.L
-local AUTO_LOOTER = PRIVATE_TABLE.AUTO_LOOTER
 local DataBase = PRIVATE_TABLE.DB
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
@@ -22,22 +23,21 @@ local GetLootSlotInfo = GetLootSlotInfo
 local GetLootSlotLink = GetLootSlotLink
 local LootSlot = LootSlot
 local ConfirmLootSlot = ConfirmLootSlot
-local ConfirmLootRoll = ConfirmLootRoll
 --
 
 local sortedLootModules = {}
 local sortedModules = {}
 
-function AUTO_LOOTER.Enable(bool)
+function AUTO_LOOTER.Toggle(bool)
 	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
 
 	if DataBase.enable then
-		AUTO_LOOTER:RegisterEvent("CONFIRM_LOOT_ROLL")
+		AUTO_LOOTER:Enable()
 		AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
 		DataBase.enable = true
 		print(L["Enabled"])
 	else
-		AUTO_LOOTER:UnregisterEvent("CONFIRM_LOOT_ROLL")
+		AUTO_LOOTER:Disable()
 		AUTO_LOOTER:UnregisterEvent("LOOT_OPENED")
 		DataBase.enable = false
 		print(L["Disabled"])
@@ -48,7 +48,7 @@ function AUTO_LOOTER:ReloadOptions()
 	PRIVATE_TABLE.DB = self.db.profile
 	DataBase = PRIVATE_TABLE.DB
 
-	AUTO_LOOTER.Enable(DataBase.enable)
+	AUTO_LOOTER.Toggle(DataBase.enable)
 end
 
 function AUTO_LOOTER:CreateProfile()
@@ -65,46 +65,8 @@ function AUTO_LOOTER:CreateProfile()
 			general = {
 				name = L["General"],
 				type = "group",
-				args = {
-					enable = {
-						type = "toggle",
-						name = L["Enable"],
-						set = function(info, val) AUTO_LOOTER.Enable(val) end,
-						get = function(info) return DataBase.enable end
-					},
-					printout = {
-						type = "toggle",
-						name = L["Printout items looted"],
-						set = function(info, val) DataBase.printout = Util.GetBoolean(val) end,
-						get = function(info) return DataBase.printout end
-					},
-					printoutIgnored = {
-						type = "toggle",
-						name = L["Printout items ignored"],
-						set = function(info, val) DataBase.printoutIgnored = Util.GetBoolean(val) end,
-						get = function(info) return DataBase.printoutIgnored end
-					},
-					close = {
-						type = "toggle",
-						name = L["Close after loot"],
-						set = function(info, val) DataBase.close = Util.GetBoolean(val) end,
-						get = function(info) return DataBase.close end
-					},
-					autoConfirmRoll = {
-						type = "toggle",
-						name = L["Auto confirm loot roll"],
-						set = function(info, val) DataBase.autoConfirmRoll = Util.GetBoolean(val) end,
-						get = function(info) return DataBase.autoConfirmRoll end
-					},
-					showMinimap = {
-						type = "toggle",
-						name = L["Show/Hide minimap button"],
-						width = "double",
-						set = function(info, val) Broker.SetMinimapVisibility(val) end,
-						get = function(info) return not DataBase.minimap.hide end
-					}
-				}
-			},
+				args = {}
+			}
 		}
 	}
 
@@ -220,12 +182,5 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 
 	for reason, contents in pairs(reasonMap) do
 		PrintReason(reason, contents)
-	end
-end
-
--- CONFIRM_LOOT_ROLL
-function AUTO_LOOTER:CONFIRM_LOOT_ROLL(_, id, rolltype)
-	if DataBase.autoConfirmRoll then
-		ConfirmLootRoll(id, rolltype)
 	end
 end
