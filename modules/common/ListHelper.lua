@@ -1,7 +1,7 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
+local ADDON_NAME, PRIVATE_TABLE = ...
 
-local L = PRIVATE_TABLE.GetTable("L")
-local ListHelper = PRIVATE_TABLE.GetTable("ListHelper")
+local L = PRIVATE_TABLE.L
+local ListHelper = PRIVATE_TABLE.ListHelper
 local Util = AutoLooter:GetUtil()
 local Color = AutoLooter:GetColorTable()
 

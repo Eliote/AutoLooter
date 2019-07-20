@@ -7,8 +7,8 @@
 -- ç : \195\167                                    œ : \197\147
 -- Ä : \195\132    Ö : \195\150    Ü : \195\156    ß : \195\159
 
-local ADDON_NAME, PRIVATE_TABLE = ...;
-local L = PRIVATE_TABLE.GetTable("L")
+local ADDON_NAME, PRIVATE_TABLE = ...
+local L = PRIVATE_TABLE.L
 
 if GetLocale() == "ptBR" then
 	L["Select all"] = "Selecionar todos"

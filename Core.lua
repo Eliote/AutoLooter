@@ -1,19 +1,15 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
+local ADDON_NAME, PRIVATE_TABLE = ...
 PRIVATE_TABLE.AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
-PRIVATE_TABLE.MODULES = {
-	-- CanLoot(GetLootSlotInfo(index)), Finish()
-}
+PRIVATE_TABLE.MODULES = {}
 
-PRIVATE_TABLE.GetTable = function(tableName)
-	if not PRIVATE_TABLE[tableName] then
-		PRIVATE_TABLE[tableName] = {}
+setmetatable(PRIVATE_TABLE, {
+	__index = function(table, key)
+		table[key] = {}
+		return table[key]
 	end
+})
 
-	return PRIVATE_TABLE[tableName]
-end
-
-
-local L = PRIVATE_TABLE.GetTable("L")
+local L = PRIVATE_TABLE.L
 local function defaultFunc(L, key)
 	-- If this function was called, we have no localization for this key.
 	-- We could complain loudly to allow localizers to see the error of their ways,
@@ -35,9 +31,9 @@ function AutoLooter:NewLootModule(priority)
 end
 
 function AutoLooter:GetColorTable()
-	return PRIVATE_TABLE.GetTable("Color")
+	return PRIVATE_TABLE.Color
 end
 
 function AutoLooter:GetUtil()
-	return PRIVATE_TABLE.GetTable("Util")
+	return PRIVATE_TABLE.Util
 end

@@ -1,5 +1,5 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.GetTable("L")
+local L = PRIVATE_TABLE.L
 
 local Color = AutoLooter:GetColorTable()
 local Util = AutoLooter:GetUtil()

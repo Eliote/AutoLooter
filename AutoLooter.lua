@@ -6,14 +6,13 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
-local L = PRIVATE_TABLE.GetTable("L")
-local ConfigUI = PRIVATE_TABLE.GetTable("ConfigUI")
-local AUTO_LOOTER = PRIVATE_TABLE.GetTable("AUTO_LOOTER")
-local DataBase = PRIVATE_TABLE.GetTable("DB")
-local Util = PRIVATE_TABLE.GetTable("Util")
-local Color = PRIVATE_TABLE.GetTable("Color")
-local MODULES = PRIVATE_TABLE.GetTable("MODULES")
-local Broker = PRIVATE_TABLE.GetTable("Broker")
+local L = PRIVATE_TABLE.L
+local AUTO_LOOTER = PRIVATE_TABLE.AUTO_LOOTER
+local DataBase = PRIVATE_TABLE.DB
+local Util = PRIVATE_TABLE.Util
+local Color = PRIVATE_TABLE.Color
+local MODULES = PRIVATE_TABLE.MODULES
+local Broker = PRIVATE_TABLE.Broker
 
 local print = Util.print
 
@@ -60,7 +59,7 @@ function AUTO_LOOTER:CreateProfile()
 			config = {
 				type = "execute",
 				name = L["Show/Hide UI"],
-				func = function() ConfigUI.CreateConfigUI() end,
+				func = function() LibStub("AceConfigDialog-3.0"):Open(ADDON_NAME) end,
 				hidden = true
 			},
 			general = {

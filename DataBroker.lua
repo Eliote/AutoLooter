@@ -1,9 +1,9 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 
-local L = PRIVATE_TABLE.GetTable("L")
-local Util = PRIVATE_TABLE.GetTable("Util")
-local Color = PRIVATE_TABLE.GetTable("Color")
-local Broker = PRIVATE_TABLE.GetTable("Broker")
+local L = PRIVATE_TABLE.L
+local Util = PRIVATE_TABLE.Util
+local Color = PRIVATE_TABLE.Color
+local Broker = PRIVATE_TABLE.Broker
 
 local print = Util.print
 

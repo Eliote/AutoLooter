@@ -1,5 +1,5 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.GetTable("L")
+local L = PRIVATE_TABLE.L
 
 local Color = AutoLooter:GetColorTable()
 local Util = AutoLooter:GetUtil()
@@ -12,8 +12,6 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
 	end
 end
-
-local ConfigUI = PRIVATE_TABLE.GetTable("ConfigUI")
 
 function module:GetOptions()
 	return {

@@ -1,8 +1,8 @@
-local ADDON_NAME, PRIVATE_TABLE = ...;
-local Util = PRIVATE_TABLE.GetTable("Util")
-local L = PRIVATE_TABLE.GetTable("L")
+local ADDON_NAME, PRIVATE_TABLE = ...
+local Util = PRIVATE_TABLE.Util
+local L = PRIVATE_TABLE.L
 
-local Color = PRIVATE_TABLE.GetTable("Color")
+local Color = PRIVATE_TABLE.Color
 Color.BLUE = "|cFF29E0E7"
 Color.DARK_BLUE = "|cFF3044D0"
 Color.PURPLE = "|cFFB737E7"
@@ -13,27 +13,27 @@ Color.GREEN = "|cFF3DDC53"
 Color.PINK = "|cFFDC5272"
 Color.ORANGE = "|cFFE77324"
 
-Color.OURO = "|cFFFFFF00"
-Color.PRATA = "|cFFCCCCCC"
-Color.BRONZE = "|cFFFF6600"
+Color.GOLD = "|cFFFFFF00"
+Color.SILVER = "|cFFCCCCCC"
+Color.COPPER = "|cFFFF6600"
 
-local ICO_OURO = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
-local ICO_PRATA = "|TInterface\\MoneyFrame\\UI-SilverIcon:0|t"
-local ICO_BRONZE = "|TInterface\\MoneyFrame\\UI-CopperIcon:0|t"
+local ICO_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
+local ICO_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:0|t"
+local ICO_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:0|t"
 
 function Util.formatGold(value, cor, somenteMaior)
 	local text = ""
 
 	if not somenteMaior or value >= 10000 then
-		text = text .. (cor or Color.OURO) .. math.floor(value / 10000) .. ICO_OURO .. "|r "
+		text = text .. (cor or Color.GOLD) .. math.floor(value / 10000) .. ICO_GOLD .. "|r "
 	end
 
 	if not somenteMaior or (value >= 100 and value < 10000) then
-		text = text .. (cor or Color.PRATA) .. math.floor((value / 100) % 100) .. ICO_PRATA .. "|r "
+		text = text .. (cor or Color.SILVER) .. math.floor((value / 100) % 100) .. ICO_SILVER .. "|r "
 	end
 
 	if not somenteMaior or (value < 100) then
-		text = text .. (cor or Color.BRONZE) .. math.floor(value % 100) .. ICO_BRONZE .. "|r"
+		text = text .. (cor or Color.COPPER) .. math.floor(value % 100) .. ICO_COPPER .. "|r"
 	end
 
 	text = trim(text)
