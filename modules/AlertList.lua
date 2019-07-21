@@ -1,6 +1,6 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.L
 
+local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local ListHelper = PRIVATE_TABLE.ListHelper
 
 local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("AlertList", "AceEvent-3.0")
@@ -44,7 +44,7 @@ function module:GetOptions()
 					name = L["Set alert sound"],
 					width = "double",
 					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
-					get = false
+					get = function(info) return PRIVATE_TABLE.DB.alertSound end,
 				}
 			}
 		}

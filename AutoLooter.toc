@@ -9,7 +9,7 @@ embeds.xml
 
 Core.lua
 
-localization\ptBR.lua
+localization\localization.xml
 
 Util.lua
 AutoLooter.lua

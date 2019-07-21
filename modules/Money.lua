@@ -1,6 +1,6 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.L
 
+local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
 
 local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("Money", "AceEvent-3.0")

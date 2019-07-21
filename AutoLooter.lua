@@ -8,7 +8,7 @@ local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
 local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
 
-local L = PRIVATE_TABLE.L
+local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local DataBase = PRIVATE_TABLE.DB
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
@@ -58,6 +58,7 @@ function AUTO_LOOTER:CreateProfile()
 				hidden = true
 			},
 			general = {
+				order = 0,
 				name = L["General"],
 				type = "group",
 				args = {}

@@ -1,8 +1,7 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.L
 
+local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local ListHelper = PRIVATE_TABLE.ListHelper
-
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 

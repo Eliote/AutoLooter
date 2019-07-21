@@ -1,6 +1,6 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
-local L = PRIVATE_TABLE.L
 
+local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
@@ -22,6 +22,7 @@ function module:GetOptions()
 				rarity = {
 					type = "select",
 					name = L["Rarity"],
+					order = 1001,
 					values = {
 						[-1] = "|cFFFF0000" .. L["Off"],
 						[0] = Util.GetColorForRarity(0) .. _G["ITEM_QUALITY0_DESC"],
