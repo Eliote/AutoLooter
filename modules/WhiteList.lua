@@ -3,10 +3,12 @@ local L = PRIVATE_TABLE.L
 
 local ListHelper = PRIVATE_TABLE.ListHelper
 
-local Color = AutoLooter:GetColorTable()
-local Util = AutoLooter:GetUtil()
+local Color = PRIVATE_TABLE.Color
+local Util = PRIVATE_TABLE.Util
 
-local module = AutoLooter:NewLootModule(400)
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("WhiteList", "AceEvent-3.0")
+module.priority = 400
+
 local reason = Color.GREEN .. L["Listed"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)

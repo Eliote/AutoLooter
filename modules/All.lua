@@ -1,10 +1,12 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.L
 
-local Color = AutoLooter:GetColorTable()
-local Util = AutoLooter:GetUtil()
+local Color = PRIVATE_TABLE.Color
+local Util = PRIVATE_TABLE.Util
 
-local module = AutoLooter:NewLootModule(100000)
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("All", "AceEvent-3.0")
+module.priority = 100000
+
 local reason = Color.GREEN .. L["All"]
 local reasonLog = Color.ORANGE .. L["Ignored"]
 

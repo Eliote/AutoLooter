@@ -12,7 +12,6 @@ local L = PRIVATE_TABLE.L
 local DataBase = PRIVATE_TABLE.DB
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
-local MODULES = PRIVATE_TABLE.MODULES
 local Broker = PRIVATE_TABLE.Broker
 
 local print = Util.print
@@ -24,9 +23,6 @@ local GetLootSlotLink = GetLootSlotLink
 local LootSlot = LootSlot
 local ConfirmLootSlot = ConfirmLootSlot
 --
-
-local sortedLootModules = {}
-local sortedModules = {}
 
 function AUTO_LOOTER.Toggle(bool)
 	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
@@ -73,7 +69,7 @@ function AUTO_LOOTER:CreateProfile()
 	self.options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	self.options.args.profile.order = -1
 
-	for _, module in pairs(MODULES) do
+	for _, module in AUTO_LOOTER:IterateModules() do
 		if (module.GetOptions) then
 			Util.mergeTable(self.options.args, module:GetOptions())
 		end
@@ -119,15 +115,6 @@ function AUTO_LOOTER:OnInitialize()
 	AUTO_LOOTER:ReloadOptions()
 	AUTO_LOOTER:CreateProfile()
 
-	for n in pairs(MODULES) do
-		table.insert(sortedModules, n)
-		if (MODULES[n].CanLoot) then
-			table.insert(sortedLootModules, n)
-		end
-	end
-	table.sort(sortedModules)
-	table.sort(sortedLootModules)
-
 	DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
 end
 
@@ -147,6 +134,30 @@ local function PrintReason(reason, contents)
 	print(reason, "|r: ", items)
 end
 
+function AUTO_LOOTER:SortedModulesIterator(lootOnly)
+	local sortTable = {}
+	local modules = {}
+	for name, module in self:IterateModules() do
+		if(not lootOnly or module.CanLoot) then
+			table.insert(sortTable, name)
+			modules[name] = module
+		end
+	end
+	table.sort(sortTable, function(o1, o2) return (modules[o1].priority or 99999999) < (modules[o2].priority or 99999999) end)
+
+	local i = 0
+	local iterator = function()
+		i = i + 1
+		if (sortTable[i] == nil) then
+			return nil
+		else
+			return sortTable[i], modules[sortTable[i]]
+		end
+	end
+
+	return iterator
+end
+
 -- LOOT OPENED
 function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	if (arg1 == 1) then return end
@@ -157,8 +168,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
 		local sItemLink = GetLootSlotLink(nIndex)
 
-		for k, moduleIndex in ipairs(sortedLootModules) do
-			local module = MODULES[moduleIndex]
+		for _, module in self:SortedModulesIterator(true) do
 			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
 			if (reason) then
@@ -175,8 +185,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		end
 	end
 
-	for _, moduleIndex in ipairs(sortedModules) do
-		local module = MODULES[moduleIndex]
+	for _, module in self:SortedModulesIterator() do
 		if (module.Finish) then module.Finish() end
 	end
 

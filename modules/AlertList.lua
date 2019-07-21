@@ -3,7 +3,8 @@ local L = PRIVATE_TABLE.L
 
 local ListHelper = PRIVATE_TABLE.ListHelper
 
-local module = AutoLooter:NewLootModule(1)
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("AlertList", "AceEvent-3.0")
+module.priority = 1
 
 local PlaySoundFile = PlaySoundFile
 local RaidNotice_AddMessage = RaidNotice_AddMessage

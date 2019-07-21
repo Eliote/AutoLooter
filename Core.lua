@@ -18,21 +18,3 @@ local function defaultFunc(L, key)
 end
 
 setmetatable(L, { __index = defaultFunc });
-
-AutoLooter = {}
-
-function AutoLooter:NewLootModule(priority)
-	local newMobule = {}
-
-	table.insert(PRIVATE_TABLE.MODULES, priority or 999999999, newMobule)
-
-	return newMobule
-end
-
-function AutoLooter:GetColorTable()
-	return PRIVATE_TABLE.Color
-end
-
-function AutoLooter:GetUtil()
-	return PRIVATE_TABLE.Util
-end

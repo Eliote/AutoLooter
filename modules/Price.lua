@@ -1,10 +1,12 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.L
 
-local Color = AutoLooter:GetColorTable()
-local Util = AutoLooter:GetUtil()
+local Color = PRIVATE_TABLE.Color
+local Util = PRIVATE_TABLE.Util
 
-local module = AutoLooter:NewLootModule(1000)
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("Price", "AceEvent-3.0")
+module.priority = 1000
+
 local reason = Color.GREEN .. L["Price"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)

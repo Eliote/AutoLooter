@@ -2,8 +2,8 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 
 local L = PRIVATE_TABLE.L
 local ListHelper = PRIVATE_TABLE.ListHelper
-local Util = AutoLooter:GetUtil()
-local Color = AutoLooter:GetColorTable()
+local Util = PRIVATE_TABLE.Util
+local Color = PRIVATE_TABLE.Color
 
 function ListHelper.AddItem(sTitle, list)
 	if not sTitle or sTitle == "" then

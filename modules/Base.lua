@@ -3,7 +3,7 @@ local L = PRIVATE_TABLE.L
 
 local Util = PRIVATE_TABLE.Util
 
-local module = AutoLooter:NewLootModule()
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("Base", "AceEvent-3.0")
 
 function module:GetOptions()
 	return {
