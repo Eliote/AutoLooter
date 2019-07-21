@@ -3,9 +3,10 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 local L = PRIVATE_TABLE.L
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
-local Broker = PRIVATE_TABLE.Broker
 
 local print = Util.print
+
+local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("DataBroker")
 
 -- thanks to Pseudopath "http://wow.curseforge.com/profiles/Pseudopath/"
 local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(ADDON_NAME, {
@@ -31,11 +32,7 @@ function AL_LDB.OnClick(self, button)
 	end
 end
 
-function Broker.Init()
-	LDBIcon:Register(ADDON_NAME, AL_LDB, PRIVATE_TABLE.DB.minimap)
-end
-
-function Broker.SetMinimapVisibility(show)
+function module.SetMinimapVisibility(show)
 	PRIVATE_TABLE.DB.minimap.hide = not show
 
 	if (show) then
@@ -43,4 +40,24 @@ function Broker.SetMinimapVisibility(show)
 	else
 		LDBIcon:Hide(ADDON_NAME)
 	end
+end
+
+function module:GetOptions()
+	return {
+		general = {
+			args = {
+				showMinimap = {
+					type = "toggle",
+					name = L["Show/Hide minimap button"],
+					width = "double",
+					set = function(info, val) module.SetMinimapVisibility(val) end,
+					get = function(info) return not PRIVATE_TABLE.DB.minimap.hide end
+				}
+			}
+		},
+	}
+end
+
+function module:OnInitialize()
+	LDBIcon:Register(ADDON_NAME, AL_LDB, PRIVATE_TABLE.DB.minimap)
 end

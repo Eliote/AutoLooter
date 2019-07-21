@@ -12,7 +12,6 @@ local L = PRIVATE_TABLE.L
 local DataBase = PRIVATE_TABLE.DB
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
-local Broker = PRIVATE_TABLE.Broker
 
 local print = Util.print
 
@@ -80,8 +79,6 @@ function AUTO_LOOTER:CreateProfile()
 
 	local AceDialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrame = AceDialog:AddToBlizOptions("AutoLooter")
-
-	Broker.Init()
 end
 
 function AUTO_LOOTER:OnInitialize()

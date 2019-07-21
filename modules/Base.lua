@@ -32,13 +32,6 @@ function module:GetOptions()
 					name = L["Close after loot"],
 					set = function(info, val) PRIVATE_TABLE.DB.close = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.close end
-				},
-				showMinimap = {
-					type = "toggle",
-					name = L["Show/Hide minimap button"],
-					width = "double",
-					set = function(info, val) PRIVATE_TABLE.Broker.SetMinimapVisibility(val) end,
-					get = function(info) return not PRIVATE_TABLE.DB.minimap.hide end
 				}
 			}
 		},
