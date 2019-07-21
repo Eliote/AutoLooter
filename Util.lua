@@ -41,52 +41,34 @@ function Util.formatGold(value, cor, somenteMaior)
 	return text
 end
 
-function Util.__genOrderedIndex(t)
-	local orderedIndex = {}
-	for key in pairs(t) do
-		table.insert(orderedIndex, key)
-	end
-	table.sort(orderedIndex)
-	return orderedIndex
-end
+function Util.orderedPairs(t, sortFunction, exclusionFunction)
+	local sortTable = {}
 
-function Util.orderedNext(t, state)
-	-- Equivalent of the next function, but returns the keys in the alphabetic
-	-- order. We use a temporary ordered key table that is stored in the
-	-- table being iterated.
-
-	local key
-	if state == nil then
-		-- the first time, generate the index
-		t.__orderedIndex = Util.__genOrderedIndex(t)
-		key = t.__orderedIndex[1]
+	local iNext, iTable
+	if (type(t) == "function") then
+		iNext, iTable = t()
 	else
-		-- fetch the next value
-		for i = 1, table.getn(t.__orderedIndex) do
-			if t.__orderedIndex[i] == state then
-				key = t.__orderedIndex[i + 1]
-			end
+		iNext, iTable = pairs(t)
+	end
+
+	for key, value in iNext, iTable do
+		if (not exclusionFunction or exclusionFunction(key, value)) then
+			table.insert(sortTable, key)
+		end
+	end
+	table.sort(sortTable, sortFunction)
+
+	local i = 0
+	local iterator = function()
+		i = i + 1
+		if (sortTable[i] == nil) then
+			return nil
+		else
+			return sortTable[i], iTable[sortTable[i]]
 		end
 	end
 
-	if key then
-		return key, t[key]
-	end
-
-	-- no more value to return, cleanup
-	t.__orderedIndex = nil
-	return
-end
-
--- iterate [indexes] from [table] using the [indexes] order
-function Util.pairsFromIndexes(table, indexes)
-	return Util.orderedNext, table, indexes
-end
-
-function Util.orderedPairs(t)
-	-- Equivalent of the pairs() function on tables. Allows to iterate
-	-- in order
-	return Util.orderedNext, t, nil
+	return iterator
 end
 
 function Util.CountTable(t)

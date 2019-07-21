@@ -135,27 +135,18 @@ local function PrintReason(reason, contents)
 end
 
 function AUTO_LOOTER:SortedModulesIterator(lootOnly)
-	local sortTable = {}
-	local modules = {}
-	for name, module in self:IterateModules() do
-		if(not lootOnly or module.CanLoot) then
-			table.insert(sortTable, name)
-			modules[name] = module
+	local function sort(o1, o2)
+		return (self:GetModule(o1).priority or 99999999) < (self:GetModule(o2).priority or 99999999)
+	end
+	local exclusion
+	if(lootOnly) then
+		exclusion = function(key, module)
+			return module.CanLoot
 		end
 	end
-	table.sort(sortTable, function(o1, o2) return (modules[o1].priority or 99999999) < (modules[o2].priority or 99999999) end)
+	local function iterator() return self:IterateModules() end
 
-	local i = 0
-	local iterator = function()
-		i = i + 1
-		if (sortTable[i] == nil) then
-			return nil
-		else
-			return sortTable[i], modules[sortTable[i]]
-		end
-	end
-
-	return iterator
+	return Util.orderedPairs(iterator, sort, exclusion)
 end
 
 -- LOOT OPENED
