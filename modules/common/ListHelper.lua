@@ -54,3 +54,11 @@ function ListHelper.RemoveItem(sTitle, list)
 
 	Util.print(L["Not listed"], ": ", Color.YELLOW, sName)
 end
+
+function ListHelper.ListToString(list)
+	local text = ""
+	for k, _ in pairs(list) do
+		text = text .. k .. '\n'
+	end
+	return text
+end

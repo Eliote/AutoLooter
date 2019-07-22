@@ -25,26 +25,45 @@ function module:GetOptions()
 			name = L["Alert List"],
 			type = "group",
 			args = {
+				info = {
+					type = "header",
+					name = L["You can drag & drop items here!"],
+					order = 0,
+					hidden = true,
+					dialogHidden = false,
+				},
 				add = {
 					type = "input",
 					name = L["Add item to alert list"],
-					width = "double",
+					width = "full",
 					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.alert) end,
-					get = false
+					get = false,
+					order = 1,
 				},
 				remove = {
 					type = "input",
 					name = L["Remove item from alert list"],
-					width = "double",
+					width = "full",
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
-					get = false
+					get = false,
+					order = 2,
 				},
 				sound = {
 					type = "input",
 					name = L["Set alert sound"],
-					width = "double",
+					width = "full",
 					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
 					get = function(info) return PRIVATE_TABLE.DB.alertSound end,
+					order = 3,
+				},
+				list = {
+					type = "input",
+					name = L["Items list"],
+					multiline = 13,
+					set = false,
+					get = function(info) return ListHelper.ListToString(PRIVATE_TABLE.DB.alert) end,
+					width = "full",
+					order = -1
 				}
 			}
 		}

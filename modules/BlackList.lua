@@ -26,20 +26,38 @@ function module:GetOptions()
 			name = L["Blacklist"],
 			type = "group",
 			args = {
+				info = {
+					type = "header",
+					name = L["You can drag & drop items here!"],
+					order = 0,
+					hidden = true,
+					dialogHidden = false,
+				},
 				add = {
 					type = "input",
 					name = L["Add item to ignore list"],
-					width = "double",
+					width = "full",
 					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.ignore) end,
-					get = false
+					get = false,
+					order = 1,
 				},
 				remove = {
 					type = "input",
 					name = L["Remove item from ignore list"],
-					width = "double",
+					width = "full",
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
-					get = false
+					get = false,
+					order = 2,
 				},
+				list = {
+					type = "input",
+					name = L["Items list"],
+					multiline = 13,
+					set = false,
+					get = function(info) return ListHelper.ListToString(PRIVATE_TABLE.DB.ignore) end,
+					width = "full",
+					order = -1
+				}
 			}
 		}
 	}

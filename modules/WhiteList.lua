@@ -22,20 +22,38 @@ function module:GetOptions()
 			name = L["Whitelist"],
 			type = "group",
 			args = {
+				info = {
+					type = "header",
+					name = L["You can drag & drop items here!"],
+					hidden = true,
+					dialogHidden = false,
+					order = 0
+				},
 				add = {
 					type = "input",
 					name = L["Add item to white list"],
 					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.items) end,
 					get = false,
-					width = "double",
-					usage = L["[link/id/name] or [mouse over]"]
+					width = "full",
+					usage = L["[link/id/name] or [mouse over]"],
+					order = 1,
 				},
 				remove = {
 					type = "input",
 					name = L["Remove item from white list"],
-					width = "double",
+					width = "full",
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.items) end,
-					get = false
+					get = false,
+					order = 2,
+				},
+				list = {
+					type = "input",
+					name = L["Items list"],
+					multiline = 13,
+					set = false,
+					get = function(info) return ListHelper.ListToString(PRIVATE_TABLE.DB.items) end,
+					width = "full",
+					order = -1
 				}
 			}
 		}

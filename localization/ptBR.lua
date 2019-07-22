@@ -78,4 +78,7 @@ L["General"] = "Geral"
 L["Alert List"] = "Lista de Alertas"
 L["Blacklist"] = "Lista Negra"
 L["Whitelist"] = "Lista Branca"
+
+L["Items list"] = "Lista de itens"
+L["You can drag & drop items here!"] = "Você pode arrastar e soltar itens aqui!"
 --@end-debug@
