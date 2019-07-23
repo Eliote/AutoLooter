@@ -3,3 +3,5 @@ package-as: AutoLooter
 ignore:
     - .gitignore
 
+manual-changelog:
+    markup-type: markdown
