@@ -4,4 +4,5 @@ ignore:
     - .gitignore
 
 manual-changelog:
+    filename: CHANGELOG.txt
     markup-type: markdown
