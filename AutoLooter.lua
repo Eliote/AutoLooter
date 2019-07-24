@@ -137,7 +137,7 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 		return (self:GetModule(o1).priority or 99999999) < (self:GetModule(o2).priority or 99999999)
 	end
 	local exclusion
-	if(lootOnly) then
+	if (lootOnly) then
 		exclusion = function(key, module)
 			return module.CanLoot
 		end
@@ -152,6 +152,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 	if (arg1 == 1) then return end
 
 	local reasonMap = {}
+	local printReason = PRIVATE_TABLE.DB.printout
 
 	for nIndex = 1, GetNumLootItems() do
 		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
@@ -160,7 +161,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		for _, module in self:SortedModulesIterator(true) do
 			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
-			if (reason) then
+			if (printReason and reason) then
 				reasonMap[reason] = reasonMap[reason] or {}
 				table.insert(reasonMap[reason], reasonContent)
 			end
