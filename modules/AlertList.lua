@@ -3,6 +3,7 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local ListHelper = PRIVATE_TABLE.ListHelper
 local Util = PRIVATE_TABLE.Util
+local WidgetLists = AceGUIWidgetLSMlists
 
 local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("AlertList", "AceEvent-3.0")
 module.priority = 1
@@ -14,7 +15,11 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	local id = Util.getId(link)
 	if (PRIVATE_TABLE.DB.alert[id] or PRIVATE_TABLE.DB.alert[sTitle]) then
 		if PRIVATE_TABLE.DB.alertSound then
-			PlaySoundFile(PRIVATE_TABLE.DB.alertSound) -- safe
+			local sound = PRIVATE_TABLE.DB.alertSound
+			if (WidgetLists.sound[PRIVATE_TABLE.DB.alertSound]) then
+				sound = WidgetLists.sound[PRIVATE_TABLE.DB.alertSound]
+			end
+			pcall(PlaySoundFile, sound) -- safe
 		end
 
 		RaidNotice_AddMessage(RaidWarningFrame, link, ChatTypeInfo["RAID_WARNING"])
@@ -44,7 +49,7 @@ function module:GetOptions()
 				},
 				remove = {
 					type = "select",
-					name =  L["Remove item from alert list"],
+					name = L["Remove item from alert list"],
 					width = "full",
 					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.alert) end,
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
@@ -52,9 +57,11 @@ function module:GetOptions()
 					order = 2,
 				},
 				sound = {
-					type = "input",
+					type = "select",
 					name = L["Set alert sound"],
 					width = "full",
+					dialogControl = "LSM30_Sound",
+					values = WidgetLists.sound,
 					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
 					get = function(info) return PRIVATE_TABLE.DB.alertSound end,
 					order = 3,
