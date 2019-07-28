@@ -43,22 +43,14 @@ function module:GetOptions()
 					order = 1,
 				},
 				remove = {
-					type = "input",
-					name = L["Remove item from ignore list"],
+					type = "select",
+					name =  L["Remove item from ignore list"],
 					width = "full",
+					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.ignore) end,
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
-					get = false,
+					get = function(info) end,
 					order = 2,
 				},
-				list = {
-					type = "input",
-					name = L["Items list"],
-					multiline = 13,
-					set = false,
-					get = function(info) return ListHelper.ListToString(PRIVATE_TABLE.DB.ignore) end,
-					width = "full",
-					order = -1
-				}
 			}
 		}
 	}

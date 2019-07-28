@@ -43,11 +43,12 @@ function module:GetOptions()
 					order = 1,
 				},
 				remove = {
-					type = "input",
-					name = L["Remove item from alert list"],
+					type = "select",
+					name =  L["Remove item from alert list"],
 					width = "full",
+					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.alert) end,
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
-					get = false,
+					get = function(info) end,
 					order = 2,
 				},
 				sound = {
@@ -57,15 +58,6 @@ function module:GetOptions()
 					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
 					get = function(info) return PRIVATE_TABLE.DB.alertSound end,
 					order = 3,
-				},
-				list = {
-					type = "input",
-					name = L["Items list"],
-					multiline = 13,
-					set = false,
-					get = function(info) return ListHelper.ListToString(PRIVATE_TABLE.DB.alert) end,
-					width = "full",
-					order = -1
 				}
 			}
 		}
