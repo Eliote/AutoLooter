@@ -11,7 +11,8 @@ module.priority = 500
 local reason = Color.ORANGE .. L["Ignored"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if (PRIVATE_TABLE.DB.ignore[sTitle]) then
+	local id = Util.getId(link)
+	if (PRIVATE_TABLE.DB.ignore[id] or PRIVATE_TABLE.DB.ignore[sTitle]) then
 		if (PRIVATE_TABLE.DB.printoutIgnored) then
 			return false, reason, "(List)" .. Util.GetItemText(icon, link, nQuantity), true
 		else

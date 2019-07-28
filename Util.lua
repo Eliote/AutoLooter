@@ -147,3 +147,11 @@ function Util.mergeTable(t1, t2)
 	end
 	return t1
 end
+
+function Util.getId(itemLinkOrId)
+	if (tonumber(itemLinkOrId)) then return itemLinkOrId end
+
+	local _, _, _, _, id = string.find(itemLinkOrId, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+
+	return tonumber(id)
+end

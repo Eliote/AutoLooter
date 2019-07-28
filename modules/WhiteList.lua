@@ -11,7 +11,8 @@ module.priority = 400
 local reason = Color.GREEN .. L["Listed"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if (PRIVATE_TABLE.DB.items[sTitle]) then
+	local id = Util.getId(link)
+	if (PRIVATE_TABLE.DB.items[id] or PRIVATE_TABLE.DB.items[sTitle]) then
 		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
 	end
 end

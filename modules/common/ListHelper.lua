@@ -6,8 +6,9 @@ local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
 function ListHelper.AddItem(sTitle, list)
+	local sLink = sTitle
 	if not sTitle or sTitle == "" then
-		sTitle = GameTooltip:GetItem()
+		sTitle, sLink = GameTooltip:GetItem()
 
 		if not sTitle or sTitle == "" then
 			for k, _ in pairs(list) do
@@ -18,22 +19,34 @@ function ListHelper.AddItem(sTitle, list)
 		end
 	end
 
-	local sName = GetItemInfo(sTitle)
-
-	if not sName then Util.print(L["Invalid item"], ": ", sTitle); return end
-
-	if (list[sName]) then
-		Util.print(L["Already in the list"], ": ", Color.YELLOW, sName)
+	local id = Util.getId(sLink)
+	if not id then
+		Util.print(L["Invalid item"], ": ", sTitle);
 		return
 	end
 
-	list[sName] = true
-	Util.print(L["Added"], ": ", Color.YELLOW, sName)
+	local item = Item:CreateFromItemID(id)
+	item:ContinueOnItemLoad(function()
+		local name, link = GetItemInfo(id)
+
+		if (list[id]) then
+			Util.print(L["Already in the list"], ": ", Color.YELLOW, link)
+			return
+		end
+
+		if (list[name]) then
+			list[name] = nil
+		end
+
+		list[id] = link
+		Util.print(L["Added"], ": ", Color.YELLOW, link)
+	end)
 end
 
 function ListHelper.RemoveItem(sTitle, list)
+	local sLink = sTitle
 	if not sTitle or sTitle == "" then
-		sTitle = GameTooltip:GetItem()
+		sTitle, sLink = GameTooltip:GetItem()
 
 		if not sTitle or sTitle == "" then
 			for k, _ in pairs(list) do
@@ -44,15 +57,24 @@ function ListHelper.RemoveItem(sTitle, list)
 		end
 	end
 
-	local sName = GetItemInfo(sTitle)
+	local id = Util.getId(sLink)
 
-	if (list[sName]) then
-		list[sName] = nil
-		Util.print(L["Removed"], ": ", Color.YELLOW, sName)
+	if(not id) then
+		if (list[sTitle]) then
+			list[sTitle] = nil
+			Util.print(L["Removed"], ": ", Color.YELLOW, sTitle)
+			return
+		end
+	end
+
+	if (list[id]) then
+		local link = list[id]
+		list[id] = nil
+		Util.print(L["Removed"], ": ", Color.YELLOW, link)
 		return
 	end
 
-	Util.print(L["Not listed"], ": ", Color.YELLOW, sName)
+	Util.print(L["Not listed"], ": ", Color.YELLOW, sTitle)
 end
 
 function ListHelper.ListToString(list)
@@ -61,4 +83,18 @@ function ListHelper.ListToString(list)
 		text = text .. k .. '\n'
 	end
 	return text
+end
+
+function ListHelper.GetValues(list)
+	local values = {}
+
+	for k, v in pairs(list) do
+		if (tonumber(k)) then
+			values[k] = v
+		elseif (v) then
+			values[k] = k
+		end
+	end
+
+	return values
 end
