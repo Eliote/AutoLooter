@@ -4,7 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("Type", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("Type", "AceEvent-3.0")
 module.priority = 1100
 
 local reason = Color.GREEN .. L["Type"]
@@ -19,12 +20,12 @@ local function LootType(iType, iSubType, iRarity)
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(link)
+	local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
 
 	if LootType(itemType, itemSubType, nRarity) then
 		local typeSubtype = (PRIVATE_TABLE.DB.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
-		return true, reason, typeSubtype .. Util.GetItemText(icon, link, nQuantity), nil
+		return true, reason, typeSubtype .. AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
 

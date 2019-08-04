@@ -102,7 +102,8 @@ function AUTO_LOOTER:OnInitialize()
 			ignoreGreys = false,
 			autoConfirmRoll = false,
 			minimap = { hide = false },
-			ignoreBop = false
+			ignoreBop = false,
+			printoutReason = true
 		}
 	}
 	self.db = LibStub("AceDB-3.0"):New("AutoLooterDB", defaults, "Default")
@@ -121,15 +122,18 @@ local function Loot(index, itemName, itemLink)
 	ConfirmLootSlot(index) -- In case it's a Bind on Pickup
 end
 
+local trim = Util.trim
 local function PrintReason(reason, contents)
 	local items = ""
-	local sep = ""
 	for _, content in pairs(contents) do
-		items = sep .. items .. content
-		sep = " "
+		items = items .. content .. " "
 	end
 
-	print(reason, "|r: ", items)
+	if(not reason or reason == "") then
+		print(trim(items))
+	else
+		print(reason, "|r: ", trim(items))
+	end
 end
 
 function AUTO_LOOTER:SortedModulesIterator(lootOnly)
@@ -161,7 +165,12 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		for _, module in self:SortedModulesIterator(true) do
 			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
-			if (printReason and reason and reasonContent) then
+			if (printReason and reason and reasonContent and reasonContent ~= "") then
+				-- ignored items will still print the reason
+				if (loot and not PRIVATE_TABLE.DB.printoutReason and nQuantity > 0) then
+					reason = ""
+				end
+
 				if (loot or PRIVATE_TABLE.DB.printoutIgnored) then
 					reasonMap[reason] = reasonMap[reason] or {}
 					table.insert(reasonMap[reason], reasonContent)

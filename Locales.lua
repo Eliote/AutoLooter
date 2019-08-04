@@ -72,6 +72,8 @@ if L then
 	L["Whitelist"] = "Lista Branca"
 	L["Items list"] = "Lista de itens"
 	L["You can drag & drop items here!"] = "Você pode arrastar e soltar itens aqui!"
+	L["Printout items icon only"] = "Exibir apenas o icone dos itens no chat"
+	L["Printout reason of loot"] = "Escrever a razão do loot"
 	--@end-debug@
 
 	return

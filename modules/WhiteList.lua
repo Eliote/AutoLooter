@@ -5,7 +5,8 @@ local ListHelper = PRIVATE_TABLE.ListHelper
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("WhiteList", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("WhiteList", "AceEvent-3.0")
 module.priority = 400
 
 local reason = Color.GREEN .. L["Listed"]
@@ -13,7 +14,7 @@ local reason = Color.GREEN .. L["Listed"]
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local id = Util.getId(link)
 	if (PRIVATE_TABLE.DB.items[id] or PRIVATE_TABLE.DB.items[sTitle]) then
-		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
+		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
 

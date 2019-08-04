@@ -4,14 +4,15 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("IgnoreBOP", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("IgnoreBOP", "AceEvent-3.0")
 module.priority = 600
 
 local reason = Color.ORANGE .. L["Ignored"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if (PRIVATE_TABLE.DB.ignoreBop and link and select(14, GetItemInfo(link)) == 1) then
-		return false, reason, "(BoP)" .. Util.GetItemText(icon, link, nQuantity), true
+		return false, reason, "(BoP)" .. AutoLooter.FormatLoot(icon, link, nQuantity), true
 	end
 end
 

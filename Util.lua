@@ -17,30 +17,6 @@ Color.GOLD = "|cFFFFFF00"
 Color.SILVER = "|cFFCCCCCC"
 Color.COPPER = "|cFFFF6600"
 
-local ICO_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
-local ICO_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:0|t"
-local ICO_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:0|t"
-
-function Util.formatGold(value, cor, somenteMaior)
-	local text = ""
-
-	if not somenteMaior or value >= 10000 then
-		text = text .. (cor or Color.GOLD) .. math.floor(value / 10000) .. ICO_GOLD .. "|r "
-	end
-
-	if not somenteMaior or (value >= 100 and value < 10000) then
-		text = text .. (cor or Color.SILVER) .. math.floor((value / 100) % 100) .. ICO_SILVER .. "|r "
-	end
-
-	if not somenteMaior or (value < 100) then
-		text = text .. (cor or Color.COPPER) .. math.floor(value % 100) .. ICO_COPPER .. "|r"
-	end
-
-	text = trim(text)
-
-	return text
-end
-
 function Util.orderedPairs(t, sortFunction, exclusionFunction)
 	local sortTable = {}
 
@@ -117,12 +93,18 @@ Util.print = function(...)
 	print(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r", out)
 end
 
-function Util.GetItemText(icon, link, quantity)
+function Util.GetItemText(icon, link, quantity, iconOnly)
 	quantity = quantity or 1
-	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark" .. ":0|t"
+	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark"
 	link = link or ""
+	local texture = "|T" .. icon .. ":0|t"
+	local text = texture .. link
 
-	return quantity .. "x|T" .. icon .. ":0|t" .. link .. " "
+	if (iconOnly) then
+		text = link:gsub("|h.+|h", "|h" .. texture .. "|h")
+	end
+
+	return quantity .. "x" .. text
 end
 
 function Util.GetBoolean(bool, def)
@@ -155,4 +137,8 @@ function Util.getId(itemLinkOrId)
 	local _, _, _, _, id = string.find(itemLinkOrId, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 
 	return tonumber(id)
+end
+
+function Util.trim(s)
+	return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
