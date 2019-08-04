@@ -14,9 +14,9 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	if PRIVATE_TABLE.DB.lootAll then
 		-- loot everything left
 		return true, reason, Util.GetItemText(icon, link, nQuantity), nil
-	elseif (PRIVATE_TABLE.DB.printoutIgnored) then
+	else
 		-- logs everything left
-		local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(link)
+		local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
 		local typeSubtype = (PRIVATE_TABLE.DB.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
 		return false, reasonLog, typeSubtype .. Util.GetItemText(icon, link, nQuantity), true

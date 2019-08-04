@@ -161,9 +161,11 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 		for _, module in self:SortedModulesIterator(true) do
 			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 
-			if (printReason and reason) then
-				reasonMap[reason] = reasonMap[reason] or {}
-				table.insert(reasonMap[reason], reasonContent)
+			if (printReason and reason and reasonContent) then
+				if (loot or PRIVATE_TABLE.DB.printoutIgnored) then
+					reasonMap[reason] = reasonMap[reason] or {}
+					table.insert(reasonMap[reason], reasonContent)
+				end
 			end
 
 			if loot then
@@ -171,7 +173,7 @@ function AUTO_LOOTER:LOOT_OPENED(_, arg1)
 				break
 			end
 
-			if forceBreak then break end
+			if forceBreak then break end -- ignore other modules and go to the next item
 		end
 	end
 

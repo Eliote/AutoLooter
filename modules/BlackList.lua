@@ -13,11 +13,7 @@ local reason = Color.ORANGE .. L["Ignored"]
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local id = Util.getId(link)
 	if (PRIVATE_TABLE.DB.ignore[id] or PRIVATE_TABLE.DB.ignore[sTitle]) then
-		if (PRIVATE_TABLE.DB.printoutIgnored) then
-			return false, reason, "(List)" .. Util.GetItemText(icon, link, nQuantity), true
-		else
-			return false, nil, nil, true
-		end
+		return false, reason, "(List)" .. Util.GetItemText(icon, link, nQuantity), true
 	end
 end
 
@@ -44,7 +40,7 @@ function module:GetOptions()
 				},
 				remove = {
 					type = "select",
-					name =  L["Remove item from ignore list"],
+					name = L["Remove item from ignore list"],
 					width = "full",
 					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.ignore) end,
 					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,

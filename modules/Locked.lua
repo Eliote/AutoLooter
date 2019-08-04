@@ -11,10 +11,6 @@ local reason = Color.RED .. L["Locked"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if (locked) then
-		if (PRIVATE_TABLE.DB.printoutIgnored) then
-			return false, reason, Util.GetItemText(icon, link, nQuantity), true
-		else
-			return false, nil, nil, true
-		end
+		return false, reason, Util.GetItemText(icon, link, nQuantity), true
 	end
 end
