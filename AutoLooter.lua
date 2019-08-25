@@ -155,8 +155,8 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	return Util.orderedPairs(iterator, sort, exclusion)
 end
 
-function AUTO_LOOTER:LOOT_READY(_, arg1)
-	if (arg1 == 1) then return end
+function AUTO_LOOTER:LOOT_READY(_, autoloot)
+	if (autoloot) then return end
 
 	local reasonMap = {}
 	local printReason = PRIVATE_TABLE.DB.printout
