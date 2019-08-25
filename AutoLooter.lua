@@ -6,10 +6,13 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
+---@class AutoLooter
 local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local DataBase = PRIVATE_TABLE.DB
+
+---@type Util
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
@@ -136,6 +139,7 @@ local function PrintReason(reason, contents)
 	end
 end
 
+---@return fun(tbl: table<string, AutoLooterModule>):string, AutoLooterModule
 function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	local function sort(o1, o2)
 		return (self:GetModule(o1).priority or 99999999) < (self:GetModule(o2).priority or 99999999)
