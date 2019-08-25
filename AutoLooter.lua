@@ -31,12 +31,12 @@ function AUTO_LOOTER.Toggle(bool)
 
 	if DataBase.enable then
 		AUTO_LOOTER:Enable()
-		AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
+		AUTO_LOOTER:RegisterEvent("LOOT_READY")
 		DataBase.enable = true
 		print(L["Enabled"])
 	else
 		AUTO_LOOTER:Disable()
-		AUTO_LOOTER:UnregisterEvent("LOOT_OPENED")
+		AUTO_LOOTER:UnregisterEvent("LOOT_READY")
 		DataBase.enable = false
 		print(L["Disabled"])
 	end
@@ -155,8 +155,7 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	return Util.orderedPairs(iterator, sort, exclusion)
 end
 
--- LOOT OPENED
-function AUTO_LOOTER:LOOT_OPENED(_, arg1)
+function AUTO_LOOTER:LOOT_READY(_, arg1)
 	if (arg1 == 1) then return end
 
 	local reasonMap = {}
