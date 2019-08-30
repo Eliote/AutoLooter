@@ -127,19 +127,22 @@ local function createOptions()
 					all = {
 						type = "execute",
 						name = L["Select all"],
-						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], true) end
+						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], true) end,
+						order = 10
 					},
 					none = {
 						type = "execute",
 						name = L["Remove all"],
-						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], false) end
+						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], false) end,
+						order = 20
 					},
 					toggle = {
 						type = "multiselect",
 						name = type,
 						values = values,
 						get = function(info, key) return GetTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
-						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end
+						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end,
+						order = 1
 					},
 				}
 			}
