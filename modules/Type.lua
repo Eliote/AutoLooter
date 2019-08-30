@@ -68,17 +68,19 @@ local function CreateAHTable(defTable)
 		local t = {}
 		local classInfo = GetItemClassInfo(itemClass)
 
-		local itemSubClasses = { GetAuctionItemSubClasses(itemClass) };
-		if #itemSubClasses > 0 then
-			for _, itemSubClass in pairs(itemSubClasses) do
-				local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
-				t[subclassInfo] = GetTypeTableDb(defTable, classInfo, subclassInfo)
+		if classInfo then
+			local itemSubClasses = { GetAuctionItemSubClasses(itemClass) };
+			if #itemSubClasses > 0 then
+				for _, itemSubClass in pairs(itemSubClasses) do
+					local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
+					t[subclassInfo] = GetTypeTableDb(defTable, classInfo, subclassInfo)
+				end
+			else
+				t[classInfo] = GetTypeTableDb(defTable, classInfo, classInfo)
 			end
-		else
-			t[classInfo] = GetTypeTableDb(defTable, classInfo, classInfo)
-		end
 
-		out[classInfo] = t
+			out[classInfo] = t
+		end
 	end
 
 	return out
