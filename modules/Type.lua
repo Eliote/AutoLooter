@@ -35,10 +35,21 @@ local function SetTypeTableDb(db, type, subtype, value)
 	db.typeTable[type][subtype] = value
 end
 
-local function GetTypeTableDb(db, type, subtype)
-	if (not db.typeTable) then return false end
-	if (not db.typeTable[type]) then return false end
-	return db.typeTable[type][subtype] or false
+local function GetOrCreateTypeTableDb(db, type, subtype)
+	if (not db.typeTable) then
+		db.typeTable = { [type] = { [subtype] = false } }
+		return false
+	end
+	if (not db.typeTable[type]) then
+		db.typeTable[type] = { [subtype] = false }
+		return false
+	end
+	if (db.typeTable[type][subtype] == nil) then
+		db.typeTable[type][subtype] = false
+		return false
+	end
+
+	return db.typeTable[type][subtype]
 end
 
 local function CreateAHTable(defTable)
@@ -73,10 +84,10 @@ local function CreateAHTable(defTable)
 			if #itemSubClasses > 0 then
 				for _, itemSubClass in pairs(itemSubClasses) do
 					local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
-					t[subclassInfo] = GetTypeTableDb(defTable, classInfo, subclassInfo)
+					t[subclassInfo] = GetOrCreateTypeTableDb(defTable, classInfo, subclassInfo)
 				end
 			else
-				t[classInfo] = GetTypeTableDb(defTable, classInfo, classInfo)
+				t[classInfo] = GetOrCreateTypeTableDb(defTable, classInfo, classInfo)
 			end
 
 			out[classInfo] = t
@@ -142,7 +153,7 @@ local function createOptions()
 						type = "multiselect",
 						name = type,
 						values = values,
-						get = function(info, key) return GetTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
+						get = function(info, key) return GetOrCreateTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
 						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end,
 						order = 1
 					},
