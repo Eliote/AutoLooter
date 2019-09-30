@@ -170,7 +170,7 @@ function AUTO_LOOTER:LOOT_READY(_, autoloot)
 
 			if (printReason and reason and reasonContent and reasonContent ~= "") then
 				-- ignored items will still print the reason
-				if (loot and not PRIVATE_TABLE.DB.printoutReason and nQuantity > 0) then
+				if (loot and not PRIVATE_TABLE.DB.printoutReason) then
 					reason = ""
 				end
 
