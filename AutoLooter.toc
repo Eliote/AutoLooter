@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 80205
 ## Title: AutoLooter
 ## Version: @project-version@
 ## Author: Eliote
