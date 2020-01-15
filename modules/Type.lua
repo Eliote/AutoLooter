@@ -80,7 +80,7 @@ local function CreateAHTable(defTable)
 		local classInfo = GetItemClassInfo(itemClass)
 
 		if classInfo then
-			local itemSubClasses = { GetAuctionItemSubClasses(itemClass) };
+			local itemSubClasses = C_AuctionHouse.GetAuctionItemSubClasses(itemClass)
 			if #itemSubClasses > 0 then
 				for _, itemSubClass in pairs(itemSubClasses) do
 					local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
