@@ -6,7 +6,8 @@ local Color = PRIVATE_TABLE.Color
 
 local print = Util.print
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("DataBroker")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("DataBroker")
 
 -- thanks to Pseudopath "http://wow.curseforge.com/profiles/Pseudopath/"
 local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(ADDON_NAME, {
@@ -28,7 +29,7 @@ function AL_LDB.OnClick(self, button)
 		LibStub("AceConfigDialog-3.0"):Open(ADDON_NAME)
 	elseif button == "RightButton" then
 		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
-		print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
+		AutoLooter.print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
 	end
 end
 

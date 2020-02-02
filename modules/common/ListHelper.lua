@@ -1,5 +1,6 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local ListHelper = PRIVATE_TABLE.ListHelper
 local Util = PRIVATE_TABLE.Util
@@ -12,7 +13,7 @@ function ListHelper.AddItem(sTitle, list)
 
 		if not sTitle or sTitle == "" then
 			for k, _ in pairs(list) do
-				Util.print(k)
+				AutoLooter.print(k)
 			end
 
 			return
@@ -21,7 +22,7 @@ function ListHelper.AddItem(sTitle, list)
 
 	local id = Util.getId(sLink)
 	if not id then
-		Util.print(L["Invalid item"], ": ", sTitle);
+		AutoLooter.print(L["Invalid item"], ": ", sTitle);
 		return
 	end
 
@@ -30,7 +31,7 @@ function ListHelper.AddItem(sTitle, list)
 		local name, link = GetItemInfo(id)
 
 		if (list[id]) then
-			Util.print(L["Already in the list"], ": ", Color.YELLOW, link)
+			AutoLooter.print(L["Already in the list"], ": ", Color.YELLOW, link)
 			return
 		end
 
@@ -39,7 +40,7 @@ function ListHelper.AddItem(sTitle, list)
 		end
 
 		list[id] = link
-		Util.print(L["Added"], ": ", Color.YELLOW, link)
+		AutoLooter.print(L["Added"], ": ", Color.YELLOW, link)
 	end)
 end
 
@@ -50,7 +51,7 @@ function ListHelper.RemoveItem(sTitle, list)
 
 		if not sTitle or sTitle == "" then
 			for k, _ in pairs(list) do
-				Util.print(k)
+				AutoLooter.print(k)
 			end
 
 			return
@@ -62,7 +63,7 @@ function ListHelper.RemoveItem(sTitle, list)
 	if(not id) then
 		if (list[sTitle]) then
 			list[sTitle] = nil
-			Util.print(L["Removed"], ": ", Color.YELLOW, sTitle)
+			AutoLooter.print(L["Removed"], ": ", Color.YELLOW, sTitle)
 			return
 		end
 	end
@@ -70,11 +71,11 @@ function ListHelper.RemoveItem(sTitle, list)
 	if (list[id]) then
 		local link = list[id]
 		list[id] = nil
-		Util.print(L["Removed"], ": ", Color.YELLOW, link)
+		AutoLooter.print(L["Removed"], ": ", Color.YELLOW, link)
 		return
 	end
 
-	Util.print(L["Not listed"], ": ", Color.YELLOW, sTitle)
+	AutoLooter.print(L["Not listed"], ": ", Color.YELLOW, sTitle)
 end
 
 function ListHelper.ListToString(list)

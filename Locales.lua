@@ -74,6 +74,7 @@ if L then
 	L["You can drag & drop items here!"] = "Você pode arrastar e soltar itens aqui!"
 	L["Printout items icon only"] = "Exibir apenas o icone dos itens no chat"
 	L["Printout reason of loot"] = "Escrever a razão do loot"
+	L["Printout chat frames"] = "Escrever nos seguintes chats"
 	--@end-debug@
 
 	return
