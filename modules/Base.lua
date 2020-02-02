@@ -49,6 +49,30 @@ function module:GetOptions()
 					name = L["Printout reason of loot"],
 					set = function(info, val) PRIVATE_TABLE.DB.printoutReason = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.printoutReason end
+				},
+				printoutChatFrame = {
+					type = "multiselect",
+					name = L["Printout chat frame"],
+					values = function()
+						local values = {}
+						for i = 1, NUM_CHAT_WINDOWS do
+							local chatName = GetChatWindowInfo(i)
+							if chatName and chatName ~= "" then
+								values[chatName] = chatName
+							end
+						end
+						return values
+					end,
+					set = function(info, key, val)
+						PRIVATE_TABLE.CHAR_DB.chatFrameNames[key] = val
+						if key == DEFAULT_CHAT_FRAME.name then
+							PRIVATE_TABLE.CHAR_DB.chatFrameNames[-1] = false
+						end
+					end,
+					get = function(info, key, ...)
+						if PRIVATE_TABLE.CHAR_DB.chatFrameNames[key] then return true end
+						if key == DEFAULT_CHAT_FRAME.name and PRIVATE_TABLE.CHAR_DB.chatFrameNames[-1] == true then return true end
+					end
 				}
 			}
 		},

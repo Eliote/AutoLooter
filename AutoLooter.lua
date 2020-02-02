@@ -16,8 +16,6 @@ local DataBase = PRIVATE_TABLE.DB
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
-local print = Util.print
-
 -- global calls runs 30% slower -- http://www.lua.org/gems/sample.pdf
 local GetNumLootItems = GetNumLootItems
 local GetLootSlotInfo = GetLootSlotInfo
@@ -26,6 +24,59 @@ local LootSlot = LootSlot
 local ConfirmLootSlot = ConfirmLootSlot
 --
 
+local chatCache = {}
+local function findChatFrame(name)
+	if (name == -1) then return DEFAULT_CHAT_FRAME end
+
+	local chat = chatCache[name]
+	if chat then return chat end
+
+	local found
+	for i = 1, NUM_CHAT_WINDOWS do
+		local chatName = GetChatWindowInfo(i)
+		if chatName then
+			local chatFrame = getglobal("ChatFrame" .. i)
+			chatCache[chatName] = chatFrame
+
+			if chatName == name then
+				found = chatFrame
+			end
+		end
+	end
+
+	return found
+end
+
+local function filterChatFrame(namesMap)
+	local frames = {}
+	for k, selected in pairs(namesMap) do
+		if selected then
+			local frame = findChatFrame(k)
+			if frame then
+				table.insert(frames, frame)
+			end
+		end
+	end
+	return frames
+end
+
+function AUTO_LOOTER.print(...)
+	local chatFrames = filterChatFrame(AUTO_LOOTER.db.char.chatFrameNames)
+	if #chatFrames == 0 then return end
+
+	local out = ""
+
+	for i = 1, select("#", ...) do
+		local s = tostring(select(i, ...))
+
+		out = out .. s
+	end
+
+	for i, chatFrame in ipairs(chatFrames) do
+		chatFrame:AddMessage(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r " .. out)
+	end
+end
+
 function AUTO_LOOTER.Toggle(bool)
 	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
 
@@ -33,17 +84,18 @@ function AUTO_LOOTER.Toggle(bool)
 		AUTO_LOOTER:Enable()
 		AUTO_LOOTER:RegisterEvent("LOOT_READY")
 		DataBase.enable = true
-		print(L["Enabled"])
+		AUTO_LOOTER.print(L["Enabled"])
 	else
 		AUTO_LOOTER:Disable()
 		AUTO_LOOTER:UnregisterEvent("LOOT_READY")
 		DataBase.enable = false
-		print(L["Disabled"])
+		AUTO_LOOTER.print(L["Disabled"])
 	end
 end
 
 function AUTO_LOOTER:ReloadOptions()
 	PRIVATE_TABLE.DB = self.db.profile
+	PRIVATE_TABLE.CHAR_DB = self.db.char
 	DataBase = PRIVATE_TABLE.DB
 
 	AUTO_LOOTER.Toggle(DataBase.enable)
@@ -107,6 +159,9 @@ function AUTO_LOOTER:OnInitialize()
 			minimap = { hide = false },
 			ignoreBop = false,
 			printoutReason = true
+		},
+		char = {
+			chatFrameNames = { [-1] = true }
 		}
 	}
 	self.db = LibStub("AceDB-3.0"):New("AutoLooterDB", defaults, "Default")
@@ -132,10 +187,10 @@ local function PrintReason(reason, contents)
 		items = items .. content .. " "
 	end
 
-	if(not reason or reason == "") then
-		print(trim(items))
+	if (not reason or reason == "") then
+		AUTO_LOOTER.print(trim(items))
 	else
-		print(reason, "|r: ", trim(items))
+		AUTO_LOOTER.print(reason, "|r: ", trim(items))
 	end
 end
 

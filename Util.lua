@@ -80,19 +80,6 @@ Util.OnOff = function(bToggle)
 	return Color.RED .. L["Off"] .. "|r"
 end
 
--- UTIL
-Util.print = function(...)
-	local out = ""
-
-	for i = 1, select("#", ...) do
-		local s = tostring(select(i, ...))
-
-		out = out .. s
-	end
-
-	print(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r", out)
-end
-
 function Util.GetItemText(icon, link, quantity, iconOnly)
 	quantity = quantity or 1
 	icon = icon or "Interface\\Icons\\INV_Misc_QuestionMark"
