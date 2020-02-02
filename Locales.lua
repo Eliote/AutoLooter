@@ -116,8 +116,20 @@ if L then
 	return
 end
 
+L = AceLocale:NewLocale("AutoLooter", "koKR")
+if L then
+	--@localization(locale="koKR", format="lua_additive_table")@
+	return
+end
 
+L = AceLocale:NewLocale("AutoLooter", "zhCN")
+if L then
+	--@localization(locale="zhCN", format="lua_additive_table")@
+	return
+end
 
-
-
-
+L = AceLocale:NewLocale("AutoLooter", "zhTW")
+if L then
+	--@localization(locale="zhTW", format="lua_additive_table")@
+	return
+end
