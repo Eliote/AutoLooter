@@ -51,6 +51,7 @@ function module:GetOptions()
 					get = function(info) return PRIVATE_TABLE.DB.printoutReason end
 				},
 				printoutChatFrame = {
+					order = 900,
 					type = "multiselect",
 					name = L["Printout chat frame"],
 					values = function()
