@@ -119,7 +119,7 @@ end
 
 function Util.getId(itemLinkOrId)
 	if not itemLinkOrId then return end
-	if (tonumber(itemLinkOrId)) then return itemLinkOrId end
+	if (tonumber(itemLinkOrId)) then return tonumber(itemLinkOrId) end
 
 	local _, _, _, _, id = string.find(itemLinkOrId, "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 
