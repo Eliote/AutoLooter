@@ -27,6 +27,11 @@ function ListHelper.AddItem(sTitle, list)
 	end
 
 	local item = Item:CreateFromItemID(id)
+	if not item or item:IsItemEmpty() then
+		AutoLooter.print(L["Invalid item"], ": ", sTitle);
+		return
+	end
+
 	item:ContinueOnItemLoad(function()
 		local name, link = GetItemInfo(id)
 
