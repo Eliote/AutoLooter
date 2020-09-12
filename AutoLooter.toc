@@ -23,6 +23,7 @@ modules\Base.lua
 modules\BlackList.lua
 modules\Currency.lua
 modules\DataBroker.lua
+modules\Fishing.lua
 modules\IgnoreBOP.lua
 modules\Locked.lua
 modules\Money.lua

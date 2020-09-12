@@ -75,6 +75,8 @@ if L then
 	L["Printout items icon only"] = "Exibir apenas o icone dos itens no chat"
 	L["Printout reason of loot"] = "Escrever a razão do loot"
 	L["Printout chat frames"] = "Escrever nos seguintes chats"
+	L["Fishing"] = "Pescaria"
+	L["Loot everything while Fishing"] = "Pegar tudo enquanto pescando"
 	--@end-debug@
 
 	return

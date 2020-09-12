@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 
 local Color = PRIVATE_TABLE.Color
 Color.BLUE = "|cFF29E0E7"
-Color.DARK_BLUE = "|cFF3044D0"
+Color.DARK_BLUE = "|cFF7878ff"
 Color.PURPLE = "|cFFB737E7"
 Color.WHITE = "|cFFFFFFFF"
 Color.RED = "|cFFDC2924"
