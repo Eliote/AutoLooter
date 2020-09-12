@@ -91,7 +91,7 @@ function Util.GetItemText(icon, link, quantity, iconOnly)
 		text = link:gsub("|h.+|h", "|h" .. texture .. "|h")
 	end
 
-	return quantity .. "x" .. text
+	return Color.WHITE .. quantity .. "x|r" .. text
 end
 
 function Util.GetBoolean(bool, def)

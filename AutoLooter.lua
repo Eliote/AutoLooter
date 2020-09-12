@@ -73,7 +73,7 @@ function AUTO_LOOTER.print(...)
 	end
 
 	for i, chatFrame in ipairs(chatFrames) do
-		chatFrame:AddMessage(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r " .. out)
+		chatFrame:AddMessage(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r|r|r " .. out)
 	end
 end
 
