@@ -17,36 +17,43 @@ function module:GetOptions()
 				enable = {
 					type = "toggle",
 					name = L["Enable"],
+					order = 0,
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) LibStub("AceAddon-3.0"):GetAddon("AutoLooter").Toggle(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.enable end
 				},
 				printout = {
 					type = "toggle",
 					name = L["Printout items looted"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.printout = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.printout end
 				},
 				printoutIgnored = {
 					type = "toggle",
 					name = L["Printout items ignored"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.printoutIgnored = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.printoutIgnored end
 				},
 				close = {
 					type = "toggle",
 					name = L["Close after loot"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.close = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.close end
 				},
 				printoutIconOnly = {
 					type = "toggle",
 					name = L["Printout items icon only"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.printoutIconOnly = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.printoutIconOnly end
 				},
 				printoutReason = {
 					type = "toggle",
 					name = L["Printout reason of loot"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.printoutReason = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.printoutReason end
 				},

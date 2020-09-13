@@ -50,7 +50,7 @@ function module:GetOptions()
 				showMinimap = {
 					type = "toggle",
 					name = L["Show/Hide minimap button"],
-					width = "double",
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) module.SetMinimapVisibility(val) end,
 					get = function(info) return not PRIVATE_TABLE.DB.minimap.hide end
 				}

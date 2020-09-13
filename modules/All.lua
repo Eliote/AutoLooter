@@ -37,6 +37,7 @@ function module:GetOptions()
 				lootAll = {
 					type = "toggle",
 					name = L["Loot everything"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.lootAll = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.lootAll end
 				}

@@ -27,6 +27,7 @@ function module:GetOptions()
 				lootQuest = {
 					type = "toggle",
 					name = L["Loot quest itens"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.lootQuest end
 				}

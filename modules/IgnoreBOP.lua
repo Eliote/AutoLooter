@@ -23,6 +23,7 @@ function module:GetOptions()
 				ignoreBop = {
 					type = "toggle",
 					name = L["Ignore BoP"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) PRIVATE_TABLE.DB.ignoreBop = Util.GetBoolean(val) end,
 					get = function(info) return PRIVATE_TABLE.DB.ignoreBop end
 				}

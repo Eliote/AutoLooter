@@ -6,6 +6,7 @@
 ## SavedVariables: AutoLooterDB
 
 embeds.xml
+widget\WrapTextCheckBox.lua
 
 Core.lua
 
