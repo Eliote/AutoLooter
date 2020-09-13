@@ -12,7 +12,7 @@ local reason = Color.GREEN .. L["Price"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(link)
-	if iPrice and (PRIVATE_TABLE.DB.price > 0) and (iPrice >= PRIVATE_TABLE.DB.price) then
+	if iPrice and (AutoLooter.db.profile.price > 0) and (iPrice >= AutoLooter.db.profile.price) then
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
@@ -30,8 +30,8 @@ function module:GetOptions()
 					step = 1,
 					width = "double",
 					order = 1000,
-					set = function(info, val) PRIVATE_TABLE.DB.price = val end,
-					get = function(info) return PRIVATE_TABLE.DB.price end
+					set = function(info, val) AutoLooter.db.profile.price = val end,
+					get = function(info) return AutoLooter.db.profile.price end
 				}
 			}
 		}

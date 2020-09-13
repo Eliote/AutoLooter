@@ -11,9 +11,9 @@ module.priority = 1100
 local reason = Color.GREEN .. L["Type"]
 
 local function LootType(iType, iSubType, iRarity)
-	if PRIVATE_TABLE.DB.ignoreGreys and iRarity == 0 then return false end
+	if AutoLooter.db.profile.ignoreGreys and iRarity == 0 then return false end
 
-	local t = PRIVATE_TABLE.DB.typeTable[iType]
+	local t = AutoLooter.db.profile.typeTable[iType]
 	if t then return t[iSubType] or t["(Legacy Types)"] end
 
 	return false
@@ -23,7 +23,7 @@ function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, lock
 	local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
 
 	if LootType(itemType, itemSubType, nRarity) then
-		local typeSubtype = (PRIVATE_TABLE.DB.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
+		local typeSubtype = (AutoLooter.db.profile.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
 		return true, reason, typeSubtype .. AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
@@ -110,20 +110,20 @@ local function createOptions()
 			name = L["Printout items type"],
 			order = 1,
 			width = "double",
-			set = function(info, val) PRIVATE_TABLE.DB.printoutType = Util.GetBoolean(val) end,
-			get = function(info) return PRIVATE_TABLE.DB.printoutType end
+			set = function(info, val) AutoLooter.db.profile.printoutType = Util.GetBoolean(val) end,
+			get = function(info) return AutoLooter.db.profile.printoutType end
 		},
 		ignoreGreys = {
 			type = "toggle",
 			name = L["Ignore greys when looting by type"],
 			order = 2,
 			width = "double",
-			set = function(info, val) PRIVATE_TABLE.DB.ignoreGreys = Util.GetBoolean(val) end,
-			get = function(info) return PRIVATE_TABLE.DB.ignoreGreys end
+			set = function(info, val) AutoLooter.db.profile.ignoreGreys = Util.GetBoolean(val) end,
+			get = function(info) return AutoLooter.db.profile.ignoreGreys end
 		}
 	}
 
-	local typeTable = CreateAHTable(PRIVATE_TABLE.DB)
+	local typeTable = CreateAHTable(AutoLooter.db.profile)
 
 	for type, subtypeTable in Util.orderedPairs(typeTable) do
 		local values = {}
@@ -140,21 +140,21 @@ local function createOptions()
 					all = {
 						type = "execute",
 						name = L["Select all"],
-						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], true) end,
+						func = function() SetAll(AutoLooter.db.profile.typeTable[type], true) end,
 						order = 10
 					},
 					none = {
 						type = "execute",
 						name = L["Remove all"],
-						func = function() SetAll(PRIVATE_TABLE.DB.typeTable[type], false) end,
+						func = function() SetAll(AutoLooter.db.profile.typeTable[type], false) end,
 						order = 20
 					},
 					toggle = {
 						type = "multiselect",
 						name = type,
 						values = values,
-						get = function(info, key) return GetOrCreateTypeTableDb(PRIVATE_TABLE.DB, type, key) end,
-						set = function(info, key, value) SetTypeTableDb(PRIVATE_TABLE.DB, type, key, value) end,
+						get = function(info, key) return GetOrCreateTypeTableDb(AutoLooter.db.profile, type, key) end,
+						set = function(info, key, value) SetTypeTableDb(AutoLooter.db.profile, type, key, value) end,
 						order = 1
 					},
 				}

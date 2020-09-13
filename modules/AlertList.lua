@@ -5,7 +5,8 @@ local ListHelper = PRIVATE_TABLE.ListHelper
 local Util = PRIVATE_TABLE.Util
 local WidgetLists = AceGUIWidgetLSMlists
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("AlertList", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("AlertList", "AceEvent-3.0")
 module.priority = 1
 
 local PlaySoundFile = PlaySoundFile
@@ -13,11 +14,12 @@ local RaidNotice_AddMessage = RaidNotice_AddMessage
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local id = Util.getId(link)
-	if (PRIVATE_TABLE.DB.alert[id] or PRIVATE_TABLE.DB.alert[sTitle]) then
-		if PRIVATE_TABLE.DB.alertSound then
-			local sound = PRIVATE_TABLE.DB.alertSound
-			if (WidgetLists.sound[PRIVATE_TABLE.DB.alertSound]) then
-				sound = WidgetLists.sound[PRIVATE_TABLE.DB.alertSound]
+	local db = AutoLooter.db.profile
+	if (db.alert[id] or db.alert[sTitle]) then
+		if db.alertSound then
+			local sound = db.alertSound
+			if (WidgetLists.sound[db.alertSound]) then
+				sound = WidgetLists.sound[db.alertSound]
 			end
 			pcall(PlaySoundFile, sound) -- safe
 		end
@@ -43,7 +45,7 @@ function module:GetOptions()
 					type = "input",
 					name = L["Add item to alert list"],
 					width = "full",
-					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.alert) end,
+					set = function(info, val) ListHelper.AddItem(val, AutoLooter.db.profile.alert) end,
 					get = false,
 					order = 1,
 				},
@@ -51,8 +53,8 @@ function module:GetOptions()
 					type = "select",
 					name = L["Remove item from alert list"],
 					width = "full",
-					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.alert) end,
-					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.alert) end,
+					values = function() return ListHelper.GetValues(AutoLooter.db.profile.alert) end,
+					set = function(info, val) ListHelper.RemoveItem(val, AutoLooter.db.profile.alert) end,
 					get = function(info) end,
 					order = 2,
 				},
@@ -62,8 +64,8 @@ function module:GetOptions()
 					width = "full",
 					dialogControl = "LSM30_Sound",
 					values = WidgetLists.sound,
-					set = function(info, val) PRIVATE_TABLE.DB.alertSound = val end,
-					get = function(info) return PRIVATE_TABLE.DB.alertSound end,
+					set = function(info, val) AutoLooter.db.profile.alertSound = val end,
+					get = function(info) return AutoLooter.db.profile.alertSound end,
 					order = 3,
 				}
 			}

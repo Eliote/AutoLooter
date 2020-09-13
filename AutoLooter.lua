@@ -11,7 +11,6 @@ local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0
 local events = LibStub("CallbackHandler-1.0"):New(AUTO_LOOTER)
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
-local DataBase = PRIVATE_TABLE.DB
 
 ---@type Util
 local Util = PRIVATE_TABLE.Util
@@ -79,7 +78,7 @@ function AUTO_LOOTER.print(...)
 end
 
 local function LoadState()
-	if (DataBase.enable) then
+	if (AUTO_LOOTER.db.profile.enable) then
 		AUTO_LOOTER:Enable()
 	else
 		AUTO_LOOTER:Disable()
@@ -87,17 +86,13 @@ local function LoadState()
 end
 
 function AUTO_LOOTER.Toggle(bool)
-	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
+	AUTO_LOOTER.db.profile.enable = Util.GetBoolean(bool, not AUTO_LOOTER.db.profile.enable)
 	LoadState()
 end
 
 function AUTO_LOOTER:ReloadOptions(onInit)
-	PRIVATE_TABLE.DB = self.db.profile
-	PRIVATE_TABLE.CHAR_DB = self.db.char
-	DataBase = PRIVATE_TABLE.DB
-
 	if onInit == "OnInitialization" then
-		self:SetEnabledState(DataBase.enable)
+		self:SetEnabledState(self.db.profile.enable)
 	else
 		LoadState()
 	end
@@ -254,7 +249,7 @@ function AUTO_LOOTER:LOOT_READY(_, autoloot)
 	if (autoloot) then return end
 
 	local reasonMap = {}
-	local printReason = PRIVATE_TABLE.DB.printout
+	local printReason = self.db.profile.printout
 
 	for nIndex = 1, GetNumLootItems() do
 		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
@@ -265,11 +260,11 @@ function AUTO_LOOTER:LOOT_READY(_, autoloot)
 
 			if (printReason and reason and reasonContent and reasonContent ~= "") then
 				-- ignored items will still print the reason
-				if (loot and not PRIVATE_TABLE.DB.printoutReason and nQuantity > 0) then
+				if (loot and not self.db.profile.printoutReason and nQuantity > 0) then
 					reason = ""
 				end
 
-				if (loot or PRIVATE_TABLE.DB.printoutIgnored) then
+				if (loot or self.db.profile.printoutIgnored) then
 					reasonMap[reason] = reasonMap[reason] or {}
 					table.insert(reasonMap[reason], reasonContent)
 				end

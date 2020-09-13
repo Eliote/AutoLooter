@@ -11,7 +11,7 @@ module.priority = 800
 local reason = Color.GREEN .. L["Quest"]
 
 function module:CanEnable()
-	return PRIVATE_TABLE.DB.lootQuest
+	return self.db.profile.lootQuest
 end
 
 function module:InitializeDb()
@@ -21,7 +21,7 @@ end
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
 
-	if (PRIVATE_TABLE.DB.lootQuest) then
+	if (AutoLooter.db.profile.lootQuest) then
 		if(isQuestItem or bindType == 4 or itemClassID == LE_ITEM_CLASS_QUESTITEM) then
 			return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 		end
@@ -37,10 +37,10 @@ function module:GetOptions()
 					name = L["Loot quest itens"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val)
-						PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(val)
+						self.db.profile.lootQuest = Util.GetBoolean(val)
 						self:LoadState()
 					end,
-					get = function(info) return PRIVATE_TABLE.DB.lootQuest end
+					get = function(info) return self.db.profile.lootQuest end
 				}
 			}
 		}

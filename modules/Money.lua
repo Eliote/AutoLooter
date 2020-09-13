@@ -3,7 +3,8 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("Money", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("Money", "AceEvent-3.0")
 module.priority = 200
 
 local reason = Color.GREEN .. L["Coin"]
@@ -46,7 +47,7 @@ local function extractMoneyValue(moneyString)
 end
 
 local function formatMoney(moneyString)
-	if (PRIVATE_TABLE.DB.printoutIconOnly) then
+	if (AutoLooter.db.profile.printoutIconOnly) then
 		return GetMoneyString(extractMoneyValue(moneyString))
 	end
 

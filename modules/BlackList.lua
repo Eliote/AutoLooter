@@ -13,7 +13,7 @@ local reason = Color.ORANGE .. L["Ignored"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local id = Util.getId(link)
-	if (PRIVATE_TABLE.DB.ignore[id] or PRIVATE_TABLE.DB.ignore[sTitle]) then
+	if (AutoLooter.db.profile.ignore[id] or AutoLooter.db.profile.ignore[sTitle]) then
 		return false, reason, "(List)" .. AutoLooter.FormatLoot(icon, link, nQuantity), true
 	end
 end
@@ -35,7 +35,7 @@ function module:GetOptions()
 					type = "input",
 					name = L["Add item to ignore list"],
 					width = "full",
-					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.ignore) end,
+					set = function(info, val) ListHelper.AddItem(val, AutoLooter.db.profile.ignore) end,
 					get = false,
 					order = 1,
 				},
@@ -43,8 +43,8 @@ function module:GetOptions()
 					type = "select",
 					name = L["Remove item from ignore list"],
 					width = "full",
-					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.ignore) end,
-					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.ignore) end,
+					values = function() return ListHelper.GetValues(AutoLooter.db.profile.ignore) end,
+					set = function(info, val) ListHelper.RemoveItem(val, AutoLooter.db.profile.ignore) end,
 					get = function(info) end,
 					order = 2,
 				},

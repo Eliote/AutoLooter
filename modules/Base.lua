@@ -7,7 +7,7 @@ local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
 local module = AutoLooter:NewModule("Base", "AceEvent-3.0")
 
 function AutoLooter.FormatLoot(icon, link, quantity)
-	return Util.GetItemText(icon, link, quantity, PRIVATE_TABLE.DB.printoutIconOnly)
+	return Util.GetItemText(icon, link, quantity, AutoLooter.db.profile.printoutIconOnly)
 end
 
 function module:GetOptions()
@@ -20,42 +20,42 @@ function module:GetOptions()
 					order = 0,
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) LibStub("AceAddon-3.0"):GetAddon("AutoLooter").Toggle(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.enable end
+					get = function(info) return AutoLooter.db.profile.enable end
 				},
 				printout = {
 					type = "toggle",
 					name = L["Printout items looted"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.printout = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.printout end
+					set = function(info, val) AutoLooter.db.profile.printout = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.printout end
 				},
 				printoutIgnored = {
 					type = "toggle",
 					name = L["Printout items ignored"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.printoutIgnored = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.printoutIgnored end
+					set = function(info, val) AutoLooter.db.profile.printoutIgnored = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.printoutIgnored end
 				},
 				close = {
 					type = "toggle",
 					name = L["Close after loot"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.close = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.close end
+					set = function(info, val) AutoLooter.db.profile.close = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.close end
 				},
 				printoutIconOnly = {
 					type = "toggle",
 					name = L["Printout items icon only"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.printoutIconOnly = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.printoutIconOnly end
+					set = function(info, val) AutoLooter.db.profile.printoutIconOnly = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.printoutIconOnly end
 				},
 				printoutReason = {
 					type = "toggle",
 					name = L["Printout reason of loot"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.printoutReason = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.printoutReason end
+					set = function(info, val) AutoLooter.db.profile.printoutReason = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.printoutReason end
 				},
 				printoutChatFrame = {
 					type = "multiselect",
@@ -71,14 +71,14 @@ function module:GetOptions()
 						return values
 					end,
 					set = function(info, key, val)
-						PRIVATE_TABLE.CHAR_DB.chatFrameNames[key] = val
+						AutoLooter.db.char.chatFrameNames[key] = val
 						if key == DEFAULT_CHAT_FRAME.name then
-							PRIVATE_TABLE.CHAR_DB.chatFrameNames[-1] = false
+							AutoLooter.db.char.chatFrameNames[-1] = false
 						end
 					end,
 					get = function(info, key, ...)
-						if PRIVATE_TABLE.CHAR_DB.chatFrameNames[key] then return true end
-						if key == DEFAULT_CHAT_FRAME.name and PRIVATE_TABLE.CHAR_DB.chatFrameNames[-1] == true then return true end
+						if AutoLooter.db.char.chatFrameNames[key] then return true end
+						if key == DEFAULT_CHAT_FRAME.name and AutoLooter.db.char.chatFrameNames[-1] == true then return true end
 					end
 				}
 			}

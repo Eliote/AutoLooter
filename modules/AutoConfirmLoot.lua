@@ -9,7 +9,7 @@ local module = AutoLooter:NewModule("AutoConfirm", PRIVATE_TABLE.SingleVarModule
 local CallbackHandler = LibStub("CallbackHandler-1.0")
 
 function module:CanEnable()
-	return PRIVATE_TABLE.DB.autoConfirmRoll
+	return AutoLooter.db.profile.autoConfirmRoll
 end
 
 function module:InitializeDb()
@@ -33,10 +33,10 @@ function module:GetOptions()
 					name = L["Auto confirm loot roll"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, value)
-						PRIVATE_TABLE.DB.autoConfirmRoll = Util.GetBoolean(value)
+						AutoLooter.db.profile.autoConfirmRoll = Util.GetBoolean(value)
 						self:LoadState()
 					end,
-					get = function(info) return PRIVATE_TABLE.DB.autoConfirmRoll end
+					get = function(info) return AutoLooter.db.profile.autoConfirmRoll end
 				},
 			}
 		},

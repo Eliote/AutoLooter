@@ -11,7 +11,7 @@ module.priority = 600
 local reason = Color.ORANGE .. L["Ignored"]
 
 function module:CanEnable()
-	return PRIVATE_TABLE.DB.ignoreBop
+	return AutoLooter.db.profile.ignoreBop
 end
 
 function module:InitializeDb()
@@ -19,7 +19,7 @@ function module:InitializeDb()
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if (PRIVATE_TABLE.DB.ignoreBop and link and select(14, GetItemInfo(link)) == 1) then
+	if (AutoLooter.db.profile.ignoreBop and link and select(14, GetItemInfo(link)) == 1) then
 		return false, reason, "(BoP)" .. AutoLooter.FormatLoot(icon, link, nQuantity), true
 	end
 end
@@ -33,10 +33,10 @@ function module:GetOptions()
 					name = L["Ignore BoP"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val)
-						PRIVATE_TABLE.DB.ignoreBop = Util.GetBoolean(val)
+						AutoLooter.db.profile.ignoreBop = Util.GetBoolean(val)
 						self:LoadState()
 					end,
-					get = function(info) return PRIVATE_TABLE.DB.ignoreBop end
+					get = function(info) return AutoLooter.db.profile.ignoreBop end
 				}
 			}
 		}

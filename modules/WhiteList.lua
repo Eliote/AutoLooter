@@ -13,7 +13,7 @@ local reason = Color.GREEN .. L["Listed"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local id = Util.getId(link)
-	if (PRIVATE_TABLE.DB.items[id] or PRIVATE_TABLE.DB.items[sTitle]) then
+	if (AutoLooter.db.profile.items[id] or AutoLooter.db.profile.items[sTitle]) then
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
@@ -34,7 +34,7 @@ function module:GetOptions()
 				add = {
 					type = "input",
 					name = L["Add item to white list"],
-					set = function(info, val) ListHelper.AddItem(val, PRIVATE_TABLE.DB.items) end,
+					set = function(info, val) ListHelper.AddItem(val, AutoLooter.db.profile.items) end,
 					get = false,
 					width = "full",
 					usage = L["[link/id/name] or [mouse over]"],
@@ -44,8 +44,8 @@ function module:GetOptions()
 					type = "select",
 					name = L["Remove item from white list"],
 					width = "full",
-					values = function() return ListHelper.GetValues(PRIVATE_TABLE.DB.items) end,
-					set = function(info, val) ListHelper.RemoveItem(val, PRIVATE_TABLE.DB.items) end,
+					values = function() return ListHelper.GetValues(AutoLooter.db.profile.items) end,
+					set = function(info, val) ListHelper.RemoveItem(val, AutoLooter.db.profile.items) end,
 					get = function(info) end,
 					order = 2,
 				},

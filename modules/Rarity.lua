@@ -11,7 +11,7 @@ module.priority = 700
 local reason = Color.GREEN .. L["Rarity"]
 
 function module:CanEnable()
-	return PRIVATE_TABLE.DB.rarity ~= -1
+	return self.db.profile.rarity ~= -1
 end
 
 function module:InitializeDb()
@@ -19,7 +19,7 @@ function module:InitializeDb()
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if (PRIVATE_TABLE.DB.rarity > -1) and nRarity and (nRarity >= PRIVATE_TABLE.DB.rarity) then
+	if (AutoLooter.db.profile.rarity > -1) and nRarity and (nRarity >= AutoLooter.db.profile.rarity) then
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
@@ -41,10 +41,10 @@ function module:GetOptions()
 						[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
 					},
 					set = function(info, val)
-						PRIVATE_TABLE.DB.rarity = val
+						AutoLooter.db.profile.rarity = val
 						self:LoadState()
 					end,
-					get = function(info) return PRIVATE_TABLE.DB.rarity end
+					get = function(info) return AutoLooter.db.profile.rarity end
 				}
 			}
 		}

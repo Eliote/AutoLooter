@@ -12,20 +12,20 @@ local reason = Color.GREEN .. L["All"]
 local reasonLog = Color.ORANGE .. L["Ignored"]
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if PRIVATE_TABLE.DB.lootAll then
+	if AutoLooter.db.profile.lootAll then
 		-- loot everything left
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	else
 		-- logs everything left
 		local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
-		local typeSubtype = (PRIVATE_TABLE.DB.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
+		local typeSubtype = (AutoLooter.db.profile.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
 		return false, reasonLog, typeSubtype .. AutoLooter.FormatLoot(icon, link, nQuantity), true
 	end
 end
 
 function module.Finish()
-	if (PRIVATE_TABLE.DB.close) then
+	if (AutoLooter.db.profile.close) then
 		CloseLoot()
 	end
 end
@@ -38,8 +38,8 @@ function module:GetOptions()
 					type = "toggle",
 					name = L["Loot everything"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.lootAll = Util.GetBoolean(val) end,
-					get = function(info) return PRIVATE_TABLE.DB.lootAll end
+					set = function(info, val) AutoLooter.db.profile.lootAll = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.lootAll end
 				}
 			}
 		}

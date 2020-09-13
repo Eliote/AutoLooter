@@ -28,13 +28,13 @@ function AL_LDB.OnClick(self, button)
 	if button == "LeftButton" then
 		LibStub("AceConfigDialog-3.0"):Open(ADDON_NAME)
 	elseif button == "RightButton" then
-		PRIVATE_TABLE.DB.lootAll = not PRIVATE_TABLE.DB.lootAll
-		AutoLooter.print(L["Loot everything"], ": ", Util.OnOff(PRIVATE_TABLE.DB.lootAll))
+		AutoLooter.db.profile.lootAll = not AutoLooter.db.profile.lootAll
+		AutoLooter.print(L["Loot everything"], ": ", Util.OnOff(AutoLooter.db.profile.lootAll))
 	end
 end
 
 function module.SetMinimapVisibility(show)
-	PRIVATE_TABLE.DB.minimap.hide = not show
+	AutoLooter.db.profile.minimap.hide = not show
 
 	if (show) then
 		LDBIcon:Show(ADDON_NAME)
@@ -52,7 +52,7 @@ function module:GetOptions()
 					name = L["Show/Hide minimap button"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) module.SetMinimapVisibility(val) end,
-					get = function(info) return not PRIVATE_TABLE.DB.minimap.hide end
+					get = function(info) return not AutoLooter.db.profile.minimap.hide end
 				}
 			}
 		},
@@ -60,5 +60,5 @@ function module:GetOptions()
 end
 
 function module:OnInitialize()
-	LDBIcon:Register(ADDON_NAME, AL_LDB, PRIVATE_TABLE.DB.minimap)
+	LDBIcon:Register(ADDON_NAME, AL_LDB, AutoLooter.db.profile.minimap)
 end
