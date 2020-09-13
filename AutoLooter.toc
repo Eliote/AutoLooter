@@ -16,7 +16,9 @@ Util.lua
 AutoLooter.lua
 
 modules\common\ListHelper.lua
+modules\common\SingleVarModulePrototype.lua
 
+modules\Debug.lua
 modules\AlertList.lua
 modules\All.lua
 modules\AutoConfirmLoot.lua

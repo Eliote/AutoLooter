@@ -1,7 +1,10 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
+
+--- @class Util
 local Util = PRIVATE_TABLE.Util
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 
+--- @class Color
 local Color = PRIVATE_TABLE.Color
 Color.BLUE = "|cFF29E0E7"
 Color.DARK_BLUE = "|cFF7878ff"
@@ -17,7 +20,7 @@ Color.GOLD = "|cFFFFFF00"
 Color.SILVER = "|cFFCCCCCC"
 Color.COPPER = "|cFFFF6600"
 
-function Util.orderedPairs(t, sortFunction, exclusionFunction, resetMessage)
+function Util.orderedPairs(t, sortFunction, filter, resetMessage)
 	local sortTable = {}
 
 	local iNext, iTable
@@ -28,7 +31,7 @@ function Util.orderedPairs(t, sortFunction, exclusionFunction, resetMessage)
 	end
 
 	for key, value in iNext, iTable do
-		if (not exclusionFunction or exclusionFunction(key, value)) then
+		if (not filter or filter(key, value)) then
 			table.insert(sortTable, key)
 		end
 	end

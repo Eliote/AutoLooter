@@ -5,10 +5,18 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Quest", "AceEvent-3.0")
+local module = AutoLooter:NewModule("Quest", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
 module.priority = 800
 
 local reason = Color.GREEN .. L["Quest"]
+
+function module:CanEnable()
+	return PRIVATE_TABLE.DB.lootQuest
+end
+
+function module:InitializeDb()
+	self.db = AutoLooter.db
+end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
@@ -28,7 +36,10 @@ function module:GetOptions()
 					type = "toggle",
 					name = L["Loot quest itens"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(val) end,
+					set = function(info, val)
+						PRIVATE_TABLE.DB.lootQuest = Util.GetBoolean(val)
+						self:LoadState()
+					end,
 					get = function(info) return PRIVATE_TABLE.DB.lootQuest end
 				}
 			}

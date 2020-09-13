@@ -4,24 +4,20 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Util = PRIVATE_TABLE.Util
 local ConfirmLootRoll = ConfirmLootRoll
 
-local module = LibStub("AceAddon-3.0"):GetAddon("AutoLooter"):NewModule("AutoConfirm", "AceEvent-3.0")
+local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
+local module = AutoLooter:NewModule("AutoConfirm", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
+local CallbackHandler = LibStub("CallbackHandler-1.0")
 
-local function SetEnabled(enable)
-	PRIVATE_TABLE.DB.autoConfirmRoll = enable
+function module:CanEnable()
+	return PRIVATE_TABLE.DB.autoConfirmRoll
+end
 
-	if (PRIVATE_TABLE.DB.autoConfirmRoll) then
-		module:Enable()
-	else
-		module:Disable()
-	end
+function module:InitializeDb()
+	self.db = AutoLooter.db
 end
 
 function module:OnEnable()
 	self:RegisterEvent("CONFIRM_LOOT_ROLL") -- embeded AceEvent is automatically deregistered upon module disable
-end
-
-function module:OnInitialize()
-	SetEnabled(PRIVATE_TABLE.DB.autoConfirmRoll)
 end
 
 function module:CONFIRM_LOOT_ROLL(_, id, rolltype)
@@ -36,7 +32,10 @@ function module:GetOptions()
 					type = "toggle",
 					name = L["Auto confirm loot roll"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, value) SetEnabled(Util.GetBoolean(value)) end,
+					set = function(info, value)
+						PRIVATE_TABLE.DB.autoConfirmRoll = Util.GetBoolean(value)
+						self:LoadState()
+					end,
 					get = function(info) return PRIVATE_TABLE.DB.autoConfirmRoll end
 				},
 			}

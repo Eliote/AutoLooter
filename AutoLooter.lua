@@ -8,6 +8,7 @@ local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
 ---@class AutoLooter
 local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
+local events = LibStub("CallbackHandler-1.0"):New(AUTO_LOOTER)
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local DataBase = PRIVATE_TABLE.DB
@@ -77,28 +78,29 @@ function AUTO_LOOTER.print(...)
 	end
 end
 
-function AUTO_LOOTER.Toggle(bool)
-	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
-
-	if DataBase.enable then
+local function LoadState()
+	if (DataBase.enable) then
 		AUTO_LOOTER:Enable()
-		AUTO_LOOTER:RegisterEvent("LOOT_READY")
-		DataBase.enable = true
-		AUTO_LOOTER.print(L["Enabled"])
 	else
 		AUTO_LOOTER:Disable()
-		AUTO_LOOTER:UnregisterEvent("LOOT_READY")
-		DataBase.enable = false
-		AUTO_LOOTER.print(L["Disabled"])
 	end
 end
 
-function AUTO_LOOTER:ReloadOptions()
+function AUTO_LOOTER.Toggle(bool)
+	DataBase.enable = Util.GetBoolean(bool, not DataBase.enable)
+	LoadState()
+end
+
+function AUTO_LOOTER:ReloadOptions(onInit)
 	PRIVATE_TABLE.DB = self.db.profile
 	PRIVATE_TABLE.CHAR_DB = self.db.char
 	DataBase = PRIVATE_TABLE.DB
 
-	AUTO_LOOTER.Toggle(DataBase.enable)
+	if onInit == "OnInitialization" then
+		self:SetEnabledState(DataBase.enable)
+	else
+		LoadState()
+	end
 end
 
 function AUTO_LOOTER:CreateProfile()
@@ -137,6 +139,14 @@ function AUTO_LOOTER:CreateProfile()
 	self.optionsFrame = AceDialog:AddToBlizOptions("AutoLooter")
 end
 
+local function registerResetCacheOn(module, func)
+	local original = module[func]
+	module[func] = function(...)
+		if original then original(...) end
+		AUTO_LOOTER:ResetModulesCache()
+	end
+end
+
 function AUTO_LOOTER:OnInitialize()
 	local defaults = {
 		profile = {
@@ -169,25 +179,27 @@ function AUTO_LOOTER:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", "ReloadOptions")
 	self.db.RegisterCallback(self, "OnProfileReset", "ReloadOptions")
 
-	AUTO_LOOTER:ReloadOptions()
+	for _, module in self:IterateModules() do
+		registerResetCacheOn(module, "OnEnable")
+		registerResetCacheOn(module, "OnDisable")
+	end
+
+	AUTO_LOOTER:ReloadOptions("OnInitialization")
 	AUTO_LOOTER:CreateProfile()
 
 	DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
 end
 
-local function registerResetCacheOn(module, func)
-	local original = module[func]
-	module[func] = function(...)
-		if original then original(...) end
-		AUTO_LOOTER:ResetModulesCache()
-	end
+function AUTO_LOOTER:OnEnable()
+	AUTO_LOOTER:RegisterEvent("LOOT_READY")
+	AUTO_LOOTER.print(L["Enabled"])
+	events:Fire("OnEnable")
 end
 
-function AUTO_LOOTER:OnEnable()
-	for _, module in self:IterateModules() do
-		registerResetCacheOn(module, "OnEnable")
-		registerResetCacheOn(module, "OnDisable")
-	end
+function AUTO_LOOTER:OnDisable()
+	--AUTO_LOOTER:UnregisterEvent("LOOT_READY") -- AceEvent will unregister it
+	AUTO_LOOTER.print(L["Disabled"])
+	events:Fire("OnDisable")
 end
 
 local function Loot(index, itemName, itemLink)
@@ -222,15 +234,13 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	local function sort(o1, o2)
 		return (self:GetModule(o1).priority or 99999999) < (self:GetModule(o2).priority or 99999999)
 	end
-	local exclusion
-	if (lootOnly) then
-		exclusion = function(key, module)
-			return module.CanLoot
+	local exclusion = function(key, module)
+		if module:IsEnabled() then
+			if lootOnly then return module.CanLoot end
+			return true
 		end
 	end
 	local function iterator() return self:IterateModules() end
-
-	print("creating cache", cacheKey)
 
 	modulesCache[cacheKey] = Util.orderedPairs(iterator, sort, exclusion, resetMessage)
 	return modulesCache[cacheKey]

@@ -5,10 +5,18 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Rarity", "AceEvent-3.0")
+local module = AutoLooter:NewModule("Rarity", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
 module.priority = 700
 
 local reason = Color.GREEN .. L["Rarity"]
+
+function module:CanEnable()
+	return PRIVATE_TABLE.DB.rarity ~= -1
+end
+
+function module:InitializeDb()
+	self.db = AutoLooter.db
+end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if (PRIVATE_TABLE.DB.rarity > -1) and nRarity and (nRarity >= PRIVATE_TABLE.DB.rarity) then
@@ -32,7 +40,10 @@ function module:GetOptions()
 						[3] = Util.GetColorForRarity(3) .. _G["ITEM_QUALITY3_DESC"],
 						[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
 					},
-					set = function(info, val) PRIVATE_TABLE.DB.rarity = val end,
+					set = function(info, val)
+						PRIVATE_TABLE.DB.rarity = val
+						self:LoadState()
+					end,
 					get = function(info) return PRIVATE_TABLE.DB.rarity end
 				}
 			}
