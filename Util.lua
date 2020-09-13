@@ -17,7 +17,7 @@ Color.GOLD = "|cFFFFFF00"
 Color.SILVER = "|cFFCCCCCC"
 Color.COPPER = "|cFFFF6600"
 
-function Util.orderedPairs(t, sortFunction, exclusionFunction)
+function Util.orderedPairs(t, sortFunction, exclusionFunction, resetMessage)
 	local sortTable = {}
 
 	local iNext, iTable
@@ -35,7 +35,11 @@ function Util.orderedPairs(t, sortFunction, exclusionFunction)
 	table.sort(sortTable, sortFunction)
 
 	local i = 0
-	local iterator = function()
+	local iterator = function(k)
+		if (resetMessage and (k == resetMessage)) then
+			i = 0
+			return
+		end
 		i = i + 1
 		if (sortTable[i] == nil) then
 			return nil

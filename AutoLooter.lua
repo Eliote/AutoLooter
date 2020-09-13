@@ -175,6 +175,21 @@ function AUTO_LOOTER:OnInitialize()
 	DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
 end
 
+local function registerResetCacheOn(module, func)
+	local original = module[func]
+	module[func] = function(...)
+		if original then original(...) end
+		AUTO_LOOTER:ResetModulesCache()
+	end
+end
+
+function AUTO_LOOTER:OnEnable()
+	for _, module in self:IterateModules() do
+		registerResetCacheOn(module, "OnEnable")
+		registerResetCacheOn(module, "OnDisable")
+	end
+end
+
 local function Loot(index, itemName, itemLink)
 	LootSlot(index)
 	ConfirmLootSlot(index) -- In case it's a Bind on Pickup
@@ -194,8 +209,16 @@ local function PrintReason(reason, contents)
 	end
 end
 
+local modulesCache = {}
+local resetMessage = {}
 ---@return fun(tbl: table<string, AutoLooterModule>):string, AutoLooterModule
 function AUTO_LOOTER:SortedModulesIterator(lootOnly)
+	local cacheKey = lootOnly and "lootOnlyTrue" or "lootOnlyFalse"
+	if modulesCache[cacheKey] ~= nil then
+		modulesCache[cacheKey](resetMessage)
+		return modulesCache[cacheKey]
+	end
+
 	local function sort(o1, o2)
 		return (self:GetModule(o1).priority or 99999999) < (self:GetModule(o2).priority or 99999999)
 	end
@@ -207,7 +230,14 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	end
 	local function iterator() return self:IterateModules() end
 
-	return Util.orderedPairs(iterator, sort, exclusion)
+	print("creating cache", cacheKey)
+
+	modulesCache[cacheKey] = Util.orderedPairs(iterator, sort, exclusion, resetMessage)
+	return modulesCache[cacheKey]
+end
+
+function AUTO_LOOTER:ResetModulesCache()
+	modulesCache = {}
 end
 
 function AUTO_LOOTER:LOOT_READY(_, autoloot)
