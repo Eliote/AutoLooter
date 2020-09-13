@@ -137,8 +137,8 @@ end
 local function registerResetCacheOn(module, func)
 	local original = module[func]
 	module[func] = function(...)
-		if original then original(...) end
 		AUTO_LOOTER:ResetModulesCache()
+		if original then return original(...) end
 	end
 end
 
