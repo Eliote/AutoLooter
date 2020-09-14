@@ -23,7 +23,12 @@ function module:GetOptions()
 			args = {
 				price = {
 					type = "range",
-					name = L["Price (in coppers)"],
+					name = function()
+						local formatedPrice = "[" .. Color.RED .. L["Off"] .. "|r]"
+						if AutoLooter.db.profile.price > 0 then
+							formatedPrice = GetMoneyString(AutoLooter.db.profile.price)
+						end
+						return L["Price (in coppers)"] .. " | " .. formatedPrice end,
 					min = 0,
 					max = 10000000,
 					softMax = 1000000,
