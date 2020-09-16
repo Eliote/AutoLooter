@@ -60,22 +60,11 @@ local function LoadState()
 	end
 end
 
-local function updateAutoLooterHooks()
-	local enabled = {}
-	for k, v in pairs(DebugModule.db.global.autoLooterHook) do
-		if DebugModule.db.global.enableDebug and v == true then
-			enabled[k] = true
-			registerHook(AutoLooter, k)
-		end
+local function getModule(name)
+	if name == AutoLooter:GetName() then
+		return AutoLooter
 	end
-	local hooked = hookedModules[AutoLooter:GetName()]
-	if hooked then
-		for k, v in pairs(hooked) do
-			if (not enabled[k]) then
-				removeHook(AutoLooter, k)
-			end
-		end
-	end
+	return AutoLooter:GetModule(name)
 end
 
 local function updateModulesHooks()
@@ -84,14 +73,14 @@ local function updateModulesHooks()
 		for hook, v in pairs(hooks) do
 			if DebugModule.db.global.enableDebug and v == true then
 				enabled[hook] = true
-				registerHook(AutoLooter:GetModule(moduleName), hook)
+				registerHook(getModule(moduleName), hook)
 			end
 		end
 		local hooked = hookedModules[moduleName]
 		if hooked then
 			for k, v in pairs(hooked) do
 				if (not enabled[k]) then
-					removeHook(AutoLooter:GetModule(moduleName), k)
+					removeHook(getModule(moduleName), k)
 				end
 			end
 		end
@@ -105,7 +94,7 @@ local function onProfileChange(event, table, profileName, ...)
 end
 
 function DebugModule:OnInitialize()
-	local defaults = { global = { enableDebug = false, autoLooterHook = {}, modulesHook = {} } }
+	local defaults = { global = { enableDebug = false, modulesHook = {} } }
 	self.db = AutoLooter.db:RegisterNamespace("DebugModule", defaults)
 	AutoLooter.db.RegisterCallback(self, "OnProfileShutdown", onProfileChange)
 	AutoLooter.db.RegisterCallback(self, "OnProfileChanged", onProfileChange)
@@ -114,17 +103,17 @@ function DebugModule:OnInitialize()
 
 	self:SetEnabledState(self.db.global.enableDebug)
 
-	updateAutoLooterHooks()
+	-- remove old hook variable
+	self.db.global.autoLooterHook = nil
+
 	updateModulesHooks()
 end
 
 function DebugModule:OnEnable()
-	updateAutoLooterHooks()
 	updateModulesHooks()
 end
 
 function DebugModule:OnDisable()
-	updateAutoLooterHooks()
 	updateModulesHooks()
 end
 
@@ -140,24 +129,6 @@ local options = {
 			set = function(info, value)
 				DebugModule.db.global.enableDebug = value
 				LoadState()
-			end
-		},
-		hookAutoLooter = {
-			type = "multiselect",
-			name = L["Hook functions of AutoLooter"],
-			values = function()
-				local t = {}
-				for k, f in pairs(AutoLooter) do
-					if type(f) == "function" then
-						t[k] = k
-					end
-				end
-				return t
-			end,
-			get = function(info, key) return DebugModule.db.global.autoLooterHook[key] end,
-			set = function(info, key, value)
-				DebugModule.db.global.autoLooterHook[key] = value
-				updateAutoLooterHooks()
 			end
 		},
 		modules = {
@@ -176,34 +147,50 @@ local options = {
 	}
 }
 
+local function createHookSelect(module, name)
+	return {
+		type = "multiselect",
+		name = L["Hook Functions"],
+		values = function()
+			local t = {}
+			for k, f in pairs(module) do
+				if type(f) == "function" then
+					t[k] = k
+				end
+			end
+			return t
+		end,
+		get = function(info, key)
+			return DebugModule.db.global.modulesHook[name] and DebugModule.db.global.modulesHook[name][key]
+		end,
+		set = function(info, key, value)
+			DebugModule.db.global.modulesHook[name] = DebugModule.db.global.modulesHook[name] or {}
+			DebugModule.db.global.modulesHook[name][key] = value
+			updateModulesHooks()
+		end
+	}
+end
+
 local function createOptions()
+	options.args[AutoLooter:GetName()] = {
+		type = "group",
+		name = "AutoLooter (Main)",
+		order = 1,
+		args = {
+			modules = createHookSelect(AutoLooter, "AutoLooter")
+		}
+	}
+
+	local order = 1
 	for _, module in AutoLooter:IterateModules() do
+		order = order + 1
 		local name = module:GetName()
-		options.args[module:GetName()] = {
+		options.args[name] = {
 			type = "group",
-			name = module:GetName(),
+			name = name,
+			order = order,
 			args = {
-				modules = {
-					type = "multiselect",
-					name = L["Hook Functions"],
-					values = function()
-						local t = {}
-						for k, f in pairs(module) do
-							if type(f) == "function" then
-								t[k] = k
-							end
-						end
-						return t
-					end,
-					get = function(info, key)
-						return DebugModule.db.global.modulesHook[name] and DebugModule.db.global.modulesHook[name][key]
-					end,
-					set = function(info, key, value)
-						DebugModule.db.global.modulesHook[name] = DebugModule.db.global.modulesHook[name] or {}
-						DebugModule.db.global.modulesHook[name][key] = value
-						updateModulesHooks()
-					end
-				}
+				modules = createHookSelect(module, name)
 			}
 		}
 	end
