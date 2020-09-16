@@ -77,6 +77,9 @@ if L then
 	L["Printout chat frames"] = "Escrever nos seguintes chats"
 	L["Fishing"] = "Pescaria"
 	L["Loot everything while Fishing"] = "Pegar tudo enquanto pescando"
+	L["Remove old entries"] = "Remover registros antigos"
+	L["This will cleanup and recreate the type database"] = "Isso irá limpar e recriar o banco de dados de tipo"
+	L["This will remove old types/subtypes entries from the database"] = "Isso irá remover todos os tipos/subtipos antigos do banco de dados"
 	--@end-debug@
 
 	return

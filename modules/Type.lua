@@ -145,6 +145,30 @@ local function createOptions()
 				module:UpdateState()
 			end,
 			get = function(info) return AutoLooter.db.profile.ignoreGreys end
+		},
+		removeAll = {
+			type = "execute",
+			desc = L["This will cleanup and recreate the type database"],
+			confirm = true,
+			width = "double",
+			name = L["Remove all"],
+			order = 3,
+			func = function()
+				AutoLooter.db.profile.typeTable = CreateAHTable({})
+				module:UpdateState()
+			end
+		},
+		removeOld = {
+			type = "execute",
+			desc = L["This will remove old types/subtypes entries from the database"],
+			confirm = true,
+			width = "double",
+			name = L["Remove old entries"],
+			order = 4,
+			func = function()
+				AutoLooter.db.profile.typeTable = CreateAHTable(AutoLooter.db.profile.typeTable)
+				module:UpdateState()
+			end
 		}
 	}
 
@@ -192,6 +216,28 @@ local function createOptions()
 			}
 		end
 	end
+
+	options.oldEntries = {
+		type = "multiselect",
+		name = L["Old Entries"],
+		values = function()
+			local values = {}
+			for type, subtypeTable in pairs(AutoLooter.db.profile.typeTable) do
+				for subtype, enabled in pairs(subtypeTable) do
+					if (typeTable[type] == nil) or (typeTable[type][subtype] == nil) then
+						values[{ type = type, subtype = subtype}] = type .. "/" .. subtype
+					end
+				end
+			end
+			return values
+		end,
+		get = function(info, key)
+			return GetOrCreateTypeTableDb(AutoLooter.db.profile, key.type, key.subtype)
+		end,
+		set = function(info, key, value)
+			SetTypeTableDb(AutoLooter.db.profile, key.type, key.subtype, value)
+		end
+	}
 
 	return options
 end
