@@ -5,7 +5,7 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Quest", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
+local module = AutoLooter:NewModule("Quest", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 module.priority = 800
 
 local reason = Color.GREEN .. L["Quest"]
@@ -38,7 +38,7 @@ function module:GetOptions()
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val)
 						self.db.profile.lootQuest = Util.GetBoolean(val)
-						self:LoadState()
+						self:UpdateState()
 					end,
 					get = function(info) return self.db.profile.lootQuest end
 				}

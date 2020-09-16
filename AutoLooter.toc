@@ -16,7 +16,7 @@ Util.lua
 AutoLooter.lua
 
 modules\common\ListHelper.lua
-modules\common\SingleVarModulePrototype.lua
+modules\common\ToggleableModulePrototype.lua
 
 modules\Debug.lua
 modules\AlertList.lua

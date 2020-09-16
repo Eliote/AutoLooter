@@ -5,7 +5,7 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("IgnoreBOP", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
+local module = AutoLooter:NewModule("IgnoreBOP", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 module.priority = 600
 
 local reason = Color.ORANGE .. L["Ignored"]
@@ -34,7 +34,7 @@ function module:GetOptions()
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val)
 						AutoLooter.db.profile.ignoreBop = Util.GetBoolean(val)
-						self:LoadState()
+						self:UpdateState()
 					end,
 					get = function(info) return AutoLooter.db.profile.ignoreBop end
 				}

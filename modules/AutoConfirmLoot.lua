@@ -5,7 +5,7 @@ local Util = PRIVATE_TABLE.Util
 local ConfirmLootRoll = ConfirmLootRoll
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("AutoConfirm", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
+local module = AutoLooter:NewModule("AutoConfirm", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 local CallbackHandler = LibStub("CallbackHandler-1.0")
 
 function module:CanEnable()
@@ -34,7 +34,7 @@ function module:GetOptions()
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, value)
 						AutoLooter.db.profile.autoConfirmRoll = Util.GetBoolean(value)
-						self:LoadState()
+						self:UpdateState()
 					end,
 					get = function(info) return AutoLooter.db.profile.autoConfirmRoll end
 				},

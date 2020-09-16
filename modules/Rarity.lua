@@ -5,7 +5,7 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Rarity", PRIVATE_TABLE.SingleVarModulePrototype:New(), "AceEvent-3.0")
+local module = AutoLooter:NewModule("Rarity", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 module.priority = 700
 
 local reason = Color.GREEN .. L["Rarity"]
@@ -42,7 +42,7 @@ function module:GetOptions()
 					},
 					set = function(info, val)
 						AutoLooter.db.profile.rarity = val
-						self:LoadState()
+						self:UpdateState()
 					end,
 					get = function(info) return AutoLooter.db.profile.rarity end
 				}

@@ -5,10 +5,18 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Price", "AceEvent-3.0")
+local module = AutoLooter:NewModule("Price", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 module.priority = 1000
 
 local reason = Color.GREEN .. L["Price"]
+
+function module:CanEnable()
+	return AutoLooter.db.profile.price > 0
+end
+
+function module:InitializeDb()
+	self.db = AutoLooter.db
+end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, _, _, bindType = GetItemInfo(link)
@@ -35,7 +43,10 @@ function module:GetOptions()
 					step = 1,
 					width = "double",
 					order = 1000,
-					set = function(info, val) AutoLooter.db.profile.price = val end,
+					set = function(info, val)
+						AutoLooter.db.profile.price = val
+						module:UpdateState()
+					end,
 					get = function(info) return AutoLooter.db.profile.price end
 				}
 			}

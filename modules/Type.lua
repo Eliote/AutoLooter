@@ -5,10 +5,30 @@ local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
-local module = AutoLooter:NewModule("Type", "AceEvent-3.0")
+local module = AutoLooter:NewModule("Type", PRIVATE_TABLE.ToggleableModulePrototype, "AceEvent-3.0")
 module.priority = 1100
 
 local reason = Color.GREEN .. L["Type"]
+
+local function hasAnySubtypeEnabled(subtypeTable)
+	if subtypeTable then
+		for subtype, enabled in pairs(subtypeTable) do
+			if enabled then return true end
+		end
+	end
+end
+
+function module:CanEnable()
+	if self.db.profile.printoutType then return true end
+
+	for _, subtypeTable in pairs(AutoLooter.db.profile.typeTable) do
+		if hasAnySubtypeEnabled(subtypeTable) then return true end
+	end
+end
+
+function module:InitializeDb()
+	self.db = AutoLooter.db
+end
 
 local function LootType(iType, iSubType, iRarity)
 	if AutoLooter.db.profile.ignoreGreys and iRarity == 0 then return false end
@@ -33,6 +53,7 @@ local function SetTypeTableDb(db, type, subtype, value)
 	db.typeTable = db.typeTable or {}
 	db.typeTable[type] = db.typeTable[type] or {}
 	db.typeTable[type][subtype] = value
+	module:UpdateState()
 end
 
 local function GetOrCreateTypeTableDb(db, type, subtype)
@@ -101,6 +122,7 @@ local function SetAll(table, value)
 	for k, v in pairs(table) do
 		table[k] = value
 	end
+	module:UpdateState()
 end
 
 local function createOptions()
@@ -109,7 +131,7 @@ local function createOptions()
 			type = "toggle",
 			name = L["Printout items type"],
 			order = 1,
-			width = "double",
+			width = "full",
 			set = function(info, val) AutoLooter.db.profile.printoutType = Util.GetBoolean(val) end,
 			get = function(info) return AutoLooter.db.profile.printoutType end
 		},
@@ -117,14 +139,18 @@ local function createOptions()
 			type = "toggle",
 			name = L["Ignore greys when looting by type"],
 			order = 2,
-			width = "double",
-			set = function(info, val) AutoLooter.db.profile.ignoreGreys = Util.GetBoolean(val) end,
+			width = "full",
+			set = function(info, val)
+				AutoLooter.db.profile.ignoreGreys = Util.GetBoolean(val)
+				module:UpdateState()
+			end,
 			get = function(info) return AutoLooter.db.profile.ignoreGreys end
 		}
 	}
 
 	local typeTable = CreateAHTable(AutoLooter.db.profile)
 
+	local order = 10
 	for type, subtypeTable in Util.orderedPairs(typeTable) do
 		local values = {}
 
@@ -133,8 +159,13 @@ local function createOptions()
 		end
 
 		if (Util.CountTable(subtypeTable) > 0) then
+			order = order + 1
 			options[type] = {
-				name = type,
+				name = function()
+					local color = (hasAnySubtypeEnabled(AutoLooter.db.profile.typeTable[type]) and Color.GREEN) or ""
+					return color .. type
+				end,
+				order = order,
 				type = "group",
 				args = {
 					all = {
