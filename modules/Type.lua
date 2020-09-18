@@ -173,7 +173,7 @@ local function createOptions()
 			values[subtype] = subtype
 		end
 
-		if (Util.CountTable(subtypeTable) > 0) then
+		if (next(values)) then
 			order = order + 1
 			options[type] = {
 				name = function()
