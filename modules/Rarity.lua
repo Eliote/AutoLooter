@@ -40,10 +40,7 @@ function module:GetOptions()
 						[3] = Util.GetColorForRarity(3) .. _G["ITEM_QUALITY3_DESC"],
 						[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
 					},
-					set = function(info, val)
-						AutoLooter.db.profile.rarity = val
-						self:UpdateState()
-					end,
+					set = function(info, value) self:SetProfileVar("rarity", value) end,
 					get = function(info) return AutoLooter.db.profile.rarity end
 				}
 			}

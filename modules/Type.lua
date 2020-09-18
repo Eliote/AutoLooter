@@ -132,7 +132,7 @@ local function createOptions()
 			name = L["Printout items type"],
 			order = 1,
 			width = "full",
-			set = function(info, val) AutoLooter.db.profile.printoutType = Util.GetBoolean(val) end,
+			set = function(info, value) module:SetProfileVar("printoutType", Util.GetBoolean(value)) end,
 			get = function(info) return AutoLooter.db.profile.printoutType end
 		},
 		ignoreGreys = {
@@ -140,10 +140,7 @@ local function createOptions()
 			name = L["Ignore greys when looting by type"],
 			order = 2,
 			width = "full",
-			set = function(info, val)
-				AutoLooter.db.profile.ignoreGreys = Util.GetBoolean(val)
-				module:UpdateState()
-			end,
+			set = function(info, value) module:SetProfileVar("ignoreGreys", Util.GetBoolean(value)) end,
 			get = function(info) return AutoLooter.db.profile.ignoreGreys end
 		},
 		removeAll = {
@@ -153,10 +150,7 @@ local function createOptions()
 			width = "double",
 			name = L["Remove all"],
 			order = 3,
-			func = function()
-				AutoLooter.db.profile.typeTable = CreateAHTable({})
-				module:UpdateState()
-			end
+			func = function() module:SetProfileVar("typeTable", CreateAHTable({})) end
 		},
 		removeOld = {
 			type = "execute",
@@ -165,10 +159,7 @@ local function createOptions()
 			width = "double",
 			name = L["Remove old entries"],
 			order = 4,
-			func = function()
-				AutoLooter.db.profile.typeTable = CreateAHTable(AutoLooter.db.profile.typeTable)
-				module:UpdateState()
-			end
+			func = function() module:SetProfileVar("typeTable", CreateAHTable(AutoLooter.db.profile.typeTable)) end
 		}
 	}
 
@@ -225,18 +216,14 @@ local function createOptions()
 			for type, subtypeTable in pairs(AutoLooter.db.profile.typeTable) do
 				for subtype, enabled in pairs(subtypeTable) do
 					if (typeTable[type] == nil) or (typeTable[type][subtype] == nil) then
-						values[{ type = type, subtype = subtype}] = type .. "/" .. subtype
+						values[{ type = type, subtype = subtype }] = type .. "/" .. subtype
 					end
 				end
 			end
 			return values
 		end,
-		get = function(info, key)
-			return GetOrCreateTypeTableDb(AutoLooter.db.profile, key.type, key.subtype)
-		end,
-		set = function(info, key, value)
-			SetTypeTableDb(AutoLooter.db.profile, key.type, key.subtype, value)
-		end
+		get = function(info, key) return GetOrCreateTypeTableDb(AutoLooter.db.profile, key.type, key.subtype) end,
+		set = function(info, key, value) SetTypeTableDb(AutoLooter.db.profile, key.type, key.subtype, value) end
 	}
 
 	return options

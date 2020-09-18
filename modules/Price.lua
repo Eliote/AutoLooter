@@ -43,10 +43,7 @@ function module:GetOptions()
 					step = 1,
 					width = "double",
 					order = 1000,
-					set = function(info, val)
-						AutoLooter.db.profile.price = val
-						module:UpdateState()
-					end,
+					set = function(info, value) module:SetProfileVar("price", value) end,
 					get = function(info) return AutoLooter.db.profile.price end
 				}
 			}

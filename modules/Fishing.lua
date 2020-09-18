@@ -34,10 +34,7 @@ function module:GetOptions()
 					width = "double",
 					name = L["Loot everything while Fishing"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val)
-						self.db.profile.enableFishingLoot = Util.GetBoolean(val)
-						self:UpdateState()
-					end,
+					set = function(info, value) self:SetProfileVar("enableFishingLoot", Util.GetBoolean(value)) end,
 					get = function(info) return self.db.profile.enableFishingLoot end
 				}
 			}

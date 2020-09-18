@@ -32,10 +32,7 @@ function module:GetOptions()
 					type = "toggle",
 					name = L["Auto confirm loot roll"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, value)
-						AutoLooter.db.profile.autoConfirmRoll = Util.GetBoolean(value)
-						self:UpdateState()
-					end,
+					set = function(info, value) self:SetProfileVar("autoConfirmRoll", Util.GetBoolean(value)) end,
 					get = function(info) return AutoLooter.db.profile.autoConfirmRoll end
 				},
 			}

@@ -43,6 +43,7 @@ function module:GetOptions()
 					type = "input",
 					name = L["Add item to ignore list"],
 					width = "full",
+					set = function(info, value) module:AddToProfileVarList("ignore", value) end,
 					set = function(info, val)
 						ListHelper.AddItem(val, AutoLooter.db.profile.ignore)
 						module:UpdateState()
