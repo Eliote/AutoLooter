@@ -127,14 +127,6 @@ end
 
 local function createOptions()
 	local options = {
-		printoutType = {
-			type = "toggle",
-			name = L["Printout items type"],
-			order = 1,
-			width = "full",
-			set = function(info, value) module:SetProfileVar("printoutType", Util.GetBoolean(value)) end,
-			get = function(info) return AutoLooter.db.profile.printoutType end
-		},
 		ignoreGreys = {
 			type = "toggle",
 			name = L["Ignore greys when looting by type"],
@@ -235,6 +227,17 @@ function module:GetOptions()
 			name = L["Type"],
 			type = "group",
 			args = createOptions()
+		},
+		chat = {
+			args = {
+				printoutType = {
+					type = "toggle",
+					name = L["Printout items type"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
+					set = function(info, value) module:SetProfileVar("printoutType", Util.GetBoolean(value)) end,
+					get = function(info) return AutoLooter.db.profile.printoutType end
+				}
+			}
 		}
 	}
 end

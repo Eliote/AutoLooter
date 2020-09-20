@@ -22,6 +22,19 @@ function module:GetOptions()
 					set = function(info, val) LibStub("AceAddon-3.0"):GetAddon("AutoLooter").Toggle(val) end,
 					get = function(info) return AutoLooter.db.profile.enable end
 				},
+				close = {
+					type = "toggle",
+					name = L["Close after loot"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
+					set = function(info, val) AutoLooter.db.profile.close = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.close end
+				},
+			}
+		},
+		chat = {
+			name = L["Chat"],
+			type = "group",
+			args = {
 				printout = {
 					type = "toggle",
 					name = L["Printout items looted"],
@@ -35,13 +48,6 @@ function module:GetOptions()
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) AutoLooter.db.profile.printoutIgnored = Util.GetBoolean(val) end,
 					get = function(info) return AutoLooter.db.profile.printoutIgnored end
-				},
-				close = {
-					type = "toggle",
-					name = L["Close after loot"],
-					dialogControl = "AutoLooter_WrapTextCheckBox",
-					set = function(info, val) AutoLooter.db.profile.close = Util.GetBoolean(val) end,
-					get = function(info) return AutoLooter.db.profile.close end
 				},
 				printoutIconOnly = {
 					type = "toggle",
@@ -82,6 +88,6 @@ function module:GetOptions()
 					end
 				}
 			}
-		},
+		}
 	}
 end
