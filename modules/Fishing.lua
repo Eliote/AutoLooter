@@ -27,7 +27,9 @@ end
 
 function module:GetOptions()
 	return {
-		general = {
+		fishing = {
+			name = L["Fishing"],
+			type = "group",
 			args = {
 				fishingLoot = {
 					type = "toggle",
@@ -35,7 +37,11 @@ function module:GetOptions()
 					name = L["Loot everything while Fishing"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, value) self:SetProfileVar("enableFishingLoot", Util.GetBoolean(value)) end,
-					get = function(info) return self.db.profile.enableFishingLoot end
+					get = function(info) return self.db.profile.enableFishingLoot end,
+					disabled = function()
+						local fishingIgnore = AutoLooter:GetModule("FishingIgnore")
+						return fishingIgnore and fishingIgnore.db.profile.enableModule
+					end
 				}
 			}
 		}

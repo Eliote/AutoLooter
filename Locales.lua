@@ -80,6 +80,10 @@ if L then
 	L["Remove old entries"] = "Remover registros antigos"
 	L["This will cleanup and recreate the type database"] = "Isso irá limpar e recriar o banco de dados de tipo"
 	L["This will remove old types/subtypes entries from the database"] = "Isso irá remover todos os tipos/subtipos antigos do banco de dados"
+	L["Ignore Fishing"] = "Ignorar pescaria"
+	L["Integration"] = "Integração"
+	L["Don't loot anything while Fishing"] = "Não pegar itens enquanto pescando"
+	L["This can be useful to let addons like Fishing Buddy do its work"] = "Isso pode ser util para permitir que addons como Fishing Buddy cuidem da pesca"
 	--@end-debug@
 
 	return
