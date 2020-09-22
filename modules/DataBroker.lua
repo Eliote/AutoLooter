@@ -4,8 +4,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
-local print = Util.print
-
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
 local module = AutoLooter:NewModule("DataBroker")
 

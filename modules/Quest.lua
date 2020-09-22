@@ -10,6 +10,8 @@ module.priority = 800
 
 local reason = Color.GREEN .. L["Quest"]
 
+local GetItemInfo = GetItemInfo
+
 function module:CanEnable()
 	return self.db.profile.lootQuest
 end
@@ -19,9 +21,8 @@ function module:InitializeDb()
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
-
 	if (AutoLooter.db.profile.lootQuest) then
+		local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
 		if (isQuestItem or bindType == 4 or itemClassID == LE_ITEM_CLASS_QUESTITEM) then
 			return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 		end

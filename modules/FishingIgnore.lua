@@ -10,6 +10,8 @@ module.priority = 10
 
 local reason = Color.DARK_BLUE .. L["Ignore Fishing"]
 
+local IsFishingLoot = IsFishingLoot
+
 function module:CanEnable()
 	return module.db.profile.enableModule
 end

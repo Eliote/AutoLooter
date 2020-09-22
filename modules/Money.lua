@@ -9,6 +9,8 @@ module.priority = 200
 
 local reason = Color.GREEN .. L["Coin"]
 
+local GetMoneyString, GetCoinText = GetMoneyString, GetCoinText
+
 local function split(inputstr, sep)
 	if sep == nil then
 		sep = "%s"
