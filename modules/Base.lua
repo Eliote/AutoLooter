@@ -1,6 +1,7 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
+local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
@@ -10,13 +11,24 @@ function AutoLooter.FormatLoot(icon, link, quantity)
 	return Util.GetItemText(icon, link, quantity, AutoLooter.db.profile.printoutIconOnly)
 end
 
+local function isWoWAutoLootEnabled()
+	return GetCVar("autoLootDefault") == "1"
+end
+
 function module:GetOptions()
 	return {
 		general = {
 			args = {
 				enable = {
 					type = "toggle",
-					name = L["Enable"],
+					name = function() return (isWoWAutoLootEnabled() and Color.RED or "") .. L["Enable AutoLooter"] end,
+					desc = function()
+						if (isWoWAutoLootEnabled()) then
+							return L["AutoLooter will not loot anything when WoWs AutoLoot option is looting!\n\n" ..
+									"This allows you to use the WoWs AutoLoot key as way to enable/disable AutoLooter by target.\n\n" ..
+									"You can configure this options in 'Menu > Interface > Controls'."]
+						end
+					end,
 					order = 0,
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) LibStub("AceAddon-3.0"):GetAddon("AutoLooter").Toggle(val) end,
