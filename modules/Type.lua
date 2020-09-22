@@ -10,6 +10,8 @@ module.priority = 1100
 
 local reason = Color.GREEN .. L["Type"]
 
+local GetItemInfoInstant = GetItemInfoInstant
+
 local function hasAnySubtypeEnabled(subtypeTable)
 	if subtypeTable then
 		for subtype, enabled in pairs(subtypeTable) do
@@ -40,7 +42,7 @@ local function LootType(iType, iSubType, iRarity)
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
+	local _, itemType, itemSubType = GetItemInfoInstant(link)
 
 	if LootType(itemType, itemSubType, nRarity) then
 		local typeSubtype = (AutoLooter.db.profile.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""

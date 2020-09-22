@@ -11,13 +11,15 @@ module.priority = 100000
 local reason = Color.GREEN .. L["All"]
 local reasonLog = Color.ORANGE .. L["Ignored"]
 
+local GetItemInfoInstant, CloseLoot = GetItemInfoInstant, CloseLoot
+
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if AutoLooter.db.profile.lootAll then
 		-- loot everything left
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	else
 		-- logs everything left
-		local _, _, _, _, _, itemType, itemSubType = GetItemInfo(link)
+		local _, itemType, itemSubType = GetItemInfoInstant(link)
 		local typeSubtype = (AutoLooter.db.profile.printoutType and Color.YELLOW .. "(" .. itemType .. "/" .. itemSubType .. ")|r") or ""
 
 		return false, reasonLog, typeSubtype .. AutoLooter.FormatLoot(icon, link, nQuantity), true
