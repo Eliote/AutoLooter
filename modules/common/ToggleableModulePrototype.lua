@@ -38,6 +38,11 @@ function prototype:SetProfileVar(var, value)
 	self:UpdateState()
 end
 
+function prototype:SetProfileVarKey(var, key, value)
+	self:GetDb().profile[var][key] = value
+	self:UpdateState()
+end
+
 PRIVATE_TABLE.ToggleableModulePrototype.super = PRIVATE_TABLE.ToggleableModulePrototype
 
 

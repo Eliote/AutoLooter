@@ -10,16 +10,24 @@ module.priority = 700
 
 local reason = Color.GREEN .. L["Rarity"]
 
+local MAX_RARITY = 6
+
 function module:CanEnable()
-	return self.db.profile.rarity ~= -1
+	for i = 0, MAX_RARITY do
+		if self.db.profile.rarity[i] then return true end
+	end
 end
 
 function module:InitializeDb()
-	self.db = AutoLooter.db
+	local defaults = { profile = { rarity = {} } }
+	for i = 2, MAX_RARITY do
+		defaults.profile.rarity[i] = true
+	end
+	self.db = AutoLooter.db:RegisterNamespace("RarityModule", defaults)
 end
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
-	if (AutoLooter.db.profile.rarity > -1) and nRarity and (nRarity >= AutoLooter.db.profile.rarity) then
+	if nRarity and module.db.profile.rarity[nRarity] then
 		return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 	end
 end
@@ -29,19 +37,18 @@ function module:GetOptions()
 		general = {
 			args = {
 				rarity = {
-					type = "select",
+					type = "multiselect",
 					name = L["Rarity"],
 					order = 1001,
-					values = {
-						[-1] = "|cFFFF0000" .. L["Off"],
-						[0] = Util.GetColorForRarity(0) .. _G["ITEM_QUALITY0_DESC"],
-						[1] = Util.GetColorForRarity(1) .. _G["ITEM_QUALITY1_DESC"],
-						[2] = Util.GetColorForRarity(2) .. _G["ITEM_QUALITY2_DESC"],
-						[3] = Util.GetColorForRarity(3) .. _G["ITEM_QUALITY3_DESC"],
-						[4] = Util.GetColorForRarity(4) .. _G["ITEM_QUALITY4_DESC"]
-					},
-					set = function(info, value) self:SetProfileVar("rarity", value) end,
-					get = function(info) return AutoLooter.db.profile.rarity end
+					values = function()
+						local values = {}
+						for i = 0, MAX_RARITY do
+							values[i] = Util.GetColorForRarity(i) .. _G["ITEM_QUALITY" .. i .. "_DESC"]
+						end
+						return values
+					end,
+					set = function(info, key, value) self:SetProfileVarKey("rarity", key, value) end,
+					get = function(info, key) return self.db.profile.rarity[key] end
 				}
 			}
 		}
