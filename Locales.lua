@@ -89,6 +89,7 @@ if L then
 			"You can configure this options in 'Menu > Interface > Controls'."] = "AutoLooter não irá pegar nenhum item enquanto o Saque automático do WoW estiver funcionando\n\n" ..
 			"Isso possibilita utilizar a tecla de saque para ativar/desativar o AutoLooter por alvo\n\n" ..
 			"Você pode configurar essas opções em 'Menu > Interface > Controles'"
+	L["Loot everything with a price greater or equal to this value"] = "Pega todos os itens com preço maior ou igual a esse valor"
 	--@end-debug@
 
 	return

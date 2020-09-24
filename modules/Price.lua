@@ -28,23 +28,37 @@ function module:GetOptions()
 	return {
 		general = {
 			args = {
-				price = {
-					type = "range",
-					name = function()
-						local formatedPrice = "[" .. Color.RED .. L["Off"] .. "|r]"
-						if AutoLooter.db.profile.price > 0 then
-							formatedPrice = GetMoneyString(AutoLooter.db.profile.price)
-						end
-						return L["Price (in coppers)"] .. " | " .. formatedPrice end,
-					min = 0,
-					max = 10000000,
-					softMax = 1000000,
-					step = 1,
-					width = "double",
-					order = 1000,
-					set = function(info, value) module:SetProfileVar("price", value) end,
-					get = function(info) return AutoLooter.db.profile.price end
+				priceGroup = {
+					name = L["Price (in coppers)"],
+					type = "group",
+					inline = true,
+					args = {
+						price = {
+							type = "range",
+							name = function()
+								local formatedPrice = "[" .. Color.RED .. L["Off"] .. "|r]"
+								if AutoLooter.db.profile.price > 0 then
+									formatedPrice = GetMoneyString(AutoLooter.db.profile.price)
+								end
+								return formatedPrice
+							end,
+							desc = function()
+								if AutoLooter.db.profile.price > 0 then
+									return L["Loot everything with a price greater or equal to this value"]
+								end
+							end,
+							min = 0,
+							max = 10000000,
+							softMax = 1000000,
+							step = 1,
+							width = "full",
+							order = 1000,
+							set = function(info, value) module:SetProfileVar("price", value) end,
+							get = function(info) return AutoLooter.db.profile.price end
+						}
+					}
 				}
+
 			}
 		}
 	}
