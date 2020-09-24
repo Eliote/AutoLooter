@@ -84,11 +84,9 @@ if L then
 	L["Integration"] = "Integração"
 	L["Don't loot anything while Fishing"] = "Não pegar itens enquanto pescando"
 	L["This can be useful to let addons like Fishing Buddy do its work"] = "Isso pode ser util para permitir que addons como Fishing Buddy cuidem da pesca"
-	L["AutoLooter will not loot anything when WoWs AutoLoot option is looting!\n\n" ..
-			"This allows you to use the WoWs AutoLoot key as way to enable/disable AutoLooter by target.\n\n" ..
-			"You can configure this options in 'Menu > Interface > Controls'."] = "AutoLooter não irá pegar nenhum item enquanto o Saque automático do WoW estiver funcionando\n\n" ..
-			"Isso possibilita utilizar a tecla de saque para ativar/desativar o AutoLooter por alvo\n\n" ..
-			"Você pode configurar essas opções em 'Menu > Interface > Controles'"
+	L["ENABLE_AUTO_LOOTER_DESC"] = "AutoLooter não irá pegar nenhum item quando o Saque automático do WoW estiver funcionando.\n\n" ..
+			"Isso possibilita utilizar a tecla de saque para ativar/desativar o AutoLooter por alvo.\n\n" ..
+			"Você pode configurar essas opções em 'Menu > Interface > Controles'."
 	L["Loot everything with a price greater or equal to this value"] = "Pega todos os itens com preço maior ou igual a esse valor"
 	--@end-debug@
 

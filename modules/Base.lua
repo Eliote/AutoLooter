@@ -22,13 +22,7 @@ function module:GetOptions()
 				enable = {
 					type = "toggle",
 					name = function() return (isWoWAutoLootEnabled() and Color.RED or "") .. L["Enable AutoLooter"] end,
-					desc = function()
-						if (isWoWAutoLootEnabled()) then
-							return L["AutoLooter will not loot anything when WoWs AutoLoot option is looting!\n\n" ..
-									"This allows you to use the WoWs AutoLoot key as way to enable/disable AutoLooter by target.\n\n" ..
-									"You can configure this options in 'Menu > Interface > Controls'."]
-						end
-					end,
+					desc = L["ENABLE_AUTO_LOOTER_DESC"],
 					order = 0,
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, val) LibStub("AceAddon-3.0"):GetAddon("AutoLooter").Toggle(val) end,
