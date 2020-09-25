@@ -2,6 +2,7 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Color = PRIVATE_TABLE.Color
+---@type Util
 local Util = PRIVATE_TABLE.Util
 
 local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
@@ -12,16 +13,34 @@ local reason = Color.GREEN .. L["Rarity"]
 
 local MAX_RARITY = 6
 
+local function qualityIterator()
+	if Enum.ItemQuality then
+		local qualityTable = Enum.ItemQuality
+		local lastQuality, qualityNumber
+		local function iterator()
+			lastQuality, qualityNumber = next(qualityTable, lastQuality)
+			return qualityNumber, lastQuality
+		end
+		return iterator
+	end
+
+	return function(_, k)
+		if ((k or 0) < MAX_RARITY) then
+			return k and (k + 1) or 0
+		end
+	end
+end
+
 function module:CanEnable()
-	for i = 0, MAX_RARITY do
+	for i in qualityIterator() do
 		if self.db.profile.rarity[i] then return true end
 	end
 end
 
 function module:InitializeDb()
 	local defaults = { profile = { rarity = {} } }
-	for i = 2, MAX_RARITY do
-		defaults.profile.rarity[i] = true
+	for i in qualityIterator() do
+		defaults.profile.rarity[i] = (i >= 2)
 	end
 	self.db = AutoLooter.db:RegisterNamespace("RarityModule", defaults)
 end
@@ -42,7 +61,7 @@ function module:GetOptions()
 					order = 1001,
 					values = function()
 						local values = {}
-						for i = 0, MAX_RARITY do
+						for i in qualityIterator() do
 							values[i] = Util.GetColorForRarity(i) .. _G["ITEM_QUALITY" .. i .. "_DESC"]
 						end
 						return values
