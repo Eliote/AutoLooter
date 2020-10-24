@@ -93,8 +93,27 @@ local function onProfileChange(event, table, profileName, ...)
 	end
 end
 
+local time = 0
+local function LootReadyStart()
+	time = debugprofilestop()
+end
+
+local function LootReadyFinish()
+	print(string.format("Elapsed time: %0.6f ms", debugprofilestop() - time))
+end
+
+local function updateTimingHook()
+	if DebugModule.db.global.enableTiming then
+		AutoLooter.RegisterCallback(DebugModule, "OnLootReadyStart", LootReadyStart)
+		AutoLooter.RegisterCallback(DebugModule, "OnLootReadyFinish", LootReadyFinish)
+	else
+		AutoLooter.UnregisterCallback(DebugModule, "OnLootReadyStart")
+		AutoLooter.UnregisterCallback(DebugModule, "OnLootReadyFinish")
+	end
+end
+
 function DebugModule:OnInitialize()
-	local defaults = { global = { enableDebug = false, modulesHook = {} } }
+	local defaults = { global = { enableDebug = false, modulesHook = {}, enableTiming = false } }
 	self.db = AutoLooter.db:RegisterNamespace("DebugModule", defaults)
 	AutoLooter.db.RegisterCallback(self, "OnProfileShutdown", onProfileChange)
 	AutoLooter.db.RegisterCallback(self, "OnProfileChanged", onProfileChange)
@@ -107,14 +126,17 @@ function DebugModule:OnInitialize()
 	self.db.global.autoLooterHook = nil
 
 	updateModulesHooks()
+	updateTimingHook()
 end
 
 function DebugModule:OnEnable()
 	updateModulesHooks()
+	updateTimingHook()
 end
 
 function DebugModule:OnDisable()
 	updateModulesHooks()
+	updateTimingHook()
 end
 
 local options = {
@@ -129,6 +151,15 @@ local options = {
 			set = function(info, value)
 				DebugModule.db.global.enableDebug = value
 				LoadState()
+			end
+		},
+		time = {
+			type = "toggle",
+			name = L["Time Loot"],
+			get = function() return DebugModule.db.global.enableTiming end,
+			set = function(info, value)
+				DebugModule.db.global.enableTiming = value
+				updateTimingHook()
 			end
 		},
 		modules = {
