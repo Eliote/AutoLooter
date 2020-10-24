@@ -248,6 +248,8 @@ end
 function AUTO_LOOTER:LOOT_READY(_, autoloot)
 	if (autoloot) then return end
 
+	events:Fire("OnLootReadyStart")
+
 	local reasonMap = {}
 	local printReason = self.db.profile.printout
 
@@ -286,4 +288,6 @@ function AUTO_LOOTER:LOOT_READY(_, autoloot)
 	for reason, contents in pairs(reasonMap) do
 		PrintReason(reason, contents)
 	end
+
+	events:Fire("OnLootReadyFinish")
 end
