@@ -15,11 +15,13 @@ local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(ADDON_NAME,
 })
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
+local iconMouseLeft = "|A:newplayertutorial-icon-mouse-leftbutton:0:0|a "
+local iconMouseRight = "|A:newplayertutorial-icon-mouse-rightbutton:0:0|a "
 function AL_LDB.OnTooltipShow(tip)
 	tip:AddLine(Color.WHITE .. ADDON_NAME)
 	tip:AddLine(" ")
-	tip:AddLine(Color.YELLOW .. L["Left-click"] .. "|r " .. L["to Show/Hide UI"])
-	tip:AddLine(Color.YELLOW .. L["Right-click"] .. "|r " .. L["to Enable/Disable loot all"])
+	tip:AddLine(iconMouseLeft .. Color.YELLOW .. L["Left-click"] .. "|r " .. L["to Show/Hide UI"])
+	tip:AddLine(iconMouseRight .. Color.YELLOW .. L["Right-click"] .. "|r " .. L["to Enable/Disable loot all"])
 end
 
 function AL_LDB.OnClick(self, button)
