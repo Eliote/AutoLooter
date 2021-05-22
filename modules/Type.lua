@@ -12,6 +12,15 @@ local reason = Color.GREEN .. L["Type"]
 
 local GetItemInfoInstant = GetItemInfoInstant
 
+local C_AuctionHouse = C_AuctionHouse
+if not C_AuctionHouse then
+	C_AuctionHouse = {}
+	C_AuctionHouse.GetAuctionItemSubClasses = function(...)
+		return { GetAuctionItemSubClasses(...) }
+	end
+end
+
+
 local function hasAnySubtypeEnabled(subtypeTable)
 	if subtypeTable then
 		for subtype, enabled in pairs(subtypeTable) do
