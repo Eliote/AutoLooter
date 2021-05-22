@@ -15,8 +15,9 @@ local AL_LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(ADDON_NAME,
 })
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
-local iconMouseLeft = "|A:newplayertutorial-icon-mouse-leftbutton:0:0|a "
-local iconMouseRight = "|A:newplayertutorial-icon-mouse-rightbutton:0:0|a "
+local isMainLine = WOW_PROJECT_MAINLINE == WOW_PROJECT_ID
+local iconMouseLeft = isMainLine and "|A:newplayertutorial-icon-mouse-leftbutton:0:0|a " or ""
+local iconMouseRight = isMainLine and "|A:newplayertutorial-icon-mouse-rightbutton:0:0|a " or ""
 function AL_LDB.OnTooltipShow(tip)
 	tip:AddLine(Color.WHITE .. ADDON_NAME)
 	tip:AddLine(" ")
