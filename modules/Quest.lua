@@ -12,6 +12,8 @@ local reason = Color.GREEN .. L["Quest"]
 
 local GetItemInfo = GetItemInfo
 
+local questItemList = {}
+
 function module:CanEnable()
 	return self.db.profile.lootQuest
 end
@@ -20,10 +22,16 @@ function module:InitializeDb()
 	self.db = AutoLooter.db
 end
 
+function module:OnEnable()
+	self:RegisterEvent("QUEST_LOG_UPDATE")
+	-- if the option is enabled later, the event might not trigger immediately. So I update the list now.
+	questItemList = self:CreateQuestItemList()
+end
+
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if (AutoLooter.db.profile.lootQuest) then
-		local _, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
-		if (isQuestItem or bindType == 4 or itemClassID == LE_ITEM_CLASS_QUESTITEM) then
+		local itemName, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
+		if (itemName and (isQuestItem or bindType == 4 or itemClassID == LE_ITEM_CLASS_QUESTITEM or questItemList[itemName])) then
 			return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 		end
 	end
@@ -43,4 +51,35 @@ function module:GetOptions()
 			}
 		}
 	}
+end
+
+function module:CreateQuestItemList()
+	local itemList = {}
+
+	for questIndex = 1, GetNumQuestLogEntries() do
+		for boardIndex = 1, GetNumQuestLeaderBoards(questIndex) do
+			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
+			if not isDone and boardItemType == "item" then
+				local itemName, numItems, numNeeded = leaderboardTxt:match("(.*):%s*([%d]+)%s*/%s*([%d]+)");
+
+				if itemName then
+					itemList[itemName] = true
+				end
+			end
+		end
+	end
+
+	return itemList
+end
+
+function module:QUEST_LOG_UPDATE()
+	self:UnregisterEvent("QUEST_LOG_UPDATE")
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
+	questItemList = self:CreateQuestItemList()
+end
+
+function module:UNIT_QUEST_LOG_CHANGED(event, unitId)
+	if unitId == "player" then
+		questItemList = self:CreateQuestItemList()
+	end
 end
