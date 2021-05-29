@@ -211,6 +211,7 @@ local function createOptions()
 		end
 	end
 
+	local keyTable = {}
 	options.oldEntries = {
 		type = "multiselect",
 		name = L["Old Entries"],
@@ -219,14 +220,22 @@ local function createOptions()
 			for type, subtypeTable in pairs(AutoLooter.db.profile.typeTable) do
 				for subtype, enabled in pairs(subtypeTable) do
 					if (typeTable[type] == nil) or (typeTable[type][subtype] == nil) then
-						values[{ type = type, subtype = subtype }] = type .. "/" .. subtype
+						local key = type .. "//" .. subtype
+						keyTable[key] = { type = type, subtype = subtype }
+						values[key] = type .. "/" .. subtype
 					end
 				end
 			end
 			return values
 		end,
-		get = function(info, key) return GetOrCreateTypeTableDb(AutoLooter.db.profile, key.type, key.subtype) end,
-		set = function(info, key, value) SetTypeTableDb(AutoLooter.db.profile, key.type, key.subtype, value) end
+		get = function(info, key)
+			local t = keyTable[key]
+			return GetOrCreateTypeTableDb(AutoLooter.db.profile, t.type, t.subtype)
+		end,
+		set = function(info, key, value)
+			local t = keyTable[key]
+			SetTypeTableDb(AutoLooter.db.profile, t.type, t.subtype, value)
+		end
 	}
 
 	return options
