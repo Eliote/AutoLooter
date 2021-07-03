@@ -87,7 +87,7 @@ end
 local function CreateAHTable(defTable)
 	local out = {}
 
-	local itemClasses = {
+	local itemClasses = (Enum and Enum.ItemClass) or {
 		LE_ITEM_CLASS_CONSUMABLE,
 		LE_ITEM_CLASS_CONTAINER,
 		LE_ITEM_CLASS_WEAPON,

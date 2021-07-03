@@ -16,6 +16,8 @@ local GetNumQuestLeaderBoards = C_QuestLog.GetNumQuestLeaderBoards or GetNumQues
 local GetQuestLogLeaderBoard = C_QuestLog.GetQuestLogLeaderBoard or GetQuestLogLeaderBoard;
 
 local questItemList = {}
+local questItemClassID = LE_ITEM_CLASS_QUESTITEM or Enum.ItemClass.Questitem
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 function module:CanEnable()
 	return self.db.profile.lootQuest
@@ -34,7 +36,7 @@ end
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if (AutoLooter.db.profile.lootQuest) then
 		local itemName, _, _, _, _, itemType, itemSubType, _, _, _, iPrice, itemClassID, itemSubClassID, bindType = GetItemInfo(link)
-		if (itemName and (isQuestItem or bindType == 4 or itemClassID == LE_ITEM_CLASS_QUESTITEM or questItemList[itemName])) then
+		if (itemName and (isQuestItem or bindType == 4 or itemClassID == questItemClassID or questItemList[itemName])) then
 			return true, reason, AutoLooter.FormatLoot(icon, link, nQuantity), nil
 		end
 	end
@@ -63,8 +65,12 @@ function module:CreateQuestItemList()
 		for boardIndex = 1, GetNumQuestLeaderBoards(questIndex) do
 			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
 			if not isDone and boardItemType == "item" then
-				local itemName, numItems, numNeeded = leaderboardTxt:match("(.*):%s*([%d]+)%s*/%s*([%d]+)");
-
+				local itemName, numItems, numNeeded
+				if (isRetail) then
+					numItems, numNeeded, itemName = leaderboardTxt:match("([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
+				else
+					itemName, numItems, numNeeded = leaderboardTxt:match("(.*):%s*([%d]+)%s*/%s*([%d]+)")
+				end
 				if itemName then
 					itemList[itemName] = true
 				end
