@@ -15,12 +15,9 @@ jobs:
       - name: Clone project
         uses: actions/checkout@v1
 
-      # once cloned, we just run the GitHub Action for the packager project
       - name: Retail
         uses: BigWigsMods/packager@ff497ddc591e87719d9da67f6dc106a4aa6a873d
 
-      # another example where we supply additional arguments, this example is specifically to release
-      # for the Classic version of the game
       - name: Burning Crusade
         uses: BigWigsMods/packager@ff497ddc591e87719d9da67f6dc106a4aa6a873d
         with:
