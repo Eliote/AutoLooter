@@ -27,7 +27,13 @@ end
 
 function AL_LDB.OnClick(self, button)
 	if button == "LeftButton" then
-		LibStub("AceConfigDialog-3.0"):Open(ADDON_NAME)
+		local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+		local frame = AceConfigDialog.OpenFrames[ADDON_NAME]
+		if (frame and frame:IsShown()) then
+			AceConfigDialog:Close(ADDON_NAME)
+		else
+			AceConfigDialog:Open(ADDON_NAME)
+		end
 	elseif button == "RightButton" then
 		AutoLooter.db.profile.lootAll = not AutoLooter.db.profile.lootAll
 		AutoLooter.print(L["Loot everything"], ": ", Util.OnOff(AutoLooter.db.profile.lootAll))

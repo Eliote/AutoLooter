@@ -1,6 +1,6 @@
-## Interface: 90100
-## Interface-Retail: 90100
-## Interface-BCC: 20501
+## Interface: 90205
+## Interface-Classic: 11403
+## Interface-BCC: 20504
 ## Title: AutoLooter
 ## Version: @project-version@
 ## Author: Eliote
@@ -8,6 +8,7 @@
 ## SavedVariables: AutoLooterDB
 
 ## X-Curse-Project-ID: 94767
+## X-Wago-ID: R4N2wQ6L
 
 embeds.xml
 widget\WrapTextCheckBox.lua
