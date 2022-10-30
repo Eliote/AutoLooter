@@ -163,7 +163,8 @@ function AUTO_LOOTER:OnInitialize()
 			autoConfirmRoll = false,
 			minimap = { hide = false },
 			ignoreBop = false,
-			printoutReason = true
+			printoutReason = true,
+			lootEarly = true,
 		},
 		char = {
 			chatFrameNames = { [-1] = true }
@@ -187,12 +188,12 @@ end
 
 function AUTO_LOOTER:OnEnable()
 	AUTO_LOOTER:RegisterEvent("LOOT_READY")
+	AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
 	AUTO_LOOTER.print(L["Enabled"])
 	events:Fire("OnEnable")
 end
 
 function AUTO_LOOTER:OnDisable()
-	--AUTO_LOOTER:UnregisterEvent("LOOT_READY") -- AceEvent will unregister it
 	AUTO_LOOTER.print(L["Disabled"])
 	events:Fire("OnDisable")
 end
@@ -245,7 +246,19 @@ function AUTO_LOOTER:ResetModulesCache()
 	modulesCache = {}
 end
 
-function AUTO_LOOTER:LOOT_READY(_, autoloot)
+function AUTO_LOOTER:LOOT_OPENED(...)
+	if (not self.db.profile.lootEarly) then
+		self:Loot(...)
+	end
+end
+
+function AUTO_LOOTER:LOOT_READY(...)
+	if (self.db.profile.lootEarly) then
+		self:Loot(...)
+	end
+end
+
+function AUTO_LOOTER:Loot(_, autoloot)
 	if (autoloot) then return end
 
 	events:Fire("OnLootReadyStart")

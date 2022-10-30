@@ -35,6 +35,12 @@ function module:GetOptions()
 					set = function(info, val) AutoLooter.db.profile.close = Util.GetBoolean(val) end,
 					get = function(info) return AutoLooter.db.profile.close end
 				},
+				lootEarly = {
+					type = "toggle",
+					name = L["Fast loot"],
+					set = function(info, val) AutoLooter.db.profile.lootEarly = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.lootEarly end
+				},
 			}
 		},
 		chat = {

@@ -88,6 +88,7 @@ if L then
 			"Isso possibilita utilizar a tecla de saque para ativar/desativar o AutoLooter por alvo.\n\n" ..
 			"Você pode configurar essas opções em 'Menu > Interface > Controles'."
 	L["Loot everything with a price greater or equal to this value"] = "Pega todos os itens com preço maior ou igual a esse valor"
+	L["Fast loot"] = "Loot rápido"
 	--@end-debug@
 
 	return
