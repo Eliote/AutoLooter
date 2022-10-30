@@ -89,6 +89,7 @@ if L then
 			"Você pode configurar essas opções em 'Menu > Interface > Controles'."
 	L["Loot everything with a price greater or equal to this value"] = "Pega todos os itens com preço maior ou igual a esse valor"
 	L["Fast loot"] = "Loot rápido"
+	L["Try to show loot animation"] = "Tentar exibir animação de saque"
 	--@end-debug@
 
 	return

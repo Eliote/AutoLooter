@@ -143,6 +143,7 @@ local function registerResetCacheOn(module, func)
 end
 
 function AUTO_LOOTER:OnInitialize()
+	local isDragonFlight = (LE_EXPANSION_LEVEL_CURRENT >= 9) -- DRAGONFLIGHT = 9
 	local defaults = {
 		profile = {
 			items = {},
@@ -164,7 +165,7 @@ function AUTO_LOOTER:OnInitialize()
 			minimap = { hide = false },
 			ignoreBop = false,
 			printoutReason = true,
-			lootEarly = true,
+			lootEarly = not isDragonFlight,
 		},
 		char = {
 			chatFrameNames = { [-1] = true }
@@ -201,6 +202,7 @@ end
 local function Loot(index, itemName, itemLink)
 	LootSlot(index)
 	ConfirmLootSlot(index) -- In case it's a Bind on Pickup
+	events:Fire("OnLoot", index)
 end
 
 local trim = Util.trim

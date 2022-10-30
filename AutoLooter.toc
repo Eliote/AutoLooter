@@ -43,3 +43,4 @@ modules\Rarity.lua
 modules\Token.lua
 modules\Type.lua
 modules\WhiteList.lua
+modules\DragonflightOptions.lua
