@@ -32,6 +32,7 @@ function module:GetOptions()
 					name = L["Price (in coppers)"],
 					type = "group",
 					inline = true,
+					order = 1000,
 					args = {
 						price = {
 							type = "range",
@@ -52,7 +53,6 @@ function module:GetOptions()
 							softMax = 1000000,
 							step = 1,
 							width = "full",
-							order = 1000,
 							set = function(info, value) module:SetProfileVar("price", value) end,
 							get = function(info) return AutoLooter.db.profile.price end
 						}
