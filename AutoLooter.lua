@@ -18,6 +18,7 @@ local Color = PRIVATE_TABLE.Color
 
 -- global calls runs 30% slower -- http://www.lua.org/gems/sample.pdf
 local GetNumLootItems = GetNumLootItems
+local GetLootSlotType = GetLootSlotType
 local GetLootSlotInfo = GetLootSlotInfo
 local GetLootSlotLink = GetLootSlotLink
 local LootSlot = LootSlot
@@ -269,30 +270,45 @@ function AUTO_LOOTER:Loot(_, autoloot)
 	local printReason = self.db.profile.printout
 
 	for nIndex = 1, GetNumLootItems() do
-		local icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
-		local sItemLink = GetLootSlotLink(nIndex)
+		local slotType = GetLootSlotType(nIndex) or 0
+		if (slotType > 0) then -- if the item is gone, there's nothing we can do.
+			local icon, title, quantity, currencyID, rarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
+			quantity = quantity or 0
+			local itemLink = GetLootSlotLink(nIndex)
 
-		for _, module in self:SortedModulesIterator(true) do
-			local loot, reason, reasonContent, forceBreak = module.CanLoot(sItemLink, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
+			for _, module in self:SortedModulesIterator(true) do
+				local loot, reason, reasonContent, forceBreak = module.CanLoot(
+						itemLink,
+						icon,
+						title,
+						quantity,
+						currencyID,
+						rarity,
+						locked,
+						isQuestItem,
+						questId,
+						isActive
+				)
 
-			if (printReason and reason and reasonContent and reasonContent ~= "") then
-				-- ignored items will still print the reason
-				if (loot and not self.db.profile.printoutReason and nQuantity > 0) then
-					reason = ""
+				if (printReason and reason and reasonContent and reasonContent ~= "") then
+					-- ignored items will still print the reason
+					if (loot and not self.db.profile.printoutReason and quantity > 0) then
+						reason = ""
+					end
+
+					if (loot or self.db.profile.printoutIgnored) then
+						reasonMap[reason] = reasonMap[reason] or {}
+						table.insert(reasonMap[reason], reasonContent)
+					end
 				end
 
-				if (loot or self.db.profile.printoutIgnored) then
-					reasonMap[reason] = reasonMap[reason] or {}
-					table.insert(reasonMap[reason], reasonContent)
+				if loot then
+					Loot(nIndex, title, itemLink)
+					break
 				end
-			end
 
-			if loot then
-				Loot(nIndex, sTitle, sItemLink)
-				break
+				if forceBreak then break end -- ignore other modules and go to the next item
 			end
-
-			if forceBreak then break end -- ignore other modules and go to the next item
 		end
 	end
 
