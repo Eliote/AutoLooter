@@ -54,6 +54,13 @@ function module:GetOptions()
 					set = function(info, val) AutoLooter.db.profile.printout = Util.GetBoolean(val) end,
 					get = function(info) return AutoLooter.db.profile.printout end
 				},
+				printLoginCommands = {
+					type = "toggle",
+					name = L["Printout commands at login"],
+					dialogControl = "AutoLooter_WrapTextCheckBox",
+					set = function(info, val) AutoLooter.db.profile.printCommandsAtLogin = Util.GetBoolean(val) end,
+					get = function(info) return AutoLooter.db.profile.printCommandsAtLogin end
+				},
 				printoutIgnored = {
 					type = "toggle",
 					name = L["Printout items ignored"],
@@ -77,7 +84,8 @@ function module:GetOptions()
 				},
 				printoutChatFrame = {
 					type = "multiselect",
-					name = L["Printout chat frame"],
+					order = -1,
+					name = L["Printout chat frames"],
 					values = function()
 						local values = {}
 						for i = 1, NUM_CHAT_WINDOWS do

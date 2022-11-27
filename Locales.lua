@@ -90,6 +90,7 @@ if L then
 	L["Loot everything with a price greater or equal to this value"] = "Pega todos os itens com preço maior ou igual a esse valor"
 	L["Fast loot"] = "Loot rápido"
 	L["Try to show loot animation"] = "Tentar exibir animação de saque"
+	L["Printout commands at login"] = "Exibir comandos durante o login"
 	--@end-debug@
 
 	return

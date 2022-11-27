@@ -167,6 +167,7 @@ function AUTO_LOOTER:OnInitialize()
 			ignoreBop = false,
 			printoutReason = true,
 			lootEarly = not isDragonFlight,
+			printLoginCommands = false,
 		},
 		char = {
 			chatFrameNames = { [-1] = true }
@@ -185,18 +186,18 @@ function AUTO_LOOTER:OnInitialize()
 	AUTO_LOOTER:ReloadOptions("OnInitialization")
 	AUTO_LOOTER:CreateProfile()
 
-	DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
+	if (self.db.profile.printCommandsAtLogin) then
+		DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
+	end
 end
 
 function AUTO_LOOTER:OnEnable()
 	AUTO_LOOTER:RegisterEvent("LOOT_READY")
 	AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
-	AUTO_LOOTER.print(L["Enabled"])
 	events:Fire("OnEnable")
 end
 
 function AUTO_LOOTER:OnDisable()
-	AUTO_LOOTER.print(L["Disabled"])
 	events:Fire("OnDisable")
 end
 
