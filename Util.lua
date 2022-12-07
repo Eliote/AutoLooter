@@ -95,7 +95,11 @@ function Util.GetItemText(icon, link, quantity, iconOnly)
 	local text = texture .. link
 
 	if (iconOnly) then
-		text = link:gsub("|h.+|h", "|h" .. texture .. "|h")
+		local newText, count = link:gsub("|h%[.+%]|h", "|h[" .. texture .. "]|h")
+		if (count == 0) then
+			newText = link:gsub("|h.+|h", "|h" .. texture .. "|h")
+		end
+		text = newText
 	end
 
 	return Color.WHITE .. quantity .. "x|r" .. text
