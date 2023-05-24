@@ -4,6 +4,7 @@
 --]]
 
 local ADDON_NAME, PRIVATE_TABLE = ...
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
 ---@class AutoLooter
