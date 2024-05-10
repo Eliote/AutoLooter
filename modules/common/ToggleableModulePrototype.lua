@@ -4,6 +4,7 @@ local AutoLooter = LibStub("AceAddon-3.0"):GetAddon("AutoLooter")
 
 local prototype = {}
 PRIVATE_TABLE.ToggleableModulePrototype = prototype
+AutoLooter.ToggleableModulePrototype = prototype
 
 function prototype:UpdateState()
 	if (AutoLooter.db.profile.enable and self:CanEnable()) then
