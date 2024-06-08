@@ -8,8 +8,8 @@ local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetad
 local MOD_VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 
 ---@class AutoLooter
-local AUTO_LOOTER = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
-local events = LibStub("CallbackHandler-1.0"):New(AUTO_LOOTER)
+AutoLooter = LibStub("AceAddon-3.0"):NewAddon("AutoLooter", "AceEvent-3.0")
+local events = LibStub("CallbackHandler-1.0"):New(AutoLooter)
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 
@@ -62,8 +62,8 @@ local function filterChatFrame(namesMap)
 	return frames
 end
 
-function AUTO_LOOTER.print(...)
-	local chatFrames = filterChatFrame(AUTO_LOOTER.db.char.chatFrameNames)
+function AutoLooter.print(...)
+	local chatFrames = filterChatFrame(AutoLooter.db.char.chatFrameNames)
 	if #chatFrames == 0 then return end
 
 	local out = ""
@@ -80,19 +80,19 @@ function AUTO_LOOTER.print(...)
 end
 
 local function LoadState()
-	if (AUTO_LOOTER.db.profile.enable) then
-		AUTO_LOOTER:Enable()
+	if (AutoLooter.db.profile.enable) then
+		AutoLooter:Enable()
 	else
-		AUTO_LOOTER:Disable()
+		AutoLooter:Disable()
 	end
 end
 
-function AUTO_LOOTER.Toggle(bool)
-	AUTO_LOOTER.db.profile.enable = Util.GetBoolean(bool, not AUTO_LOOTER.db.profile.enable)
+function AutoLooter.Toggle(bool)
+	AutoLooter.db.profile.enable = Util.GetBoolean(bool, not AutoLooter.db.profile.enable)
 	LoadState()
 end
 
-function AUTO_LOOTER:ReloadOptions(onInit)
+function AutoLooter:ReloadOptions(onInit)
 	if onInit == "OnInitialization" then
 		self:SetEnabledState(self.db.profile.enable)
 	else
@@ -100,7 +100,7 @@ function AUTO_LOOTER:ReloadOptions(onInit)
 	end
 end
 
-function AUTO_LOOTER:CreateProfile()
+function AutoLooter:CreateProfile()
 	self.options = {
 		type = "group",
 		name = "AutoLooter",
@@ -123,7 +123,7 @@ function AUTO_LOOTER:CreateProfile()
 	self.options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	self.options.args.profile.order = -1
 
-	for _, module in AUTO_LOOTER:IterateModules() do
+	for _, module in AutoLooter:IterateModules() do
 		if (module.GetOptions) then
 			Util.mergeTable(self.options.args, module:GetOptions())
 		end
@@ -139,12 +139,12 @@ end
 local function registerResetCacheOn(module, func)
 	local original = module[func]
 	module[func] = function(...)
-		AUTO_LOOTER:ResetModulesCache()
+		AutoLooter:ResetModulesCache()
 		if original then return original(...) end
 	end
 end
 
-function AUTO_LOOTER:OnInitialize()
+function AutoLooter:OnInitialize()
 	local isDragonFlight = (LE_EXPANSION_LEVEL_CURRENT >= 9) -- DRAGONFLIGHT = 9
 	local defaults = {
 		profile = {
@@ -184,21 +184,21 @@ function AUTO_LOOTER:OnInitialize()
 		registerResetCacheOn(module, "OnDisable")
 	end
 
-	AUTO_LOOTER:ReloadOptions("OnInitialization")
-	AUTO_LOOTER:CreateProfile()
+	AutoLooter:ReloadOptions("OnInitialization")
+	AutoLooter:CreateProfile()
 
 	if (self.db.profile.printCommandsAtLogin) then
 		DEFAULT_CHAT_FRAME:AddMessage(Color.BLUE .. "AutoLooter" .. Color.WHITE .. " || v" .. MOD_VERSION .. " || " .. Color.YELLOW .. "/autolooter /al /atl|r")
 	end
 end
 
-function AUTO_LOOTER:OnEnable()
-	AUTO_LOOTER:RegisterEvent("LOOT_READY")
-	AUTO_LOOTER:RegisterEvent("LOOT_OPENED")
+function AutoLooter:OnEnable()
+	AutoLooter:RegisterEvent("LOOT_READY")
+	AutoLooter:RegisterEvent("LOOT_OPENED")
 	events:Fire("OnEnable")
 end
 
-function AUTO_LOOTER:OnDisable()
+function AutoLooter:OnDisable()
 	events:Fire("OnDisable")
 end
 
@@ -216,16 +216,16 @@ local function PrintReason(reason, contents)
 	end
 
 	if (not reason or reason == "") then
-		AUTO_LOOTER.print(trim(items))
+		AutoLooter.print(trim(items))
 	else
-		AUTO_LOOTER.print(reason, "|r: ", trim(items))
+		AutoLooter.print(reason, "|r: ", trim(items))
 	end
 end
 
 local modulesCache = {}
 local resetMessage = {}
 ---@return fun(tbl: table<string, AutoLooterModule>):string, AutoLooterModule
-function AUTO_LOOTER:SortedModulesIterator(lootOnly)
+function AutoLooter:SortedModulesIterator(lootOnly)
 	local cacheKey = lootOnly and "lootOnlyTrue" or "lootOnlyFalse"
 	if modulesCache[cacheKey] ~= nil then
 		modulesCache[cacheKey](resetMessage)
@@ -247,23 +247,23 @@ function AUTO_LOOTER:SortedModulesIterator(lootOnly)
 	return modulesCache[cacheKey]
 end
 
-function AUTO_LOOTER:ResetModulesCache()
+function AutoLooter:ResetModulesCache()
 	modulesCache = {}
 end
 
-function AUTO_LOOTER:LOOT_OPENED(...)
+function AutoLooter:LOOT_OPENED(...)
 	if (not self.db.profile.lootEarly) then
 		self:Loot(...)
 	end
 end
 
-function AUTO_LOOTER:LOOT_READY(...)
+function AutoLooter:LOOT_READY(...)
 	if (self.db.profile.lootEarly) then
 		self:Loot(...)
 	end
 end
 
-function AUTO_LOOTER:Loot(_, autoloot)
+function AutoLooter:Loot(_, autoloot)
 	if (autoloot) then return end
 
 	events:Fire("OnLootReadyStart")
