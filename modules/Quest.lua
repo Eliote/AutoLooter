@@ -48,7 +48,7 @@ function module:GetOptions()
 			args = {
 				lootQuest = {
 					type = "toggle",
-					name = L["Loot quest itens"],
+					name = L["Loot quest items"],
 					dialogControl = "AutoLooter_WrapTextCheckBox",
 					set = function(info, value) self:SetProfileVar("lootQuest", Util.GetBoolean(value)) end,
 					get = function(info) return self.db.profile.lootQuest end

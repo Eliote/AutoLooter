@@ -22,7 +22,7 @@ if L then
 	L["Printout items ignored"] = "Escrever ignorados"
 	L["Printout items type"] = "Escrever o tipo"
 	L["Loot everything"] = "Pegar tudo"
-	L["Loot quest itens"] = "Pegar itens de missão"
+	L["Loot quest items"] = "Pegar itens de missão"
 	L["Close after loot"] = "Fechar após pegar"
 	L["Ignore greys when looting by type"] = "Ignorar cinzas ao pegar por tipo"
 	L["Auto confirm loot roll"] = "Auto confirmar loot"
