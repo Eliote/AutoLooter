@@ -17,14 +17,12 @@ local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
--- global calls runs 30% slower -- http://www.lua.org/gems/sample.pdf
-local GetNumLootItems = GetNumLootItems
-local GetLootSlotType = GetLootSlotType
-local GetLootSlotInfo = GetLootSlotInfo
-local GetLootSlotLink = GetLootSlotLink
-local LootSlot = LootSlot
-local ConfirmLootSlot = ConfirmLootSlot
---
+AutoLooter.GetNumLootItems = GetNumLootItems
+AutoLooter.GetLootSlotType = GetLootSlotType
+AutoLooter.GetLootSlotInfo = GetLootSlotInfo
+AutoLooter.GetLootSlotLink = GetLootSlotLink
+AutoLooter.LootSlot = LootSlot
+AutoLooter.ConfirmLootSlot = ConfirmLootSlot
 
 local chatCache = {}
 local function findChatFrame(name)
@@ -75,7 +73,7 @@ function AutoLooter.print(...)
 	end
 
 	for i, chatFrame in ipairs(chatFrames) do
-		chatFrame:AddMessage(Color.WHITE .. "<" .. Color.BLUE .. "AutoLooter" .. Color.WHITE .. ">|r|r|r " .. out)
+		chatFrame:AddMessage(Color.WHITE .. "[" .. Color.BLUE .. "AL" .. Color.WHITE .. "]|r|r|r " .. out)
 	end
 end
 
@@ -203,8 +201,8 @@ function AutoLooter:OnDisable()
 end
 
 local function Loot(index, itemName, itemLink)
-	LootSlot(index)
-	ConfirmLootSlot(index) -- In case it's a Bind on Pickup
+	AutoLooter.LootSlot(index)
+	AutoLooter.ConfirmLootSlot(index) -- In case it's a Bind on Pickup
 	events:Fire("OnLoot", index)
 end
 
@@ -271,12 +269,13 @@ function AutoLooter:Loot(_, autoloot)
 	local reasonMap = {}
 	local printReason = self.db.profile.printout
 
-	for nIndex = 1, GetNumLootItems() do
-		local slotType = GetLootSlotType(nIndex) or 0
-		if (slotType > 0) then -- if the item is gone, there's nothing we can do.
-			local icon, title, quantity, currencyID, rarity, locked, isQuestItem, questId, isActive = GetLootSlotInfo(nIndex)
+	for nIndex = 1, self.GetNumLootItems() do
+		local slotType = self.GetLootSlotType(nIndex) or 0
+		if (slotType > 0) then
+			-- if the item is gone, there's nothing we can do.
+			local icon, title, quantity, currencyID, rarity, locked, isQuestItem, questId, isActive = self.GetLootSlotInfo(nIndex)
 			quantity = quantity or 0
-			local itemLink = GetLootSlotLink(nIndex)
+			local itemLink = self.GetLootSlotLink(nIndex)
 
 			for _, module in self:SortedModulesIterator(true) do
 				local loot, reason, reasonContent, forceBreak = module.CanLoot(

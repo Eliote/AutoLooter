@@ -2,6 +2,7 @@ package-as: AutoLooter
 
 ignore:
     - .gitignore
+    - Test.lua
 
 manual-changelog:
     filename: CHANGELOG.txt

@@ -45,3 +45,7 @@ modules\Token.lua
 modules\Type.lua
 modules\WhiteList.lua
 modules\DragonflightOptions.lua
+
+#@do-not-package@
+Test.lua
+#@end-do-not-package@
