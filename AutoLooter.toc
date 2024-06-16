@@ -30,6 +30,7 @@ modules\All.lua
 modules\AutoConfirmLoot.lua
 modules\Base.lua
 modules\BlackList.lua
+modules\ChatLoot.lua
 modules\Currency.lua
 modules\DataBroker.lua
 modules\Fishing.lua

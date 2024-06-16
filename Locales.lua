@@ -91,6 +91,12 @@ if L then
 	L["Fast loot"] = "Loot rápido"
 	L["Try to show loot animation"] = "Tentar exibir animação de saque"
 	L["Printout commands at login"] = "Exibir comandos durante o login"
+	L["Received Items"] = "Itens recebidos"
+	L["Print items you receive"] = "Escrever items que você recebe"
+	L["Print items others receive"] = "Escrever items que os outros recebem"
+	L["Received items group Delay (ms)"] = "Intervalo de agrupamento dos itens recebidos (ms)"
+	L["All items received between this delay will be grouped"] = "Todos os itens recebidos dentro deste intervalo serão agrupados"
+	L["You"] = "Você"
 	--@end-debug@
 
 	return
