@@ -4,6 +4,8 @@ local ADDON_NAME, PRIVATE_TABLE = ...
 local Util = PRIVATE_TABLE.Util
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
 
+local GetItemQualityColor = (C_Item and C_Item.GetItemQualityColor) or GetItemQualityColor
+
 --- @class Color
 local Color = PRIVATE_TABLE.Color
 Color.BLUE = "|cFF29E0E7"

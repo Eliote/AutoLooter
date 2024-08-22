@@ -11,7 +11,8 @@ module.priority = 100000
 local reason = Color.GREEN .. L["All"]
 local reasonLog = Color.ORANGE .. L["Ignored"]
 
-local GetItemInfoInstant, CloseLoot = GetItemInfoInstant, CloseLoot
+local GetItemInfoInstant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+local CloseLoot = CloseLoot
 
 function module.CanLoot(link, icon, sTitle, nQuantity, currencyID, nRarity, locked, isQuestItem, questId, isActive)
 	if AutoLooter.db.profile.lootAll then

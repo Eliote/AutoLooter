@@ -9,6 +9,8 @@ module.priority = 1000
 
 local reason = Color.GREEN .. L["Price"]
 
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+
 function module:CanEnable()
 	return AutoLooter.db.profile.price > 0
 end

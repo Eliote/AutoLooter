@@ -6,6 +6,8 @@ local ListHelper = PRIVATE_TABLE.ListHelper
 local Util = PRIVATE_TABLE.Util
 local Color = PRIVATE_TABLE.Color
 
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+
 function ListHelper.AddItem(sTitle, list)
 	local sLink = sTitle
 	if not sTitle or sTitle == "" then

@@ -10,7 +10,9 @@ module.priority = 1100
 
 local reason = Color.GREEN .. L["Type"]
 
-local GetItemInfoInstant = GetItemInfoInstant
+local GetItemInfoInstant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+local GetItemClassInfo = (C_Item and C_Item.GetItemClassInfo) or GetItemClassInfo
+local GetItemSubClassInfo = (C_Item and C_Item.GetItemSubClassInfo) or GetItemSubClassInfo
 
 local C_AuctionHouse = C_AuctionHouse
 if not C_AuctionHouse then

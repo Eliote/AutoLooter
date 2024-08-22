@@ -10,7 +10,7 @@ module.priority = 600
 
 local reason = Color.ORANGE .. L["Ignored"]
 
-local GetItemInfo, select = GetItemInfo, select
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
 
 function module:CanEnable()
 	return AutoLooter.db.profile.ignoreBop

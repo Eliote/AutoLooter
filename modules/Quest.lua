@@ -10,10 +10,10 @@ module.priority = 800
 
 local reason = Color.GREEN .. L["Quest"]
 
-local GetItemInfo = GetItemInfo
-local GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries or GetNumQuestLogEntries;
-local GetNumQuestLeaderBoards = C_QuestLog.GetNumQuestLeaderBoards or GetNumQuestLeaderBoards;
-local GetQuestLogLeaderBoard = C_QuestLog.GetQuestLogLeaderBoard or GetQuestLogLeaderBoard;
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+local GetNumQuestLogEntries = (C_QuestLog and C_QuestLog.GetNumQuestLogEntries) or GetNumQuestLogEntries
+local GetNumQuestLeaderBoards = (C_QuestLog and C_QuestLog.GetNumQuestLeaderBoards) or GetNumQuestLeaderBoards
+local GetQuestLogLeaderBoard = (C_QuestLog and C_QuestLog.GetQuestLogLeaderBoard) or GetQuestLogLeaderBoard
 
 local questItemList = {}
 local questItemClassID = LE_ITEM_CLASS_QUESTITEM or Enum.ItemClass.Questitem

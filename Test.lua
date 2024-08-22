@@ -4,6 +4,8 @@ local module = AutoLooter:NewModule("TestModule", PRIVATE_TABLE.ToggleableModule
 local C = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
+local GetCoinText = (C_CurrencyInfo and C_CurrencyInfo.GetCoinText) or GetCoinText
+
 function module:CanEnable()
 	return true
 end
