@@ -106,7 +106,7 @@ function module:LOOT_EVENT(event, text, playerName, _, _, _, _, _, _, _, _, _, g
 		end
 		if (playerLocation) then
 			local className, classFilename, classID = C_PlayerInfo.GetClass(playerLocation)
-			playerBucket.color = C_ClassColor.GetClassColor(classFilename)
+			playerBucket.color = C_ClassColor and C_ClassColor.GetClassColor(classFilename) or GetClassColorObj(classFilename)
 		end
 	end
 
