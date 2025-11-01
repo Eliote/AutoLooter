@@ -118,7 +118,11 @@ local function CreateAHTable(defTable)
 			if #itemSubClasses > 0 then
 				for _, itemSubClass in pairs(itemSubClasses) do
 					local subclassInfo, _ = GetItemSubClassInfo(itemClass, itemSubClass)
-					t[subclassInfo] = GetOrCreateTypeTableDb(defTable, classInfo, subclassInfo)
+					-- GetAuctionItemSubClasses for the itemClass '0', is returning a subclass '-1' for some reason.
+					-- So we have to check if it's a real subclass here
+					if (subclassInfo) then
+					    t[subclassInfo] = GetOrCreateTypeTableDb(defTable, classInfo, subclassInfo)
+					end
 				end
 			else
 				t[classInfo] = GetOrCreateTypeTableDb(defTable, classInfo, classInfo)
