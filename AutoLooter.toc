@@ -1,6 +1,4 @@
-## Interface: 110105
-## Interface-Classic: 11507
-## Interface-Cata: 40402
+## Interface: 110205, 50501, 11508
 ## Title: AutoLooter
 ## Version: @project-version@
 ## Author: Eliote
