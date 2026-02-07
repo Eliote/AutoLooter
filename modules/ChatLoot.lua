@@ -84,6 +84,7 @@ end
 
 -- Events: CHAT_MSG_LOOT, CHAT_MSG_CURRENCY, CHAT_MSG_MONEY
 function module:LOOT_EVENT(event, text, playerName, _, _, _, _, _, _, _, _, _, guid)
+  if (issecretvalue and issecretvalue(playerName)) then return end
 	if (playerName == nil or playerName == "") then
 		playerName = currentPlayerName
 	end
