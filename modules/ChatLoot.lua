@@ -110,7 +110,7 @@ function module:LOOT_EVENT(event, text, playerName, _, _, _, _, _, _, _, _, _, g
 		end
 	end
 
-	for link, amount in string.gmatch(text, "(|c%x*|H.-|h|r)(x?%d*)") do
+	for link, amount in string.gmatch(text, "(|c.-|H.-|h|r)(x?%d*)") do
 		-- Since [gmatch] can't make optional captures. We do this to make sure there's a 'x%d+' in the string.
 		amount = string.match(amount, "x(%d+)") or 1
 		if (event == "CHAT_MSG_LOOT") then
