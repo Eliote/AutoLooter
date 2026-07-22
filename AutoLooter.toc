@@ -1,4 +1,4 @@
-## Interface: 120000, 110207, 50503, 38000, 20505, 11508
+## Interface: 120007, 50504, 38001, 20506, 11508
 ## Title: AutoLooter
 ## Version: @project-version@
 ## Author: Eliote
