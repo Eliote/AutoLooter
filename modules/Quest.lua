@@ -18,6 +18,7 @@ local GetQuestLogLeaderBoard = (C_QuestLog and C_QuestLog.GetQuestLogLeaderBoard
 local questItemList = {}
 local questItemClassID = LE_ITEM_CLASS_QUESTITEM or Enum.ItemClass.Questitem
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local isForever = WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
 
 function module:CanEnable()
 	return self.db.profile.lootQuest
@@ -66,7 +67,7 @@ function module:CreateQuestItemList()
 			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
 			if not isDone and boardItemType == "item" then
 				local itemName, numItems, numNeeded
-				if (isRetail) then
+				if (isRetail or isForever) then
 					numItems, numNeeded, itemName = leaderboardTxt:match("([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
 				else
 					itemName, numItems, numNeeded = leaderboardTxt:match("(.*):%s*([%d]+)%s*/%s*([%d]+)")
