@@ -1,6 +1,7 @@
 local ADDON_NAME, PRIVATE_TABLE = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale("AutoLooter")
+local LSD = LibStub("LibStringDeformat-1.0")
 local Color = PRIVATE_TABLE.Color
 local Util = PRIVATE_TABLE.Util
 
@@ -17,8 +18,6 @@ local GetQuestLogLeaderBoard = (C_QuestLog and C_QuestLog.GetQuestLogLeaderBoard
 
 local questItemList = {}
 local questItemClassID = LE_ITEM_CLASS_QUESTITEM or Enum.ItemClass.Questitem
-local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local isForever = WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
 
 function module:CanEnable()
 	return self.db.profile.lootQuest
@@ -66,12 +65,7 @@ function module:CreateQuestItemList()
 		for boardIndex = 1, GetNumQuestLeaderBoards(questIndex) do
 			local leaderboardTxt, boardItemType, isDone = GetQuestLogLeaderBoard(boardIndex, questIndex)
 			if not isDone and boardItemType == "item" then
-				local itemName, numItems, numNeeded
-				if (isRetail or isForever) then
-					numItems, numNeeded, itemName = leaderboardTxt:match("([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
-				else
-					itemName, numItems, numNeeded = leaderboardTxt:match("(.*):%s*([%d]+)%s*/%s*([%d]+)")
-				end
+				local itemName = module:GetQuestInfo(leaderboardTxt)
 				if itemName then
 					itemList[itemName] = true
 				end
@@ -80,6 +74,11 @@ function module:CreateQuestItemList()
 	end
 
 	return itemList
+end
+
+local questItemPattern = LSD:Compile(QUEST_ITEMS_NEEDED)
+function module:GetQuestInfo(text)
+	return questItemPattern:Parse(text)
 end
 
 function module:QUEST_LOG_UPDATE()
