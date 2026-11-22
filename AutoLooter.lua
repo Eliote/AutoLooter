@@ -23,6 +23,7 @@ AutoLooter.GetLootSlotInfo = GetLootSlotInfo
 AutoLooter.GetLootSlotLink = GetLootSlotLink
 AutoLooter.LootSlot = LootSlot
 AutoLooter.ConfirmLootSlot = ConfirmLootSlot
+AutoLooter.GetLootSourceInfo = GetLootSourceInfo
 
 local chatCache = {}
 local function findChatFrame(name)
@@ -269,13 +270,13 @@ function AutoLooter:Loot(_, autoloot)
 	local reasonMap = {}
 	local printReason = self.db.profile.printout
 
-	for nIndex = 1, self.GetNumLootItems() do
-		local slotType = self.GetLootSlotType(nIndex) or 0
+	for lootSlot = 1, self.GetNumLootItems() do
+		local slotType = self.GetLootSlotType(lootSlot) or 0
 		if (slotType > 0) then
 			-- if the item is gone, there's nothing we can do.
-			local icon, title, quantity, currencyID, rarity, locked, isQuestItem, questId, isActive = self.GetLootSlotInfo(nIndex)
+			local icon, title, quantity, currencyID, rarity, locked, isQuestItem, questId, isActive = self.GetLootSlotInfo(lootSlot)
 			quantity = quantity or 0
-			local itemLink = self.GetLootSlotLink(nIndex)
+			local itemLink = self.GetLootSlotLink(lootSlot)
 
 			for _, module in self:SortedModulesIterator(true) do
 				local loot, reason, reasonContent, forceBreak = module.CanLoot(
@@ -288,7 +289,8 @@ function AutoLooter:Loot(_, autoloot)
 						locked,
 						isQuestItem,
 						questId,
-						isActive
+						isActive,
+						lootSlot
 				)
 
 				if (printReason and reason and reasonContent and reasonContent ~= "") then
@@ -304,7 +306,7 @@ function AutoLooter:Loot(_, autoloot)
 				end
 
 				if loot then
-					Loot(nIndex, title, itemLink)
+					Loot(lootSlot, title, itemLink)
 					break
 				end
 

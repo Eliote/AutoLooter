@@ -39,6 +39,7 @@ modules\Money.lua
 modules\Price.lua
 modules\Quest.lua
 modules\Rarity.lua
+modules\Skinning.lua
 modules\Token.lua
 modules\Type.lua
 modules\WhiteList.lua
