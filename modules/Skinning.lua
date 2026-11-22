@@ -69,7 +69,7 @@ function module:IsGUIDFromSkinnable(guid)
 end
 
 function module:GetIDFromGUID(guid)
-	if not guid or IsSecret(guid) then
+	if IsSecret(guid) or not guid then
 		return
 	end
 
@@ -86,7 +86,7 @@ function module:UPDATE_MOUSEOVER_UNIT()
 	end
 
 	local guid = UnitGUID("mouseover")
-	if not guid or IsSecret(guid) then
+	if IsSecret(guid) or not guid then
 		return
 	end
 
@@ -108,7 +108,7 @@ function module:IsUnitTooltipSkinnable(unit)
 
 	for i = 2, GameTooltip:NumLines() do
 		local line = _G["GameTooltipTextLeft" .. i]
-		if line and line:GetText() == SKINNABLE_TEXT then
+		if (line and module:SafeEquals(line:GetText(), SKINNABLE_TEXT)) then
 			local r, g, b = line:GetTextColor()
 			local lineColor = CreateColor(r, g, b)
 			return module:CanSkin(lineColor)
@@ -120,7 +120,7 @@ end
 function module:IsTooltipDataSkinnable(data)
 	if data and data.lines then
 		for _, line in ipairs(data.lines) do
-			if line.leftText == SKINNABLE_TEXT then
+			if (module:SafeEquals(line.leftText, SKINNABLE_TEXT)) then
 				return module:CanSkin(line.leftColor)
 			end
 		end
@@ -136,10 +136,17 @@ function module:AreColorsSimilar(c1, c2, delta)
 end
 
 function module:CanSkin(color)
-	if (color and module:AreColorsSimilar(color, RED_FONT_COLOR)) then
-		return false
+	if (IsSecret(color) or not color or not module:AreColorsSimilar(color, RED_FONT_COLOR)) then
+		return true
 	end
-	return true
+	return false
+end
+
+function module:SafeEquals(a, b, default)
+	if IsSecret(a) or IsSecret(b) then
+		return default
+	end
+	return a == b
 end
 
 function module:GetOptions()
